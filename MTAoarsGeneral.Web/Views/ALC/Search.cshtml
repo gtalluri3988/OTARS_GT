@@ -1,0 +1,51 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.ALCHeaderViewModel
+
+<div id="search-alc">
+@Html.ValSummary()          
+    <table class="mta-panel" style="width:90%">
+        <caption>Search</caption>
+        <tr>
+            <th>Agency No</th>
+            <td><input type="text" class="k-textbox" id="agency-number" required/></td>
+            <td><button id="search-alc-button" class="k-button"><span class="k-icon k-i-search"></span>Search</button></td>
+        </tr>
+    </table>
+</div>           
+
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#search-alc-button").click(function () {
+            
+            jsonPost("#search-alc", "@Url.Action("Search")", {agencyNumber:$("#agency-number").val()}, function(response) {
+                
+                if(response.Result) {
+                    var current = master.getCurrent();
+                    current.Name = response.Data.NomineeName;
+                    current.ICNumber = response.Data.NomineeNewICNumber;
+                    current.MemberID = response.Data.NomineeID;
+                    current.CompanyID = response.Data.CompanyID;
+                    current.AgencyID = response.Data.AgencyID;
+                    var today = new Date();                    
+                    current.StartDate = getCurrentDate();
+                    current.EndDate = getCurrentDate();
+                    master.refresh();
+                    $("#alc-details").show();
+                }
+            });
+
+        });
+
+    });
+
+    function getCurrentDate() {
+        var d = new Date();
+        d.setHours(0);
+        d.setMinutes(0);
+        return d;
+    }
+
+</script>

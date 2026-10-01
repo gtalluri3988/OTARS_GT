@@ -1,0 +1,56 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.TrainingViewModel
+@Html.ValSummary()           
+<table class="mta-panel">
+    <caption>Training details</caption>
+    <tr>
+        <th>Name</th>
+        <td><span data-bind="text:Name"></span></td>
+        <th>IC Number</th>
+        <td><span data-bind="text:ICNumber"></span></td>
+    </tr>
+    <tr>
+        <th>
+            @Html.BindEditorFor(model=>model.IsStructured) Structured
+         </th>
+        <td>
+              @Html.BindDropDownListFor(model => model.IntermediaryTypeID, Url.Action("IntermediaryTypes", "Lookup"))
+        </td>
+        <th data-bind="invisible:IsStructured">
+            Course Description
+        </th>
+        <td data-bind="invisible:IsStructured">@Html.BindTextBoxFor(model=>model.CourseDescription)</td>
+         <th data-bind="visible:IsStructured">Course</th>
+        <td data-bind="visible:IsStructured">
+            @Html.BindDropDownListFor(model => model.CourseID, Url.Action("Courses", "Lookup"))
+        </td>
+    </tr>
+    <tr>
+        <th>Start Date</th>
+        <td>@Html.EditorFor(model=>model.StartDate, "DateEditor")</td>
+        <th>End Date</th>
+        <td>@Html.EditorFor(model=>model.EndDate, "DateEditor")</td>
+    </tr>
+    <tr>
+        <th>Training Type</th>
+        <td colspan="3"> @Html.BindDropDownListFor(model => model.TrainingTypeID, Url.Action("TrainingTypes", "Lookup"))</td>
+    </tr>
+    <tr>
+        <th>Credit Hours</th>
+        <td>@Html.BindTextBoxFor(model=>model.CreditHours)</td>
+        <th>Organized By</th>
+        <td>@Html.BindTextBoxFor(model=>model.OrganizedBy)</td>
+    </tr>
+    <tr>
+        <th>Internal Reference Number</th>
+        <td>@Html.BindTextBoxFor(model=>model.ReferenceNumber)</td>
+        <th>Bank Name</th>
+        <td>@Html.BindTextBoxFor(model=>model.BankName)</td>
+    </tr>
+     <tr>
+        <th colspan="4" style="text-align:right">
+            <button class="k-button" id="save-button"><span class="k-icon k-i-tick"></span>Save</button>
+            <button class="k-button" id="cancel-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+        </th>
+    </tr>
+</table>

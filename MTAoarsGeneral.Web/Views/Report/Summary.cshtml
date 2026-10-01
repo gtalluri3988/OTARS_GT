@@ -1,0 +1,39 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.SummaryReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>Summary Report Parameters</caption>
+    <tr>
+        <th>Year</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Year, Url.Action("RecentYears", "Lookup"), required:true)
+        </td>
+   
+      
+        <th>
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Summary Report", "#", 2);
+
+        
+        $("#is-valid").kendoDropDownList({});
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        viewModel.IsValid = "All";
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+          // if(typeof(viewModel.IntermediaryTypeID) !== "object") viewModel.IntermediaryTypeID = viewModel.IntermediaryTypeID.ID;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=Summary")", viewModel, "#report");
+        });
+
+    });
+</script>

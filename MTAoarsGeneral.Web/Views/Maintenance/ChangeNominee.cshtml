@@ -1,0 +1,46 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+    <div id="tabs">
+        <ul>
+            <li class="k-state-active" id="nominee">Nominee</li>          
+            <li id="qualification">Qualification</li>
+              
+        </ul>
+     
+            @Html.ValSummary()
+            
+            @TabHelper.DisplayPage("nominee", 
+                              () => Html.PartialFor(model => model.CorporateNominee, "CorporateNominee"),
+                              0,false
+                       )       
+         @TabHelper.DisplayPage("qualification",
+                    () => Html.PartialFor(model => model.CorporateNominee.Qualification, "~/Views/Registration/Qualification.cshtml"),
+                    1, true)
+              
+                    
+ 
+        
+    </div>
+    <script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=CCNO", 1);
+        addBreadCrumb("Change Corporate Nominee", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        $("#submit-button", "#main-content").click(function() {
+            jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", mainViewModel.CorporateNominee, function(response) {
+                 if(response.Result)
+               {    
+                alert("Nominee saved successfully");
+                window.location.href="Search?maintenanceType=CCNO";
+               }
+                });
+           
+        });
+
+    });
+</script>

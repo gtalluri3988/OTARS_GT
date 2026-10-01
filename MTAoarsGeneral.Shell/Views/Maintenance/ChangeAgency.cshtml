@@ -1,0 +1,19 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+    <div id="maintenanceTabs">
+        <ul>
+            <li><a href="#nominee">Agency</a></li>          
+           
+              
+        </ul>
+ @using (Html.BeginForm("SaveAgency", "Maintenance", new { id = "mainForm" }))
+ {
+            
+            @Html.ValSummary()
+            @TabHelper.DisplayPage("agency", "Details for Agency",
+                              () => Html.PartialFor(model => model.Agency, "../Registration/Agency"),
+                         nextPage: "submit")           
+         
+ }
+        
+    </div>

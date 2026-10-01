@@ -1,0 +1,27 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AgencySearchRequestViewModel
+
+<div id="search-content">
+    <table class="mta-panel">
+        <caption>Search Agency</caption>
+        <tr>
+            <th>Agency Number</th>
+            <td>@Html.BindTextBoxFor(model => model.AgencyNumber, 10)</td>
+            <th>Business Regn Number</th>
+            <td>@Html.BindTextBoxFor(model => model.BusinessRegistrationNumber, 15)</td>
+        </tr>
+        <tr>
+            <!--<th>Name</th>
+            <td>@Html.BindTextBoxFor(model => model.MemberName, 75)</td>-->
+            <th>IC / Passport Number</th>
+            <td>@Html.BindTextBoxFor(model => model.ICNumber, 12)</td>
+            <th>New Business Regn Number</th>
+            <td>@Html.BindTextBoxFor(model => model.NewBusinessRegistrationNumber, 12)</td>
+        </tr>
+        <tr>
+            <td style="text-align:right" colspan="4">
+                <button class="k-button" id="search-button"><span class="k-icon k-i-search"></span>Search</button>
+            </td>
+        </tr>
+    </table>
+</div>

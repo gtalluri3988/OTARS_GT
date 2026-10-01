@@ -1,0 +1,47 @@
+@model List<MTAoarsGeneral.ViewModels.Operations.AgencyPrincipalDisplayViewModel>
+<h4>
+        <a href="#">Principals</a></h4>
+    <div class="hastable">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Agency Number
+                    </th>
+                    <th>
+                        Company
+                    </th>
+                    <th>
+                        Intermediary Type
+                    </th>
+                     <th>
+                        Valid From
+                    </th>
+                     <th>
+                        Valid To
+                    </th>
+                    <th>
+                        Termination Date
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ap in Model) {
+                    <tr>
+                        <td>@ap.AgencyNumber
+                        </td>
+                        <td>@ap.CompanyName
+                        </td>
+                        <td>@ap.ItermediaryTypeDescription
+                        </td>
+                        <td>@Html.DisplayFor(model=>ap.ValidFrom, "Date")
+                        </td>
+                         <td>@Html.DisplayFor(model=>ap.ValidTo, "Date")
+                        </td>
+                        <td>@Html.DisplayFor(model=>ap.TerminationDate, "Date")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>

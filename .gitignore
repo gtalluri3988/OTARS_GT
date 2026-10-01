@@ -1,0 +1,33 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# DLLs referenced directly from bin folders by .csproj HintPaths
+!MTAoarsGeneral.Utilities/bin/
+MTAoarsGeneral.Utilities/bin/*
+!MTAoarsGeneral.Utilities/bin/Debug/
+MTAoarsGeneral.Utilities/bin/Debug/*
+!MTAoarsGeneral.Utilities/bin/Debug/System.Web.Mvc.dll
+!MTAoarsGeneral.Web/bin/
+MTAoarsGeneral.Web/bin/*
+!MTAoarsGeneral.Web/bin/Microsoft.Web.Infrastructure.dll
+!MTAoarsGeneral.Web/bin/System.Web.WebPages.Deployment.dll
+!MTAoarsGeneral.Web/bin/System.Web.WebPages.Razor.dll
+
+# NuGet packages (restored by NuGet)
+packages/
+!.nuget/NuGet.exe
+
+# Logs
+logs/
+*.log
+Nlog_Logging.txt

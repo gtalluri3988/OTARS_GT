@@ -1,0 +1,54 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+  @using MTAoarsGeneral.ViewModels.Interfaces
+  @using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+          
+    <div id="tabs">
+        <ul>
+                       
+          @Html.Partial("Header",Model,ViewData)      
+            <li id="guarantor">Guarantor</li>  
+              
+        </ul>
+ 
+            @Html.ValSummary()
+            @Html.Partial("Details", Model, ViewData)           
+         
+               
+                @TabHelper.DisplayPage("guarantor",
+    () => Html.PartialFor(model => model.Guarantor, "../Registration/Guarantor",true),
+    Model is IExistableAgency?1:0,true)
+            
+           
+
+        
+    </div>
+    <script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=CGU", 1);
+        addBreadCrumb("Change Guarantor", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        var guarantorType = mainViewModel.Guarantor.GuarantorType;
+        if (guarantorType != null && guarantorType.Code != "@LookupConstants.GuarantorTypes.NoGuarantee") {
+            $("#guarantors").show();
+        } else {
+            $("#guarantors").hide();
+        }
+        $("#submit-button", "#main-content").click(function() {
+            jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", mainViewModel.Guarantor, function(response) {
+                if(response.Result)
+               {    
+                alert("Guarantor saved successfully");
+                window.location.href="Search?maintenanceType=CGU";
+               }
+                });
+           
+        });
+
+    });
+</script>

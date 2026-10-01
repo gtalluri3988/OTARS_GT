@@ -1,0 +1,51 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.IndividualRegistrationViewModel
+<div id="main-content">
+    @Html.ValSummary()
+    <div id="tabs">
+        <ul>
+            <li class="k-state-active" id="nominee">Nominee</li>
+            <li id="address">Address</li>
+            <li id="qualification">Qualification</li>
+            <li id="spouse">Spouse / Next of Kin</li>
+            <li id="guarantor">Guarantor</li>
+        </ul>
+        @TabHelper.DisplayPage("nominee", () => Html.PartialFor(model => model.CorporateNominee, "CorporateNominee"), 0, false)
+        @TabHelper.DisplayPage("address", () => Html.PartialFor(model => model.Address, "Address"), 1, false)
+        @TabHelper.DisplayPage("qualification", () => Html.PartialFor(model => model.CorporateNominee.Qualification, "Qualification"), 2, false)
+        @TabHelper.DisplayPage("spouse", () => Html.PartialFor(model => model.CorporateNominee.Spouse, "Spouse"), 3, false)
+        @TabHelper.DisplayPage("guarantor", () => Html.PartialFor(model => model.Guarantor, "Guarantor"), 4, true)
+    </div>
+
+    <input type="hidden" id="submit-url" value="@Url.Action("IndividualSubmit")" />
+</div>
+
+
+
+@TabHelper.RegisterTabScript()
+
+<script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Entry", "javascript:showDiv('#create-main')", 3);
+
+        kendo.bind($("#main-content"), mainViewModel);
+
+        $("#submit-button", "#main-content").click(function() {
+//            if($('.k-filename').length < 1) {
+//                alert("Please upload agent's photograph"); return false;
+//            }
+
+            jsonPost("#main-content", "@Url.Action("IndividualCheck")", mainViewModel, function(response) {
+                viewPost("#main-content", response.RedirectUrl, mainViewModel, function (result) {
+                    postPage("#create-confirm", result);
+                });
+            });
+        });
+
+    });
+</script>

@@ -1,0 +1,114 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.UserMasterViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}           
+<div id="users-content">
+    <div id="users-grid"></div>
+    <br />
+    <div id="users-details" style="display:none;text-align:center">
+        <table class="mta-panel" style="width:90%">
+            <caption>User</caption>
+            <tr>
+                <th>Company</th>
+                <td>@Html.BindDropDownListFor(model => model.CompanyID, @Url.Action("Companies", "Lookup", new {IncludeDefault = true}))</td>
+                <th>Role</th>
+                <td>@Html.BindDropDownListFor(model => model.RoleID, @Url.Action("Roles", "Lookup", new {IncludeDefault = true}))</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>@Html.BindTextBoxFor(model => model.Name)</td>
+                 <th>Email</th>
+                <td>@Html.BindTextBoxFor(model => model.Email)</td>
+            </tr>
+            <tr>
+                <th>User Name</th>
+                <td>@Html.BindTextBoxFor(model => model.UserName)
+                    <span for="UserName"></span>
+                </td>
+          
+                <th>Password</th>
+                <td>@Html.BindTextBoxFor(model => model.Password)</td>
+            </tr>
+            <tr>
+                <th>Secret Question</th>
+                <td>@Html.BindTextBoxFor(model => model.SecretQuestion)</td>
+         
+                <th>Secret Answer</th>
+                <td>@Html.BindTextBoxFor(model => model.SecretAnswer)</td>
+            </tr>
+            <tr>
+                <th colspan="4" style="text-align:right">
+                    <button class="k-button" id="save-button"><span class="k-icon k-i-tick"></span>Save</button>
+                    <button class="k-button" id="cancel-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model));
+    
+    var master;
+    $(function () {
+
+        var getCompaniesAsync = getAsyncFunction("@Url.Action("Companies", "Lookup")");
+        var getRolesAsync = getAsyncFunction("@Url.Action("Roles", "Lookup")");
+
+        var userModel = {
+            id: "ID",
+            fields: {
+                CompanyID: {type:"number"},
+                UserName: {
+                    type:"string",  
+                    validation: {
+                        required:true
+                    }
+                },
+                Name: {type:"string"},
+                Email: {type:"string"},
+                RoleID: {type:"number"}
+            }
+        };
+
+
+        $.when(getCompaniesAsync()).done(function(companies) {
+            $.when(getRolesAsync()).done(function(roles) {
+                $("#users-grid").kendoGrid({
+                    dataSource: getMasterGridDataSource(masterDataServiceUrl + "/Users", userModel),
+                    pageable:true,
+                    sortable:true,
+                    filterable:true,
+                    selectable:true,
+                    editable:"inline",
+                    columns: [
+                        { field: "CompanyID", values:companies, title:"Company"},
+                        { field: "UserName" },
+                        { field: "Name" },
+                        { field: "RoleID", values:roles, title:"Role" },
+                        { field: "Email" },
+                        { field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+                        { command: ["destroy"]}
+                    ],
+                    toolbar:[{template:"<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button>"}]
+                });
+            });
+        });
+
+        master = new Master({
+            url: masterDataServiceUrl + "/Users",
+            gridSelector: "#users-grid", detailsSelector: "#users-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateUser")"
+        });
+
+    });
+
+    function onEditClick() {
+        master.editClick();
+    }
+    
+    function onAddClick() {
+        master.addClick();
+    }
+</script>

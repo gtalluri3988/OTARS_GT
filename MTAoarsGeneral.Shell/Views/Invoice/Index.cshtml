@@ -1,0 +1,100 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@section  PageTitle{
+Invoice
+}
+@section Breadcrumb {
+    <a href="@Url.Action("Index", "Home")" title="Home">Home</a> > Invoice
+}
+<div class="two-column">
+    <div class="column">
+        <div id="invoiceGrid" style="clear: both">
+        </div>
+     </div>
+    <div class="column column-right">
+        <div id="detailGrid"></div>
+    </div>
+</div>
+                 
+
+<script type="text/kendo-tmpl" id="invoice-detail-template">
+    
+        <b>${CompanyName}</b> <br/>
+    
+    
+         For ${Month}/${Year} <br/>
+    
+    
+        Date - ${DisplayDate} <br/>
+    
+    
+        <b>${Amount}</b> <br/>
+    
+</script>
+
+<script type="text/javascript">
+    
+</script>
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+    var gridColumns = [
+                    { field: "CompanyName", title: "Company Name", sortField: "Company.Name" },
+                    { field: "Month", title: "Month", sortField: "Month" },
+                    { field: "Year", title:"Year", sortField: "Year" },
+                    { field: "Amount", title: "Amount", sortField: "Amount" },
+                    { field: "DisplayDate", title: "Date", sortField: "Date" }];
+
+    $("#invoiceGrid").kendoGrid({
+        dataSource: {
+            type: "jsonp",
+            serverPaging: true,
+            serverSorting: true,
+            pageSize: 10,
+            transport: {
+                read: {
+                    url:"@Url.Action("PagedList", "Invoice")",
+                    type: "POST",
+                    contentType: 'application/json'
+                },
+                parameterMap: function (options, type) {
+                    var input = JSON.stringify(options);
+                    for(var i = 0; i < gridColumns.length; i++) {
+                        input = input.replace(gridColumns[i].field, gridColumns[i].sortField);
+                    }
+                    return input;
+                }
+
+            },
+            schema: { 
+                data:"Data", total:"TotalInvoice"
+            }
+                
+        },
+        height: 280,
+        pageable:true,
+        sortable: true,
+        filterable:true,
+        selectable:true,
+        columns: gridColumns,
+       // rowTemplate: kendo.template($("#invoice-detail-template").html())
+       change: function(e) {
+            var item = this.dataItem(this.select());
+            populateDetail(item.ID);
+       }
+    });
+
+   function showDetails(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        currentInvoiceId = dataItem.ID;
+       // alert(currentInvoiceId);
+    }
+
+
+    function populateDetail(id) {
+        $("#detailGrid").load("@Url.Action("Detail")/" + id);
+    }
+       
+});
+</script>

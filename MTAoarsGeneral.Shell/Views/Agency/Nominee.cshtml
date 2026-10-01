@@ -1,0 +1,76 @@
+@model MTAoarsGeneral.ViewModels.Operations.MemberDisplayViewModel
+<h4>
+    <a href="#">Corporate Nominee</a></h4>
+<div class="hasdetailtable">
+    <table>
+        <tr>
+            <td>
+                <b>Name</b>
+            </td>
+            <td>@Model.Name
+            </td>
+            <td>
+                <b>New IC Number</b>
+            </td>
+            <td>@Model.NewICNumber
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Old IC Number</b>
+            </td>
+            <td>@Model.OldICNumber
+            </td>
+            <td>
+                <b>Race</b>
+            </td>
+            <td>@Model.Race
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Religion</b>
+            </td>
+            <td>@Model.Religion
+            </td>
+            <td>
+                <b>Marital Status</b>
+            </td>
+            <td>@Model.MaritalStatus
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Birth Date</b>
+            </td>
+            <td>@Html.DisplayFor(model => model.BirthDate, "Date")
+            </td>
+            <td>
+                <b>Appointed Date</b>
+            </td>
+            <td>@Html.DisplayFor(model => model.JoinedOn, "Date")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Gender</b>
+            </td>
+            <td>@Model.Gender
+            </td>
+            <td>
+                <b>Banca</b>
+            </td>
+           <td>@Html.DisplayFor(model => model.IsBancaStaff)</td>
+        </tr>
+        <tr>
+            <td>
+                <b>Citizen</b>
+            </td>
+            <td>@Html.DisplayFor(model => model.IsCitizen)</td>
+            <td>
+                <b>Bumiputera</b>
+            </td>
+           <td>@Html.DisplayFor(model => model.IsBumiputera)</td>
+        </tr>
+    </table>
+</div>

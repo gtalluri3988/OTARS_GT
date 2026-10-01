@@ -1,0 +1,82 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Accounts.LogOnViewModel
+@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+@section CssScript{
+    <script type="text/javascript">
+        $(function () {
+            
+
+             $("#captcha").click(function(){
+                $(this).attr("src", "@Url.Action("CaptchaImage")?time=" + (new Date()).getTime());
+                return false;
+            });
+
+            setInterval(function() {
+                $("#captcha").attr("src", "@Url.Action("CaptchaImage")?time=" + (new Date()).getTime());
+            }, 30000);
+
+            $("input").keypress(function(e) {
+                if(e.which == 13) {
+                    $("form").submit();
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+        });
+        
+
+    </script>
+}
+
+<div id="info-window"></div>
+
+<div id="logon-content" align="center">
+    @Html.ValSummary()
+    <table class="mta-panel">
+        <caption>Logon</caption>
+        <tr>
+            <th>@Html.LabelFor(model => model.UserName)</th>
+            <td>
+                @Html.BindTextBoxFor(model => model.UserName)
+            </td>
+        </tr>
+        <tr>
+            <th>@Html.LabelFor(model => model.Password)</th>
+            <td>
+                @Html.BindPasswordFor(model => model.Password)
+            </td>
+        </tr>
+
+        <tr>
+            <th> Enter the character as seen on the image : <br />(click the image to refresh) </th>
+            <td> @Html.BindTextBoxFor(model => model.CaptchaKey)  <br /> <input type="image" id="captcha" src="@Url.Action("CaptchaImage")" alt="click to refresh" /> </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:right">
+                <button id="submit-button" class="k-button"><span class="k-icon k-i-tick"></span>Logon</button>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+
+    var logonViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        kendo.bind($("#logon-content"), logonViewModel);
+
+        $("#submit-button", "#logon-content").click(function() {
+            jsonPost("#logon-content", "@Url.Action("LogOnSubmit")", logonViewModel, function(response) {
+               location.href = response.RedirectUrl;
+            });
+        });
+
+    });
+</script>
+

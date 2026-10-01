@@ -1,0 +1,204 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Mvc;
+@using MTAoarsGeneral.Utilities.Extensions
+@using Microsoft.Practices.Unity
+@using MTAoarsGeneral.ViewModels.Shared
+@using MTAoarsGeneral.Utilities.IoC
+@using MTAoarsGeneral.Utilities.Interfaces
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.RenewalHeaderViewModel
+
+@section  PageTitle{
+Renewal
+}
+@section Breadcrumb {
+    <a href="@Url.Action("Index", "Home")" title="Home">Home</a> > Renewal Details
+}
+
+<div id="mainContent">
+    <div id="exceptionDialog">
+    </div>
+
+<div class="column-content-box">
+    <div class="content-box content-box-header ui-corner-all">
+        <div class="ui-state-default ui-corner-top ui-box-header">
+            <span class="ui-icon float-left ui-icon-notice"></span>Header
+        </div>
+        <div class="content-box-wrapper">
+            <div class="hastable">
+                <table>
+                    <tr>
+                        <td>
+                            <b>Company Name</b>
+                        </td>
+                        <td>@Model.CompanyName
+                        </td>
+                        <td>
+                            <b>Status</b>
+                        </td>
+                        <td>@Model.StatusDescription
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Year</b>
+                        </td>
+                        <td>@Model.Year
+                        </td>
+                        <td>
+                            <b>Quarter</b>
+                        </td>
+                        <td>@Model.Quarter
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="column-content-box">
+    <div class="content-box content-box-header ui-corner-all">
+        <div class="ui-state-default ui-corner-top ui-box-header">
+            <span class="ui-icon float-left ui-icon-notice"></span>Details
+        </div>
+        <div class="content-box-wrapper">
+                <div id="status-message"></div>
+                <div id="grid" style="clear:both"></div>
+                @Html.HiddenFor(model=>model.ID)
+            
+        </div>
+    </div>
+</div>
+
+
+ 
+</div>
+<script type="text/html" id="details-template">
+	<tr>
+        <td><span data-bind="text:AgencyNumber"></span></td>
+        <td><span data-bind="text:AgencyName"></span></td>
+		<td>
+			<select data-bind="options:$parent.statuses, value:StatusID,
+				optionsText:'Description',
+				optionsValue:'ID'" >
+			</select>
+		</td>
+		<td><input data-bind="value:Description" class="k-textbox"/>
+            <input data-bind="value:ID" type="hidden"/>
+        </td>
+		
+	</tr>
+</script>
+
+<script type="text/javascript">
+    var detailsGrid ;
+    $(function () {
+
+        dataSource = new kendo.data.DataSource({
+            type: "jsonp",
+            transport: {
+                read: {
+                    url: '@Url.Action("PagedDetails")',
+                    data: { headerId: '@Model.ID' },
+                    type: "POST",
+                    contentType: 'application/json'
+                },
+                update: {
+                    url: '@Url.Action("Update")',
+                    dataType: "jsonp"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        return { models: kendo.stringify(options.models) };
+                    } else {
+                        return kendo.stringify(options);
+                    }
+                }
+            },
+            batch: true,
+            serverPaging: true,
+            serverSorting: true,
+            pageSize: 30,
+            schema: {
+                data: "Data", total: "TotalRecords",
+                model: {
+                    id: "ID",
+                    fields: {
+                        ID: { editable: false, nullable: false },
+                        AgencyName: { editable: false, type: "string" },
+                        AgencyNumber: { editable:false, type: "string" },
+                        StatusDescription: {editable:false, type: "string" },
+                        Description: { type: "string" },
+                        AgencyTypeDescription:{editable:false},
+                        IntermediaryTypeDescription:{editable:false},
+                        RenewalStatus: {defaultValue:{ID:"1", Description:"Generated"}}
+                    }
+                }
+            }
+        });
+
+        detailsGrid = $("#grid").kendoGrid({
+            dataSource: dataSource,
+            navigatable: true,
+            pageable: true,
+            height: 400,
+            toolbar: [{text:"Save"}, {text:"Submit"}, "cancel"],
+            columns: [
+                            {field:"AgencyName", title:"Agency Name"}, 
+                            {field:"AgencyNumber", title:"Agency Number"},  {field: "AgencyTypeDescription", title:"Corporate Status"},
+                            {field: "IntermediaryTypeDescription", title:"Intermediary Type"},
+                            { field: "RenewalStatus", editor:statusEditor, template:"#=RenewalStatus.Description#" , title:"Renewal Status"}
+                     ],
+            editable: true
+        }).data("kendoGrid");
+
+        $(".k-grid-Save").click(function() {
+            saveChanges("Save", detailsGrid.dataSource, '@Url.Action("SaveDetails")');
+        });
+
+        $(".k-grid-Submit").click(function() {
+            saveChanges("Submit", detailsGrid.dataSource, '@Url.Action("SubmitDetails")');
+        });
+
+    });
+
+    function statusEditor(container, options) {
+        $('<input data-text-field="Description" data-value-field="ID" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: true,
+                            dataTextField:"Description",
+                            dataValueField:"ID",
+                            dataSource: {
+                                data: @Html.Raw(Json.Encode(Model.RenewalDetailStatuses))
+                            }
+                        });
+    }
+
+    function saveRenewalDetails() {
+        saveChanges("Save", detailsGrid.dataSource, '@Url.Action("Save")');
+    }
+
+    function saveChanges(action, dataSource, url) {
+        var model = {items:[], action:action, id:@Model.ID};
+        var datas = dataSource._data;
+        for(var i = 0; i < datas.length; i++) {
+            if(datas[i].dirty) model.items.push(datas[i]);
+        }
+        if(model.items.length == 0) return;
+       // alert(kendo.stringify(model));
+       showProgressbar();
+        $.ajax({
+            type:"POST",
+            contentType:"application/json",
+            url:url,
+            data: kendo.stringify(model),
+            success:function(response) {
+             //   alert(response);
+                $("#status-message").html(response.Status);
+                hideProgressbar();
+            }
+        });
+    }
+
+</script>

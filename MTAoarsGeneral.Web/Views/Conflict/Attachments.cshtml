@@ -1,0 +1,23 @@
+@model List<MTAoarsGeneral.ViewModels.Operations.ConflictAttachmentViewModel>
+<table class="mta-panel">
+    <caption>Documents</caption>
+    <tr>
+        <th>File Name</th>
+        <th>Download</th>
+    </tr>
+    @foreach (var item in Model) {
+        <tr>
+            <td>@item.UploadFileName</td>
+            <td>
+                 <button for='download' class='k-button' onclick='javascript:downloadFile("@item.ID")'>
+                        <span class='k-icon k-i-restore'></span>Download</button>
+            </td>
+        </tr>
+    }
+</table>
+
+<script type="text/javascript">
+    function downloadFile(id) {
+       location.href = "@Url.Action("Download")?id=" + id;
+    }
+</script>

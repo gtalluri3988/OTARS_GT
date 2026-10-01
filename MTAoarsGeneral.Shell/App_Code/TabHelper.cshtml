@@ -1,0 +1,97 @@
+@using System.Web.Mvc
+@using MTAoarsGeneral.Utilities.Mvc
+
+@helper DisplayPage(string currentPage, string caption, Func<MvcHtmlString> method, string previousPage = null, string nextPage = null) {
+    <div id="@currentPage">
+        <div class="column-content-box">
+            <div class="content-box content-box-header ui-corner-all">
+                <div class="ui-state-default ui-corner-top ui-box-header">
+                    <span class="ui-icon float-left ui-icon-notice"></span>@caption
+                </div>
+                <div class="content-box-wrapper">
+                    @method()
+                    <fieldset>
+                        <ul>
+                            <li>
+                                <div class="tab-button">
+                                    @if(!String.IsNullOrEmpty(previousPage)) {
+                                        <a href="#" data-linkto="#@previousPage" class="btn ui-state-default ui-corner-all"><span
+                                            class="ui-icon ui-icon-grip-dotted-horizontal"></span>Previous </a>
+                                    }
+                                    @if(!String.IsNullOrEmpty(nextPage)) {
+                                        <a href="#" data-linkto="#@nextPage"
+                                            class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-grip-dotted-horizontal">
+                                            </span>Next </a>
+                                     }
+                                </div>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@helper DisplayConfirmationDivision() {
+    <div id="confirmationDivision">
+        <div id="confirmationDetail">
+        </div>
+        <div id="confirmationButton">
+            <a href="#" data-linkto="#back" class="btn ui-state-default ui-corner-all"><span
+                class="ui-icon ui-icon-grip-dotted-horizontal"></span>Back </a>
+
+            <a href="#" data-linkto="#submit" class="btn ui-state-default ui-corner-all"><span
+                class="ui-icon ui-icon-grip-dotted-horizontal"></span>Submit </a>
+        </div>
+    </div>
+}
+
+@helper RegisterJavaScript(string tabName, string checkUrl, string confirmUrl, string postUrl) {
+    <script type="text/javascript">
+        $(function () {
+            $("#@tabName").tabs();
+            $("#confirmationDivision").hide();
+
+            $("a", "div[class=tab-button]").click(function () {
+                $("#@tabName").tabs("select", $(this).attr("data-linkto"));
+            });
+
+            $("a[data-linkto='#submit']", "div[id='confirmationButton']").click(function () {
+                $("#progressbar").progressbar();
+                $("form", "#mainContent").attr("action", "@postUrl");
+                submitData(function (data) {
+                    onRegistrationSuccess(data, "individualRegistrationTabs");
+                });
+            });
+
+            $("a[data-linkto='#submit']", "div[class=tab-button]").click(function () {
+                $("form", "#mainContent").attr("action", "@checkUrl");
+                submitData(function (data) {
+                    if (data.IsRedirect) {
+                        $.post("@confirmUrl",
+                            $("form", "#mainContent").serialize(),
+                            function (confirmationResult) {
+                                $("#@tabName").hide();
+                                $("#confirmationDetail").html(confirmationResult);
+                                $("#confirmationDivision").show();
+                                $("span[data-valsummary]").html("");
+                                $("span[data-valmsg-for]").html("");
+                            }
+                            );
+                    } else {
+                        onRegistrationSuccess(data, "@tabName");
+                    }
+                });
+            });
+
+            $("a[data-linkto='#back']", "div[id='confirmationButton']").click(function () {
+                $("#confirmationDivision").hide();
+                $("#@tabName").show();
+            });
+
+        });
+    </script>
+}
+}
+

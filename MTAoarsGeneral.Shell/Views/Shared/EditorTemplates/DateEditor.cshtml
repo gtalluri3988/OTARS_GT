@@ -1,0 +1,8 @@
+﻿@model System.DateTime?
+
+
+<div for="date">
+   @Html.TextBox("", (Model.HasValue ? Model.Value.ToString("dd'/'MM'/'yyyy") : ""))
+</div>
+
+

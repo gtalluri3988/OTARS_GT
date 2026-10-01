@@ -1,0 +1,44 @@
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.AgentsStatisticsReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>Terminated Agnets - @Model.Caption</caption>
+    <tr>
+        <th>
+            Date
+        </th>
+        <td>
+            @Html.EditorFor(model => model.Date, "DateEditor")
+        </td>
+        <th>Corporate Status</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.RegistrationCategory, Url.Action("RegistrationCategories", "Lookup"), required:true)
+        </td>
+        <th>
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Terminated Agents Statistical Report", "#", 2);
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        viewModel.Date = new Date();
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+           //viewModel.Date = getDate(viewModel.Date);
+           var model = $.extend(true, {}, viewModel);
+           model.RegistrationCategory =viewModel.RegistrationCategory.Code;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=TerminatedAgentsStatistics")", model, "#report");
+           
+        });
+
+    });
+</script>

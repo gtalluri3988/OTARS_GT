@@ -1,0 +1,91 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.ComplaintViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}            
+<div id="list-content">
+    @Html.ValSummary()
+    <div id="complaint-grid" data-page-div="true"></div>
+    <div id="complaint-details" data-page-div="true"></div>
+</div>
+
+<script type="text/x-kedno-template" id="toolbar-template">
+    <table class='mta-panel'>
+        <tr>
+            <td><button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Create</button></td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model));
+    var grid;
+    var master;
+     $(function () {
+
+            addBreadCrumb("Complaints", "javascript:showDiv('#complaint-grid')", 1);
+
+            var complaintModel = {
+                id: "ID"
+            };
+
+         
+
+            grid = $("#complaint-grid").kendoGrid({
+                    dataSource: getMasterGridDataSource(masterDataServiceUrl + "/ComplaintViewDetails", complaintModel, masterDataServiceUrl + "/Complaints" ),
+                    pageable:true,
+                    sortable:true,
+                    filterable:true,
+                    selectable:true,
+                    editable:"inline",
+                    columns: [
+                        { field: "AgencyNumber" },
+                        { field: "NomineeName" },
+                        { field: "NomineeICNumber"},
+                        { field: "DescriptionShortText", title:"Description"},
+                        { field: "ActionShortText", title:"Action"},
+                        @if(Html.IsMTA() || Html.IsISM()) {
+                            @:{ field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "}
+                        }else {
+                            @:{ field: "ID", template:"<button class='k-button' onclick='onViewClick()'><span class='k-icon k-i-pencil'></span>View</button>", filterable:false, title:" "},
+                            @:{ command: ["destroy"]}
+                        }
+                       
+                    ],
+                    toolbar:[{template:"<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Create</button>"}]
+                });
+
+        master = new Master({
+            url: masterDataServiceUrl + "/Complaints",
+            gridSelector: "#complaint-grid", detailsSelector: "#complaint-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateComplaint")"
+        });
+
+    });
+
+    function onEditClick() {
+        $("#complaint-details").load('@Url.Action("Edit")', function() {
+            $("#complaint-grid").hide();
+            master.editClick();
+        });
+    }
+
+    function onViewClick() {
+        $("#complaint-details").load('@Url.Action("Display")', function() {
+            $("#complaint-grid").hide();
+            master.editClick();
+        });
+    }
+    
+    function onAddClick() {
+        $("#complaint-details").load('@Url.Action("Create")', function() {
+            $("#complaint-grid").hide();
+            master.addClick();
+        });
+    }
+    
+     function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+</script>

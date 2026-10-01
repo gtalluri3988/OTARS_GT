@@ -1,0 +1,58 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.ComplaintViewModel
+<div id="edit-wrapper">
+   
+    <div id="edit-content">
+        <table class="mta-panel" style="width:90%">
+            <tr>
+                <th>Name</th>
+                <td><span data-bind="text:NomineeName"></span></td>
+                <th>IC Number</th>
+                <td><span data-bind="text:NomineeNewICNumber"></span></td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td colspan="3">
+                    <span data-bind="text:Description"></span>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="4">Action</th>
+            </tr>
+            <tr>
+                <th colspan="4">
+                    <textarea id="Action" data-bind="value:Action" style="width: 900px; height: 150px;"></textarea>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="4">
+                    <button id="cancel-button" class="k-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                    <button id="save-button" class="k-button"><span class="k-icon k-i-tick"></span>Submit</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        addBreadCrumb("Edit", "javascirpt:showDiv('#complaint-details')", 2);
+
+        var editor = $("#Action").kendoEditor();
+
+
+        $("#save-button").click(function () {
+            master.getCurrent().ActionDate = new Date();
+            master.save();
+            master.refresh();
+            showDiv("#complaint-grid");
+        });
+
+        $("#cancel-button").click(function () {
+            editor.data("kendoEditor").destroy();
+            showDiv("#complaint-grid");
+        });
+
+    });
+</script>

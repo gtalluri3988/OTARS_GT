@@ -1,0 +1,40 @@
+@model MTAoarsGeneral.ViewModels.Notifications.MailReplyViewModel
+@using (Html.BeginForm("Reply", "Mail")) {
+    <div class="column-content-box">
+        <div class="content-box
+content-box-header ui-corner-all">
+            <div class="ui-state-default ui-corner-top ui-box-header">
+                <span class="ui-icon float-left ui-icon-notice"></span>Reply
+            </div>
+            <div class="hasdetailtable">
+                <table>
+                    <tr>
+                        <td>
+                            <b>From</b>
+                        </td>
+                        <td>@Model.FromCompanyName
+                        </td>
+                        <tr>
+                            <td>
+                                <b>To</b>
+                            </td>
+                            <td>@Model.ToCompanyName
+                            </td>
+                        </tr>
+                        <td>
+                            <b>Subject</b>
+                        </td>
+                        <td>@Html.TextBoxFor(model => model.Subject, new { @class = "k-textbox large" })
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="content-box-wrapper">
+                @Html.TextAreaFor(model => model.Body, new { cols = 130, rows = 15 })
+                @Html.HiddenFor(model => model.FromCompanyID)
+                @Html.HiddenFor(model => model.ToCompanyID)
+                @Html.HiddenFor(model => model.SoureceMailID)
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,140 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.CorporateNomineeViewModel
+@{
+               var readOnly=(bool)( ViewData["ReadOnly"]?? false);
+               var agencyNumber = (string)(ViewData["AgencyNumber"] ?? "");
+}
+<table class="mta-panel" style="width: 100%">
+    <caption>
+        Agent Nominee Details</caption>
+    <tr>
+        <th>
+            @Html.LabelFor(model=>model.Name)
+        </th>
+        <td>
+            @Html.BindTextBoxFor(model => model.Name,isReadonly:readOnly)
+        </td>
+        <th>@Html.LabelFor(model=>model.NewICNumber)
+        </th>
+        <td>
+            @Html.BindTextBoxFor(model => model.NewICNumber,  isReadonly: readOnly)
+            @Html.Hidden("AgencyNumber", agencyNumber, new { @readonly = "readonly", disabled = "disabled" })
+        </td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.Race)
+        </th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Race, Url.Action("Races", "Lookup"), isReadonly: readOnly)
+        </td>
+        <th>@Html.LabelFor(model=>model.OldICNumber)
+        </th>
+        <td>@Html.BindTextBoxFor(model=>model.OldICNumber,isReadonly:readOnly)
+        </td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.MaritalStatus)
+        </th>
+        <td>
+            @Html.BindDropDownListFor(model => model.MaritalStatus, Url.Action("MaritalStatuses", "Lookup"), isReadonly: readOnly)
+        </td>
+        <th>@Html.LabelFor(model=>model.Religion)
+        </th>
+        <td>@Html.BindDropDownListFor(model => model.Religion, Url.Action("Religions", "Lookup"),isReadonly:readOnly)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.LabelFor(model=>model.BirthDate)
+        </th>
+        <td>
+          
+                @if (readOnly)
+                {
+                    if (Model.BirthDate.HasValue) {<text>@Model.BirthDate.Value.ToString("dd/MM/yy") </text> }
+                }
+                else
+                {
+                <span>@Html.EditorFor(model => model.BirthDate, "DateEditor", isReadonly: readOnly)</span>
+                }
+             
+        </td>
+        <th>
+            Gender
+        </th>
+        <td>
+           
+                @Html.BindDropDownListFor(model => model.Gender, Url.Action("Genders", "Lookup"),isReadonly:readOnly)
+             
+        </td>
+    </tr>
+    <tr>
+        <th>
+        </th>
+        <td>
+            @Html.BindEditorFor(model => model.IsCitizen, readOnly) Citizen
+            @Html.BindEditorFor(model => model.IsBumiputera, readOnly) Bumiputera
+           
+        </td>
+        <th>
+            Date Appointed
+        </th>
+        <td>
+            <span data-bind="source:this" data-template="date-template"></span>
+        </td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.Phone)
+        </th>
+        <td>@Html.BindTextBoxFor(model=>model.Phone,isReadonly:readOnly)
+        </td>
+        <th>@Html.LabelFor(model=>model.Mobile)
+        </th>
+        <td>@Html.BindTextBoxFor(model => model.Mobile,isReadonly:readOnly)
+        </td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.Email)
+        </th>
+        <td>@Html.BindTextBoxFor(model => model.Email,isReadonly:readOnly)
+        </td>
+        <th>@Html.LabelFor(model => model.Fax)
+        </th>
+        <td>@Html.BindTextBoxFor(model => model.Fax,isReadonly:readOnly)
+        </td>
+    </tr>
+    @if (!readOnly)
+    {
+                    
+        <tr>
+            <th>
+                @Html.LabelFor(model => model.ICType)
+            </th>
+            <td>
+                @Html.BindDropDownListFor(model => model.ICType, Url.Action("ICTypes", "Lookup"))
+            </td>
+            <th>
+                Rank
+            </th>
+            <td>
+                @Html.BindDropDownListFor(model => model.Level, Url.Action("MemberLevels", "Lookup"))
+            </td>
+        </tr>
+        <tr>
+            <th>
+                Takaful Exam
+            </th>
+            <td>
+                @Html.BindDropDownListFor(model => model.TbeCategory, Url.Action("TbeCategories", "Lookup"))
+            </td>
+            <th>Passport Number</th>
+            <td>@Html.BindTextBoxFor(model=>model.PassportNumber,isReadonly:readOnly)
+            </td>
+        </tr>
+              
+    }         
+    
+</table>
+<script id="date-template" type="text/kendo-tmpl">
+    #:formatDate(DateAppointed)#
+</script>

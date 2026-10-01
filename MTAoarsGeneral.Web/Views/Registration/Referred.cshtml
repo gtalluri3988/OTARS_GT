@@ -1,0 +1,66 @@
+@using MTAoarsGeneral.ViewModels.Shared
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants;
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationIndexViewModel
+
+@{
+//var referredMemberCategories = Model.GetCategoryDescription();
+//var referredMemberCreatedDate = Model.GetReferredMemberDateCreated();
+}
+
+
+<div id="referred-content" align="center">
+    <table class="mta-panel" style="width: 80%">
+        <caption>
+            Referred Member 1
+        </caption>
+        <tr>
+            <th>
+                @*This member is in referred list. Do you want to continue*@
+                @foreach (var referredMember in Model.ReferredMembers)
+                {
+                    <div>
+                        @string.Format("This agent appears in the referred listing under ({0}) on {1}",
+                        (string.IsNullOrEmpty(referredMember.CategoryDescription)) ? "" : referredMember.CategoryDescription,
+                        (!referredMember.CreatedDate.HasValue ? "" : Convert.ToDateTime(referredMember.CreatedDate).ToString(GlobalConstants.DateFormat)))
+                    </div>
+                }
+                <div>Do you want to continue?</div>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <input type="radio" data-bind="checked:AllowReferredMember" value="1" />Yes
+                <input type="radio" data-bind="checked:AllowReferredMember" value="0" />No
+            </td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <button id="submit-button" class="k-button">
+                        <span class="k-icon k-i-arrow-e"></span>Next
+                    </button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+
+        kendo.bind($("#referred-content"), indexViewModel);
+
+        $("#submit-button", "#referred-content").click(function () {            
+            if (indexViewModel.AllowReferredMember == true) {
+                viewPost("#referred-content", "@Url.Action("Main")", indexViewModel, function (result) {
+                    postPage("#create-main", result);
+                });
+            } else {
+                location.reload(true);
+            }
+        });
+
+    });
+
+</script>

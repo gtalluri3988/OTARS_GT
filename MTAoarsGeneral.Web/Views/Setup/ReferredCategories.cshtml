@@ -1,0 +1,83 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.ReferredCategoryViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}  
+
+<div id="referred-category-content">
+     <div id="referred-category-grid"></div>
+    <br />
+    <div id="referred-category-details" style="display:none">
+      <table class="mta-panel" style="width:90%">
+            <caption>Referred Category</caption>
+             <tr>
+                <th>Code</th>
+                <td>@Html.BindTextBoxFor(model => model.Code)</td>
+                 <th>Description</th>
+                <td>@Html.BindTextBoxFor(model => model.Description)</td>
+             </tr>
+             <tr>
+                <th>@Html.LabelFor(model => model.IsActive)</th>
+                <td>@Html.BindEditorFor(model => model.IsActive)</td>
+            </tr>
+            <tr>
+                <th colspan="4" style="text-align:right">
+                    <button class="k-button" id="save-button"><span class="k-icon k-i-tick"></span>Save</button>
+                    <button class="k-button" id="cancel-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model));
+    
+    var master;
+    
+    $(function () {     
+
+        var reasonModel = {
+            id: "ID",
+            fields: {
+                Code: {type:"string"},
+                Description: {type:"string"},
+                IsActive:{type:"boolean"}
+            }
+        };
+
+        $("#referred-category-grid").kendoGrid({
+            dataSource: getMasterGridDataSource(masterDataServiceUrl + "/LookupReferredCategories", reasonModel),
+            pageable:true,
+            sortable:true,
+            filterable:true,
+            selectable:true,
+            editable:"inline",
+            columns: [
+                { field: "Code"},
+                { field: "Description" },
+                { field: "IsActive"},
+                { field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+               
+            ],
+            toolbar:[{template:"<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button>"}]
+           
+        });
+        
+
+        master = new Master({
+            url: masterDataServiceUrl + "/LookupReferredCategories",
+            gridSelector: "#referred-category-grid", detailsSelector: "#referred-category-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateCategory")"       
+        });
+
+    });
+
+    function onEditClick() {
+        master.editClick();
+    }
+    
+    function onAddClick() {
+        master.addClick();
+    }
+
+</script>

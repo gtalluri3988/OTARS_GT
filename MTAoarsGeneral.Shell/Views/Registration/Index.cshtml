@@ -1,0 +1,79 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationIndexViewModel
+@section  PageTitle{
+    @Model.TypeDescription Registration
+}
+@section Breadcrumb {
+   <a href="@Url.Action("Index", "Home")" title="Home">Home</a> > Registration
+}
+<div id="mainContent">
+    <div class="column-content-box">
+        <div class="content-box
+content-box-header ui-corner-all">
+            <div class="ui-state-default ui-corner-top ui-box-header">
+                <span class="ui-icon float-left ui-icon-notice"></span>Details for @Model.TypeDescription Agent / Nominee
+            </div>
+            <div class="content-box-wrapper">
+                @using (Html.BeginForm("Index", "Registration")) {
+                    @Html.ValSummary()
+                    <fieldset>
+                        <ul>
+                            <li>
+                                <label class="desc" for="firstname">
+                                    @Html.LabelFor(model => model.ICTypeID)</label>
+                                <div>
+                                    @Html.DropDownListFor(model => model.ICTypeID, Model.ICTypes, new { style = "width:25%" })
+                                    @Html.ValMsgFor(model => model.ICTypeID)</div>
+                            </li>
+                            <li>
+                                <label class="desc" for="firstname">
+                                    @Html.LabelFor(model => model.ICNumber)</label>
+                                <div>
+                                    @Html.TextBoxFor(model => model.ICNumber, new { @class = "k-textbox small" })
+                                    @Html.ValMsgFor(model => model.ICNumber)</div>
+                            </li>
+                            @if (Model.TypeCode != LookupConstants.AgencyType.Individual) {
+                                <li>
+                                    <label class="desc" for="firstname">
+                                        @Html.LabelFor(model => model.BusinessRegistrationNumber)</label>
+                                    <div>
+                                        @Html.TextBoxFor(model => model.BusinessRegistrationNumber, new { @class = "k-textbox small" })
+                                        @Html.ValMsgFor(model => model.BusinessRegistrationNumber)</div>
+                                </li>
+                            }
+                            <li >
+                                <label class="desc" for="TbeCategoryID">
+                                   @Html.LabelFor(model=>model.TbeCategoryID)</label>
+                                <div class="largeControl">
+                                   @Html.DropDownListFor(model => model.TbeCategoryID, Model.TbeCategories, new { style = "width:25%" })
+                                   @Html.ValMsgFor(model => model.TbeCategoryID)</div>
+                            </li>
+                            
+                            <li>
+                               
+                                <div>
+                                       @Html.CheckBoxFor(model => model.IsBancaStaff, new { @class = "k-checkbox" })Banca staff
+                                       @Html.CheckBoxFor(model => model.AllowConflict) Allow conflict
+                                </div>
+                            </li>
+                            <li class="buttons">
+                                <button class="ui-state-default ui-corner-all float-right ui-button" type="submit">
+                                    Next</button>
+                            </li>
+                        </ul>
+                    </fieldset>
+                    @Html.HiddenFor(model => model.TypeID)
+                    @Html.HiddenFor(model => model.CompanyID)
+                    @Html.HiddenFor(model => model.TypeCode)
+                    @Html.HiddenFor(model => model.TypeDescription)
+                    @Html.HiddenFor(model => model.IsGeneral)
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("select").kendoDropDownList();
+</script>

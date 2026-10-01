@@ -1,0 +1,75 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.CPDReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>CPD Report Parameters</caption>
+    @if (Html.IsISMOrMTA()) {
+    <tr>
+        <th>
+                Takaful Operator
+        </th>
+        <td colspan="3">
+             @Html.BindDropDownListFor(model => model.CompanyID, Url.Action("Companies", "Lookup"))
+        </td>
+    </tr>
+    }
+    <tr>
+        <th>Year</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Year, Url.Action("RecentYears", "Lookup"), required:true)
+        </td>
+   
+        <th>Intermediary Type</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.IntermediaryTypeID, Url.Action("IntermediaryTypes", "Lookup"))
+        </td>
+   </tr>
+   <tr>
+        <th>Banca Staff</th>
+        <td>
+            <select id="is-banca-staff" data-bind="value:IsBancaStaff">
+                <option value='All'>All</option>
+                <option value='true'>Yes</option>
+                <option value='false'>No</option>
+            </select>
+        </td>
+   
+         <th>Achieved</th>
+        <td>
+            <select id="is-achieved" data-bind="value:IsAchieved">
+                <option value='All'>All</option>
+                <option value='true'>Yes</option>
+                <option value='false'>No</option>
+            </select>
+        </td>
+   </tr>
+   <tr>
+        <th colspan="4">
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("CPD", "#", 2);
+
+        $("#is-banca-staff").kendoDropDownList({});
+        $("#is-achieved").kendoDropDownList({});
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        viewModel.IsBancaStaff = "All";
+        viewModel.IsAchieved = "All";
+        viewModel.IntermediaryTypeID = 1;
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+          if(viewModel.CompanyID && viewModel.CompanyID.ID) viewModel.CompanyID = viewModel.CompanyID.ID;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=CPD")", viewModel, "#report");
+        });
+
+    });
+</script>

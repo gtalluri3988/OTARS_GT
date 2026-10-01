@@ -1,0 +1,60 @@
+﻿<div class="column-content-box">
+    <div class="content-box
+    content-box-header ui-corner-all">
+        <div class="ui-state-default ui-corner-top ui-box-header">
+            <span class="ui-icon float-left ui-icon-notice"></span>Outbox
+        </div>
+        <div class="content-box-wrapper">
+            <a href="#" data-linkto="Inbox" class="btn ui-state-default ui-corner-all"><span
+                class="ui-icon ui-icon-grip-dotted-horizontal"></span>Inbox </a>
+            <div id="outboxGrid" class="clear">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+    var gridColumns = [
+                    { field: "ToCompanyName", title: "From", sortField: "ToCompany.Name" },
+                    { field: "Subject", title: "Subject", sortField: "Subject" },
+                    { field: "CreatedOnDisplay", title:"Received", sortField: "CreatedOn" },
+                    { field: "StatusDescription", title: "Status", sortField: "StatusID" },
+                    { command: { text: "Details", click:showDetails }, title: " ", width: "110px" }];
+
+    $("#outboxGrid").kendoGrid({
+        dataSource: {
+            type: "jsonp",
+            serverPaging: true,
+            serverSorting: true,
+            pageSize: 10,
+            transport: {
+                read: {
+                    url:"@Url.Action("SentList", "Mail")",
+                    type: "POST",
+                    contentType: 'application/json'
+                },
+                parameterMap: function (options, type) {
+                    var input = JSON.stringify(options);
+                    for(var i = 0; i < gridColumns.length; i++) {
+                        input = input.replace(gridColumns[i].field, gridColumns[i].sortField);
+                    }
+                    return input;
+                }
+
+            },
+            schema: { 
+                data:"Data", total:"TotalMail"
+            }
+                
+        },
+        height: 280,
+        pageable:true,
+        sortable: true,
+        filterable:true,
+        columns: gridColumns
+    });
+       
+       loadInbox();
+       loadOutbox();
+});
+</script>

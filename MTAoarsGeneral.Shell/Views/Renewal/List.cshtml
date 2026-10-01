@@ -1,0 +1,89 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using Microsoft.Practices.Unity
+@using MTAoarsGeneral.ViewModels.Shared
+@using MTAoarsGeneral.Utilities.IoC
+@using MTAoarsGeneral.Utilities.Interfaces
+@using MTAoarsGeneral.Utilities.Constants
+
+@model IEnumerable<MTAoarsGeneral.ViewModels.Operations.RenewalListViewModel>
+@section  PageTitle{
+Renewal
+}
+@section Breadcrumb {
+    <a href="@Url.Action("Index", "Home")" title="Home">Home</a> > Renewal List
+}
+<div class="column-content-box">
+    <div class="content-box content-box-header ui-corner-all">
+        <div class="ui-state-default ui-corner-top ui-box-header">
+            <span class="ui-icon float-left ui-icon-notice"></span>Renewal List
+        </div>
+        <div class="content-box-wrapper">
+            <div class="hastable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                Company Name
+                            </th>
+                            <th>
+                                Year
+                            </th>
+                            <th>
+                                Quarter
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                Select
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model) {
+                            <tr>
+                                <td>@item.CompanyName
+                                </td>
+                                <td>@item.Year
+                                </td>
+                                <td>@item.Quarter
+                                </td>
+                                <td>@item.StatusDescription
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Details", "Renewal", new { ID = item.ID })" id="search" class="btn ui-state-default ui-corner-all">
+                                        <span class="ui-icon ui-icon-circle-zoomin"></span>Select</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                @{
+                    var dataProvider = ObjectContainer.Container.Resolve<IScopeDataProvider>();
+                    var identity = dataProvider.Get<Identity>(GlobalConstants.CurrentIdentity);
+                    if (identity == null) {
+                        identity = ObjectContainer.Container.Resolve<Identity>();
+                    }
+                 }
+                
+            </div>
+            
+        </div>
+        
+    </div>
+     @if (identity.IsMTA) {
+        
+         <a class="k-button" id="process-button"><span class="k-icon k-i-search"></span>Process</a>
+     }
+</div>
+<script type="text/javascript">
+
+    $(function () {
+
+        $("#process-button").click(function () {
+            location.href = "@Url.Action("Process")";
+        });
+
+    });
+</script>

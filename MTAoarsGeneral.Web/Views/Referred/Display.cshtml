@@ -1,0 +1,143 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Maintenance.ReferredDetailViewModel
+<div id="display-content">
+    <table class="mta-panel">
+        <caption>
+            Referred Member Detail</caption>
+        <tr>
+            <th>New IC Number</th>
+            <td>@Model.ICNumber</td>
+            <th>Old IC Number</th>
+            <td>@Model.OldICNumber</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>@Model.Name</td>
+            <th>Agency Number</th>
+            <td>@Model.AgencyNumber</td>
+        </tr>
+        <tr>
+            <th>Is General</th>
+            <td colspan="3">@Model.IsGeneral</td>
+        </tr>
+        <tr>
+            <th>Category</th>
+            <td>@(Model.Category==null?"":Model.Category.Description)</td>
+            <th>Reason</th>
+            <td>@Model.Reason.Description</td>
+        </tr>
+
+
+        <tr>
+            <th>Date of Offence</th>
+            <td>@(Model.DateOfOffence == null ? "" : Convert.ToDateTime(Model.DateOfOffence).ToString("dd/MM/yyyy"))</td>
+            <th>Date of Investigation or Internal Inquiry Initiated</th>
+            <td>@(Model.DateOfInvestigationInitiated == null ? "" : Convert.ToDateTime(Model.DateOfInvestigationInitiated).ToString("dd/MM/yyyy"))</td>
+        </tr>
+        <tr>
+            <th>Date of Investigation or Internal Inquiry Completed </th>
+            <td>@(Model.DateOfInvestigationCompleted == null ? "" : Convert.ToDateTime(Model.DateOfInvestigationCompleted).ToString("dd/MM/yyyy"))</td>
+            <th>Action Taken by Licensed Insurer Against Agent</th>
+            <td>@(Model.ActionTaken == null ? "" : Model.ActionTaken.Description)</td>
+        </tr>
+        <tr>
+            <th>Date Action Taken </th>
+            <td>@(Model.DateActionTaken == null ? "" : Convert.ToDateTime(Model.DateActionTaken).ToString("dd/MM/yyyy"))</td>
+            <th>Whether Police Report Lodged / Charge Made Against the Agent (if applicable) </th>
+            <td>@(Model.PoliceReportLogged == null ? "" : Model.PoliceReportLogged.Description)</td>
+        </tr>
+
+
+
+
+        <tr>
+            <th>Comments</th>
+            <td colspan="3">@Model.Comments</td>
+        </tr>
+        <tr>
+            <th>Allow For Registration</th>
+            <td>
+                @if (Html.IsISMOrMTA()) {
+                     @Html.BindEditorFor(model => model.AllowForRegistration)
+                } else {
+                    @Html.DisplayFor(model => model.AllowForRegistration)
+                }
+            </td>
+            <th>Active</th>
+            <td>
+                 @if (Html.IsISMOrMTA()) {
+                    @Html.BindEditorFor(model => model.IsActive)
+                 } else {
+                     @Html.DisplayFor(model => model.IsActive)
+                 }
+            </td>
+        </tr>
+        
+        <tr>
+            <th>Approver Comments</th>
+            <td colspan="3">
+                @if (Html.IsISMOrMTA()) {
+                    @Html.BindTextBoxFor(model => model.ApproverComments)
+                } else {
+                    @Model.ApproverComments
+                }
+            </td>
+        </tr>
+       
+    </table>
+    <br />
+    @if (Model.Attachments.Count > 0) {
+        <table class="mta-panel">
+            <caption>
+                Documents</caption>
+            <tr>
+                <th>
+                    File Name
+                </th>
+                <th>
+                    Download
+                </th>
+            </tr>
+            @foreach (var item in Model.Attachments) {
+                <tr>
+                    <td>@item.UploadFileName
+                    </td>
+                    <td>
+                        <button for='download' class='k-button' onclick='javascript:downloadFile("@item.ID")'>
+                            <span class='k-icon k-i-restore'></span>Download</button>
+                    </td>
+                </tr>
+            }
+        </table>
+        <br />
+    }
+    @if ((Html.IsISM() || Html.IsMTA()) && Model.Status.Code != LookupConstants.ReferredDetailStatus.Approved) {
+        <button class="k-button" id="approve-button" >
+            <span class="k-icon k-i-tick"></span>Approve</button>
+    }
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+
+        addBreadCrumb("Details", "javascript:showDiv('#create-detail')", 3);
+        var displayViewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+        kendo.bind($("#display-content"), displayViewModel);
+
+        $("#approve-button").click(function() {
+            jsonPost("#display-content", "@Url.Action("Approve")", displayViewModel, function(response) {
+                showDiv("#create-list");
+                refreshListGrid();
+                refreshHeaderGrid();
+            });
+        });
+
+    });
+
+    function downloadFile(id) {
+        location.href = "@Url.Action("Download")?id=" + id;
+    }
+
+</script>

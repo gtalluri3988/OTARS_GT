@@ -1,0 +1,29 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AgencyViewModel
+
+
+<table class="mta-panel" style="width:100%">
+    <caption>Banker Details</caption>
+    <tr>
+        <th>@Html.LabelFor(model => model.Name)</th>
+        <td>@Html.BindTextBoxFor(model => model.Name, 100)</td>
+        <th>@Html.LabelFor(model => model.BusinessRegistrationNumber)</th>
+        <td>@Model.BusinessRegistrationNumber</td>
+    </tr>
+    <tr>
+        <th></th>
+        <td></td>
+        <th>@Html.LabelFor(model => model.NewBusinessRegistrationNumber)</th>
+        <td>@Model.NewBusinessRegistrationNumber</td>
+    </tr>
+    @if (Model.ShouldDisplayAuthorizedCapital.Value)
+    {
+        <tr>
+            <th>@Html.LabelFor(model => model.AuthorizedCapital)</th>
+            <td> @Html.BindTextBoxFor(model => model.AuthorizedCapital, 8)</td>
+            <th>@Html.LabelFor(model => model.PaidupCapital)</th>
+            <td> @Html.BindTextBoxFor(model => model.PaidupCapital, 8)</td>
+        </tr>
+    }
+</table>
+

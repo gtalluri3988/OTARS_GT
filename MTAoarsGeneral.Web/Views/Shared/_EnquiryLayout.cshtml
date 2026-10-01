@@ -1,0 +1,214 @@
+@using MTAoarsGeneral.Utilities.Mvc
+<!doctype html>
+<html>
+<head>
+    <title>Public Enquiry</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    @Html.StyleSheet("~/Content/Css/kendo.common.enquiry.min.css")
+    @Html.StyleSheet("~/Content/Css/kendo.uniform.min.css")
+    @Html.StyleSheet("~/Content/Css/bootstrap.min.css")
+    @Html.StyleSheet("~/Content/font-awesome.min.css")
+
+    @Html.Script("~/Scripts/jquery-3.6.0.min.js")
+    @Html.Script("~/Scripts/jquery-migrate-3.0.0.js")
+    @Html.Script("~/Scripts/kendo.web.min.js")
+    @Html.Script("~/Scripts/bootstrap.min.js")
+    @Html.Script("~/Scripts/site.js")
+    <style type="text/css">
+        .navbar-dark {
+            background: #0d437f;
+        }
+
+            .navbar-dark .navbar-nav .nav-link {
+                color: #fff;
+            }
+
+        .mta-panel th {
+            border: 0px;
+            background-color: #e1e1e1 !important;
+        }
+
+        .footerWrap {
+            width: 100%;
+        }
+
+        .footerlink {
+            width: 960px;
+            margin: 0 auto;
+            background: #fff;
+            border-left: 1px solid #e1e1e1;
+            border-right: 1px solid #e1e1e1;
+        }
+
+        .footerSection {
+            width: 100%;
+            clear: both;
+            font-size: 0.8em;
+        }
+
+        address {
+            padding: 0px 5px 0px 10px;
+        }
+
+            address div {
+                float: left;
+                margin-right: 5px;
+            }
+
+            address ul {
+                margin: 5px 0 0;
+                padding: 0;
+                float: left;
+            }
+
+                address ul li {
+                    list-style: none;
+                    border-left: 1px solid #d9d9d9;
+                    float: left;
+                }
+
+                    address ul li:first-child {
+                        border-left: none;
+                    }
+
+                    address ul li a {
+                        display: block;
+                        color: #5a5a5a;
+                        padding: 0 5px;
+                    }
+
+            address p {
+                float: right;
+            }
+
+        footer {
+            position: relative;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            text-align: center;
+        }
+
+        @@media screen and (min-width: 1250px) {
+            footer {
+                position: absolute;
+            }
+        }
+    </style>
+
+    @RenderSection("CssScript", false)
+
+</head>
+<body>
+    <div class="header">
+        <div class="headerShadow">
+        </div>
+        <div class="headerWrap">
+            <div>
+                <a href="http://www.malaysiantakaful.com.my/Home.aspx">
+                    <img src="@Url.Content("~/Content/Images/mta-header-logo.png")"></a>
+            </div>
+        </div>
+    </div>
+    <div class="navbar navbar-dark navbar-expand-md sticky-top d-none">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="http://www.malaysiantakaful.com.my/Home.aspx">Home</a>
+                </li>
+                <li class="nav-item dropdown"><a class="nav-link" href="http://www.malaysiantakaful.com.my/About-MTA/History-of-MTA.aspx" id="navbarDropdownAbout" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About MTA</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownAbout">
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/About-MTA/History-of-MTA.aspx">History of MTA</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/About-MTA/MTA-Mission-Vision.aspx">MTA Mission &amp; Vision</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/About-MTA/Management-Committee/2011-2013.aspx">Management Committee</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/About-MTA/Takaful-Definitions.aspx">Takaful Definitions</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/About-MTA/Members-Listing.aspx">Members Listing</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown"><a class="nav-link" href="http://www.malaysiantakaful.com.my/Consumer-Zone/FAQs/Overview.aspx" id="navbarDropdownFAQ" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Consumer Zone</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownFAQ">
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Consumer-Zone/FAQs/Overview.aspx">FAQs</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Consumer-Zone/Library/Statistic/List.aspx">Library</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Consumer-Zone/Glossary.aspx">Glossary</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Consumer-Zone/Motor-Takaful.aspx">Motor Takaful</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Consumer-Zone/Perlindungan-Tenang.aspx">Perlindungan Tenang</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Consumer-Zone/Public-Enquiry-on-Agent-Status.aspx">Public Enquiry on Agent Status</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Consumer-Zone/Building-Cost-Calculator.aspx">Building Cost Calculator</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Consumer-Zone/Direct-Channel-Consumer-Zone.aspx">Direct Channel Consumer Zone</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Consumer-Zone/Takaful-Industry-Customer-Service-Charter.aspx">Takaful Industry Customer Service Charter</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown"><a class="nav-link" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/FAQs-on-Liberalisation-of-Motor-Tariff.aspx" id="navbarDropdownPhased" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Phased Liberalisation</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownPhased">
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/FAQs-on-Liberalisation-of-Motor-Tariff.aspx">FAQs on Liberalisation of Motor Tariff</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/Top-10-Facts-on-Phased-Liberalisation.aspx">Top 10 Facts on Phased Liberalisation</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/How-Will-I-be-Assessed-and-What-is-Risk-Profiling.aspx">How Will I be Assessed and What is Risk Profiling?</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/Benefits-of-Motor-Insurance-Takaful-Liberalisation.aspx">Benefits of Motor Insurance/Takaful Liberalisation For Consumers</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/What-to-Consider-When-Buying-Motor-Insurance-Takaf.aspx">What to Consider When Buying Motor Insurance/Takaful</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/What-is-The-Difference-Between-Liberalised-and-Tar.aspx">What is The Difference Between Liberalised and Tariffed Markets?</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/Industry-Effects-of-De-Tariffication-Liberalisatio.aspx">Industry Effects of De-Tariffication/Liberalisation. How Will The Insurers and Takaful Operators be </a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/Motor-Product-Selector.aspx">Motor Product Selector</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="http://www.malaysiantakaful.com.my/Phased-Liberalisation/Motor-Product-Selector.aspx">Motor Product Selector</a></li>
+                <li class="nav-item dropdown"><a class="nav-link" href="http://www.malaysiantakaful.com.my/Life-Framework/Life-Insurance-Family-Takaful-Framework.aspx" id="navbarDropdownLife" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Life Framework</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownLife">
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Life-Framework/Life-Insurance-Family-Takaful-Framework.aspx">Life Insurance &amp; Family Takaful Framework</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Life-Framework/Financial-Advisers-In-Malaysia.aspx">Financial Advisers In Malaysia</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Life-Framework/Service-Guide.aspx">Service Guide</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Life-Framework/Online-Account-Facility.aspx">Online Account Facility</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Life-Framework/Direct-Channel.aspx">Direct Channel</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Life-Framework/Marketing-Illustration.aspx">Enhanced Marketing Illustration</a>
+                    </fiv>
+                </li>
+                <li class="nav-item dropdown"><a class="nav-link" href="http://www.malaysiantakaful.com.my/Media-Room/MTA-in-the-news/List.aspx" id="navbarDropdownMedia" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Media Room</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMedia">
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Media-Room/MTA-in-the-news/List.aspx">MTA in the news</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Media-Room/International-News/List.aspx">International News</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Media-Room/Media-Releases-Press-Statement/List.aspx">Media Releases/Press Statement</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Media-Room/Video.aspx">Video</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Media-Room/Activities-Events/List.aspx">Activities/Events</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Media-Room/Gallery.aspx">Gallery</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown"><a class="nav-link" href="http://www.malaysiantakaful.com.my/Career/Overview.aspx" id="navbarDropdownCareer" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Career</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownCareer">
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Career/Overview.aspx">Overview</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Career/MTA-Members.aspx">Career in MTA Members</a>
+                        <a class="dropdown-item" href="http://www.malaysiantakaful.com.my/Career/Submit-Resume.aspx">Submit Resume</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="http://www.malaysiantakaful.com.my/Contact-Info.aspx">Contact Info</a></li>
+            </ul>
+        </div>
+    </div>
+    @RenderBody()
+    <footer class="footerSection">
+        <div class="footerContainer">
+            <div class="footer-wrap">
+                <address class="mb-0">
+                    <div>
+                        <img src="@Url.Content("~/Content/Images/mta-footer-logo.jpg")"></div>
+                        <ul>
+	                        <li>
+		                        <a href="http://www.malaysiantakaful.com.my/Others/Legal-Disclaimer.aspx">Legal Disclaimer</a></li>
+	                        <li>
+		                        <a href="http://www.malaysiantakaful.com.my/Others/Privacy-Policy.aspx">Privacy Policy</a></li>
+	                        <li>
+		                        <a href="http://www.malaysiantakaful.com.my/Others/Security-Policy.aspx">Security Policy</a></li>
+	                        <li>
+		                        <a href="http://www.malaysiantakaful.com.my/Others/Sitemap.aspx">Sitemap</a></li>
+                        </ul>
+                    <p>
+                        Copyrights ©
+                       @DateTime.Now.Year Malaysian Takaful Association. All Rights Reserved.</p>
+                </address>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

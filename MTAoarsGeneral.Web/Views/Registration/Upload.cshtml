@@ -1,0 +1,116 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions;
+@model  MTAoarsGeneral.ViewModels.Operations.RegistrationUploadViewModel
+@Html.ValidationSummary()
+<div id="main-content">
+    <table>
+        @using (Html.BeginForm("Upload", "Registration", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+            <tr>
+                <th>
+                    Excel Upload
+                </th>
+                <td>
+                    <input type="file" id="fileTermination" name="fileTermination" />
+                </td>
+                  <td >
+                    <button id="upload-button" class="k-button">
+                        <span class="k-icon k-i-search"></span>Upload</button>
+                </td>
+            </tr>
+            
+        }
+    </table>
+    <div id="registrations">
+    </div>
+</div>
+<script type="text/javascript">
+     var viewModel = kendo.observable(
+     @if (@Model.Registrations != null) {
+            @Html.Raw(@Json.Encode(new { Registrations = @Model.Registrations.Select(s => new { ID = Model.Registrations.IndexOf(s), AgencyName = s.Model.CorporateNominee == null ? "" : s.Model.CorporateNominee.Name, isError = (s.Errors == null ? 0 : s.Errors.Count) > 0, Messages = s.Errors == null ? new List<string>() : s.Errors.Values.ToList() }) }))
+     } else {
+         @Html.Raw(@Json.Encode(@Model))
+     }
+        );
+    $(function () {  
+     
+      
+        kendo.bind($("#main-content"), viewModel);
+
+        var schema = {
+            id:"ID",
+            model: {
+                fields: {
+                    AgencyName:{editable:false}
+                }
+            }
+        }
+
+        function bindGrid() {
+            $("#registrations").kendoGrid({
+                dataSource:{
+                    data:viewModel.Registrations,
+                    schema:schema
+                },
+                editable:true,
+                navigatable:true,
+                dataBound: onDataBound,
+                detailInit: detailInit,
+                columns:[
+                    {field:"AgencyName", title:"Agency Name", editable:false, width:"125px"}                    
+                ],
+                toolbar:[{template:"<button id='btnSave' class='k-button'><span class='k-icon k-i-cancel'></span>Save</button>"}]
+            });
+        }
+
+        function onDataBound(e,arg)
+        {
+        var data=this;
+       $(e.sender.tbody).find("tr").each(function()
+       {
+            if(data.dataItem($( this)).isError)
+            {
+                $(this).css("color","red");
+            }
+       });
+           
+        }
+
+     function detailInit(e,arg)
+     {
+        var id=e.data.ID;
+        var div=$("<div></div>");
+        div.load("LoadRegistration?ID="+id+"");
+        div.appendTo(e.detailCell);
+     }  
+
+        var firstTime = true;
+
+       
+
+        if(viewModel!=null)
+        {
+                bindGrid();
+               firstTime=false;
+         
+        }
+        $('#registrations').delegate('button','click',Save);
+         function Save() {
+         jsonPost("#main-content", "@Url.Action("Process")", viewModel, function(response) {
+         viewModel= kendo.observable(response);
+          firstTime=true;
+           if(viewModel!=null)
+        {
+             $('#registrations').empty();
+                bindGrid();
+               firstTime=false;
+         
+        }
+        $('#btnSave').addClass("disabled");
+     
+         });
+    }
+
+    });
+
+   
+</script>

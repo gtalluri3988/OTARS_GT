@@ -1,0 +1,50 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.GuarantorViewModel
+
+       
+<table class="mta-panel" style="width:50%" id="guarantor-type-table">
+    <tr>
+        <th>@Html.LabelFor(model=>model.GuarantorType)</th>
+        <td>@Html.BindDropDownListFor(model => model.GuarantorType, Url.Action("GuarantorTypes", "Lookup"))</td>
+    </tr>
+</table>
+
+<br />
+<div id="guarantors">
+    <table class="mta-panel" style="width:100%">
+        <tr>
+            <th>@Html.LabelFor(model=>model.Details)</th>
+            <td>@Html.BindTextBoxFor(model=>model.Details, 75)</td>
+            <th>@Html.LabelFor(model=>model.Amount)</th>
+            <td>@Html.BindTextBoxFor(model => model.Amount)</td>
+        </tr>
+         <tr>
+            <th>@Html.LabelFor(model=>model.FromDate)</th>
+            <td>@Html.EditorFor(model => model.FromDate, "DateEditor")</td>
+            <th>@Html.LabelFor(model=>model.ToDate)</th>
+            <td>@Html.EditorFor(model => model.ToDate, "DateEditor")</td>
+        </tr>
+    </table>
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        $("#guarantors").hide();
+        $("input", "#guarantor-type-table").change(function () {
+            checkGuarantorType();
+
+        });
+
+    });
+
+    function checkGuarantorType() {
+        if (mainViewModel.Guarantor.GuarantorType.Code != "@LookupConstants.GuarantorTypes.NoGuarantee") {
+            $("#guarantors").show();
+        } else {
+            $("#guarantors").hide();
+        }
+    }
+</script>

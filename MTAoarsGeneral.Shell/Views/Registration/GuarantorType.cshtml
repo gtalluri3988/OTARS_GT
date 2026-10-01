@@ -1,0 +1,70 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.GuarantorViewModel
+<div class="two-column">
+    <div class="column" id="guarantorTypeControl">
+        <fieldset>
+            <ul>
+                @Html.ListItemDropDown(model=>model.TypeID, Model.GuarantorTypes)
+            </ul>
+        </fieldset>
+    </div>
+    <div class="column column-right">
+    </div>
+</div>
+<div class="clear">
+</div>
+<div id="guarantors">
+    <div id="guarantorDetails" for="guarantor">
+        <div class="two-column">
+            <div class="column">
+                <fieldset>
+                    <ul
+                        @Html.ListItemTextBox(model => model.Details)
+                        @Html.ListItemDateEditor(model => model.FromDate)
+                       
+                    </ul>
+                </fieldset>
+            </div>
+            <div class="column column-right">
+                <fieldset>
+                    <ul>
+                       @Html.ListItemTextBox(model => model.Amount)
+                       @Html.ListItemDateEditor(model=>model.ToDate)
+                    </ul>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+
+<script type="text/javascript">
+    $(function () {
+        var guarantorTypes = @Html.Raw(Json.Encode(Model.GuarantorTypes))
+        
+        $("div[for=guarantor]", "#guarantors").hide();
+
+        $("select", "div[id=guarantorTypeControl]").change(function () {
+           $("div[for=guarantor]", "#guarantors").each(function() {
+                $(this).hide();
+                $("form", this).attr("data-canserialize", false);
+            });
+            
+            var type = getGuarantorType($(this).val());
+            if(type == null) return;
+            
+            if(type.Code != "@LookupConstants.GuarantorTypes.NoGuarantee") {
+                $("#guarantorDetails").show();
+            }
+           
+        });
+
+        function getGuarantorType(id) {
+            for(var i = 0; i < guarantorTypes.length; i++) {
+                if(guarantorTypes[i].ID == id) return guarantorTypes[i];
+            }
+        }
+    });
+</script>

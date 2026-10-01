@@ -1,0 +1,42 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+   
+}
+<div id="history-content">
+    <div id="history-grid">
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        
+        var filter =  @(Html.IsISMOrMTA() ? Html.Raw("{}") :
+              Html.Raw("{field: 'CompanyID', operator: 'eq', value: " + Html.GetIdentity().CompanyID + "}"));
+        var dataSource =  getMasterGridDataSource(masterDataServiceUrl + "/UploadHistories", {});
+        dataSource.filter(filter);
+        var grid = $("#history-grid").kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            selectable: true,
+            editable: "inline",
+            columns: [
+                { field: "Code" },
+                { field: "UploadFileName" },
+                { field: "TotalValidRecords", title: "Total Valid Records" },
+                { field: "TotalInvalidRecords", title: "Total Invalid Records" },
+                { field: "ID", title: "Uploaded File", template: "<button onclick='javascript:download(\"@Url.Action("RawContent")/#=ID#\")' class='k-button'><span class='k-icon k-i-restore'></span>Download</button>" },
+                { field: "ID", title: "Success File", template: "<button onclick='javascript:download(\"@Url.Action("SuccessContent")/#=ID#\")' class='k-button'><span class='k-icon k-i-restore'></span>Download</button>" },
+                { field: "ID", title: "Error File", template: "<button onclick='javascript:download(\"@Url.Action("ErrorContent")/#=ID#\")' class='k-button'><span class='k-icon k-i-restore'></span>Download</button>" }
+            ]
+        });
+    });
+
+    function download(url) {
+        location.href = url;
+    }
+
+</script>

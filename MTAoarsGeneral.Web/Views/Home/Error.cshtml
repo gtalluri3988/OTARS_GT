@@ -1,0 +1,41 @@
+﻿@{
+    Layout = null;
+    var responseCode = TempData["ResponseCode"];
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <div data-role="content" style="clear: both; font-size: 30px; padding: 5px 30px;">
+
+            @if (string.Equals(responseCode, "404"))
+            {
+                <div>
+                    Page Not Found. <br />
+                    We can't seem to find the page you're looking for. <br />
+                </div>
+            }
+            else if (string.Equals(responseCode, "500"))
+            {
+                <div>
+                    Internal Server Error. <br />
+                    Please contact ISM administrator for assist. <br />
+                </div>
+            }
+            else
+            {
+                <div>
+                    An error occurred. <br />
+                    Please contact ISM administrator for assist. <br />
+                </div>
+            }
+        </div>
+    </div>
+</body>
+</html>

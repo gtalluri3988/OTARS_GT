@@ -1,0 +1,24 @@
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.QualificationDisplayViewModel
+
+    <table class="mta-panel four-columns-grid">
+        <caption>Qualification</caption>
+        <tr>
+            <th>Educational Qualification</th>
+            <td>@Html.DisplayFor(model => model.EducationalQualification)
+            </td>
+            <th>School Name</th>
+            <td>@Model.SchoolName
+            </td>
+        </tr>
+        <tr>
+            <th>Year</th>
+            <td>
+               @Model.Year
+            </td>
+           <th>&nbsp;</th>
+           <td>&nbsp;</td>
+        </tr>
+     
+    </table>

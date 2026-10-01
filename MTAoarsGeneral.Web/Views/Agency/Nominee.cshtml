@@ -1,0 +1,72 @@
+@model MTAoarsGeneral.ViewModels.Operations.MemberDisplayViewModel
+<table class="mta-panel four-columns-grid">
+    <caption>
+       Details of Agent / Corporate Nominee</caption>
+    <tr>
+        <th>
+            Name
+        </th>
+        <td>@Model.Name
+        </td>
+        <th>
+            New IC Number
+        </th>
+        <td id="CorporateNominee_NewICNumber">@Model.NewICNumber</td>
+    </tr>
+    <tr>
+        <th>
+            Old IC Number
+        </th>
+        <td>@Model.OldICNumber
+        </td>
+        <th>
+            Race
+        </th>
+        <td>@Html.DisplayFor(model => model.Race)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Religion
+        </th>
+        <td>@Html.DisplayFor(model => model.Religion)
+        </td>
+        <th>
+            Marital Status
+        </th>
+        <td>@Html.DisplayFor(model => model.MaritalStatus)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Birth Date
+        </th>
+        <td colspan="3">@Html.DisplayFor(model => model.BirthDate, "Date")
+        </td>
+       
+    </tr>
+    <tr>
+        <th>
+            Gender
+        </th>
+        <td>@Html.DisplayFor(model => model.Gender)
+        </td>
+        <th>
+            Banca
+        </th>
+        <td>@Html.DisplayFor(model => model.IsBancaStaff)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Citizen
+        </th>
+        <td>@Html.DisplayFor(model => model.IsCitizen)
+        </td>
+        <th>
+            Bumiputera
+        </th>
+        <td>@Html.DisplayFor(model => model.IsBumiputera)
+        </td>
+    </tr>
+</table>

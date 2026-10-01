@@ -1,0 +1,46 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.InvoiceDetailReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>Invoice Report Parameters</caption>
+    <tr>
+        <th>
+            Company
+        </th>
+        <td colspan="4">
+            @Html.BindDropDownListFor(model => model.CompanyID, Url.Action("Companies", "Lookup"), required:true)
+        </td>
+    </tr>
+    <tr>
+
+        <th>Year</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Year, Url.Action("RecentYears", "Lookup"), required:true)
+        </td>
+   
+        <th>Month</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Month, Url.Action("AllMonths", "Lookup"), required:true)
+        </td>
+   
+        <th>
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Invoice Detail", "#", 2);
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))        
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=InvoiceDetail")", viewModel, "#report");
+        });
+
+    });
+</script>

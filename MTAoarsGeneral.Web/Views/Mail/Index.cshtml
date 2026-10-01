@@ -1,0 +1,44 @@
+﻿<div id="index-content">
+    <div id="index-inbox" data-page-div="true">
+    </div>
+    <div id="index-outbox" data-page-div="true">
+    </div>
+    <div id="index-detail" data-page-div="true">
+    </div>
+    <div id="index-new" data-page-div="true">
+    </div>
+    <div id="index-reply" data-page-div="true">
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        loadPage("#index-inbox", '@Url.Action("Inbox")');
+    });
+
+    function loadPage(selector, action) {
+        
+        $("div[data-page-div='true']").hide();
+        $(selector).load(action + "?time=" + (new Date()).getTime());
+        $(selector).show();
+    }
+
+    function postPage(selector, content) {
+        $("div[data-page-div='true']").hide();
+        $(selector).html(content);
+        $(selector).show();
+    }
+
+    function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+
+    function showDetails(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        viewPost(e.currentTarget, "@Url.Action("Detail")", {id: dataItem.ID}, function(response) {
+            postPage("#index-detail", response);
+        });
+    }
+</script>

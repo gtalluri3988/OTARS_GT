@@ -1,0 +1,81 @@
+@model MTAoarsGeneral.ViewModels.Administrative.ReferredSearchViewModel
+@using MTAoarsGeneral.Utilities.Mvc
+
+<div id="MainContent" data-page-div="true">
+    <table class="mta-panel">
+        <caption>Search Referred Member</caption>
+        <tr>
+            <th>IC Number</th>
+            <th>@Html.BindTextBoxFor(x => x.IcNumber)</th>
+            <td class="for-button"><button id="search-button" class="k-button"><span class="k-icon k-i-search"></span>Search</button></td>
+        </tr>
+    </table>
+    &nbsp;
+    <div id="ReferredGrid">
+    </div>
+</div>
+
+<script type="text/javascript">
+    addBreadCrumb("Referred", "Referred", 1);
+    var ViewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+
+    kendo.bind($('#MainContent'), ViewModel);
+
+    $('#search-button').click(function () {
+            //alert("hi");
+        jsonPost("#MainContent", "@Url.Action("ReferredDetails")", { Icnumber: ViewModel.IcNumber}, function (response) {
+            ViewModel.ReferredMembers = [];
+            
+            for (var i = 0; i < response.Data.length; i++) {
+
+                ViewModel.ReferredMembers.push(response.Data[i]);
+
+            }
+
+            bindGrid()
+
+            $('#ReferredGrid').show();
+
+            });
+        });
+
+    function bindGrid() {
+        $("#ReferredGrid").kendoGrid({
+            dataSource: {
+                data: ViewModel.ReferredMembers,
+
+            },
+            selectable: true,
+            columns: [
+                { field: "ICNumber", title: "New IC Number"},
+                { field: "Name", title: "Name" },
+                { field: "ReasonDescription", title: "Reason" },
+                { field: "CategoryDescription", title: "Category" },
+                { field: "IsActive", title: "Active" },
+                { field: "Edit", title: "", template: showButton }
+            ]
+
+        });
+    }
+
+    function showButton(data) {
+        if (data.ID <= 0)
+            return '';
+        return "<button class='k-button' onclick='showDetails(" + data.ID + ")'><span class='k-icon k-i-pencil'></span>Edit</button>";
+    }
+
+    function showDetails(id,categoryId,reasonId) {
+        viewPost("#MainContent", "@Url.Action("ReferredEdit")", { id: id}, function (output) {
+            addBreadCrumb("Detail", "#", 2);
+            showDiv("#MainContent");
+            $("#MainContent").html(output);
+
+        });
+    }
+
+    function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+
+</script>

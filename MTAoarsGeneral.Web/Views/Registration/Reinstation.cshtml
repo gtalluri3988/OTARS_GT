@@ -1,0 +1,36 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationReinstationViewModel
+
+<script type="text/javascript">
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+</script>
+
+<div id="main-content">
+     <h2> The details already exist and eligible for Reinstation</h2>
+     @{Html.RenderPartial("~/Views/Agency/Details.cshtml", Model.Agency);}
+     <div style="text-align:right;margin:30px">
+         <button id="submit-button" class="k-button"><span class="k-icon k-i-tick"></span>Submit</button>
+    </div>
+ </div>
+
+ <script type="text/javascript">
+
+     $(function () {
+         addBreadCrumb("Reinstation", "javascript:showDiv('#create-main')", 3);
+
+         kendo.bind($("#main-content"), mainViewModel);
+
+         $("#submit-button", "#main-content").click(function () {
+             jsonPost("#main-content", "@Url.Content("ReinstationSubmit")", mainViewModel, function (response) {
+                 viewPost("#main-content", response.RedirectUrl, response.Data, function (result) {
+                     postPage("#create-complete", result);
+                 });
+             });
+             return false;
+         });
+
+     });
+
+ </script>

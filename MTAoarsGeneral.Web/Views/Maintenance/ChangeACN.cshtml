@@ -1,0 +1,47 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.ViewModels.Interfaces
+@using MTAoarsGeneral.ViewModels.Operations
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+<div id="tabs">
+    <ul>
+      
+        @Html.Partial("Header", Model, ViewData)
+        <li id="additionalCorporateNominees">ACN</li>
+    </ul>
+
+            
+        @Html.ValSummary()
+        @Html.Partial("Details", Model, ViewData)  
+               
+      
+
+      @TabHelper.DisplayPage("additionalCorporateNominees",
+                  () => Html.PartialFor(model => model.AdditionalCorporateNominee, "../Registration/AdditionalCorporateNominee"),
+                           Model is IExistableAgency ? 2 : 1, true)   
+           
+           
+  
+</div>
+<script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=CACN", 1);
+        addBreadCrumb("Change Additional Corporate Nominee", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        $("#submit-button", "#main-content").click(function() {
+            jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", {additionalCorporateNominees: mainViewModel.AdditionalCorporateNominees}, function(response) {
+                if(response.Result)
+               {    
+                alert("Additional corporate nominee saved successfully");
+                window.location.href="Search?maintenanceType=CACN";
+               }
+                });
+           
+        });
+
+    });
+</script>

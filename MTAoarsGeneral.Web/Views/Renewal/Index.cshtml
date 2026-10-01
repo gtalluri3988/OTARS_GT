@@ -1,0 +1,33 @@
+﻿<div id="index-content">
+    <div id="index-list" data-page-div="true">
+    </div>
+    <div id="index-details" data-page-div="true">
+    </div>
+    <div id="index-complete" data-page-div="true">
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        loadPage("#index-list", '@Url.Action("List")');
+    });
+
+    function loadPage(selector, action) {
+        $("div[data-page-div='true']").hide();
+        $(selector).load(action + "?time=" + (new Date()).getTime());
+        $(selector).show();
+    }
+
+    function postPage(selector, content) {
+        $("div[data-page-div='true']").hide();
+        $(selector).html(content);
+        $(selector).show();
+    }
+
+    function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+
+    
+</script>

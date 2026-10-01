@@ -1,0 +1,73 @@
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.AdministrativeAgentViewModel
+@{
+}
+@section  PageTitle{
+    Administrative
+}
+
+<div id="main-content">
+    <div id="exceptionDialog">
+    </div>
+    <div>
+        <table class="mta-panel">
+            <caption>Agency Details</caption>
+            <tr>
+                <th>@Html.LabelFor(model => model.AgencyNumber)</th>
+                <td>@Html.BindTextBoxFor(model => model.AgencyNumber, isReadonly: true)</td>
+                @if (Model.DateTerminated != null)
+                {
+                    <th>Date Terminated</th>
+                    <td><input data-role="datepicker" data-bind="value:DateTerminated" data-format="dd/MM/yyyy" /></td>
+                }
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div id="tabs">
+        <ul>
+            <li class="k-state-active" id="agency">Agency</li>
+            <li id="nominee">Nominee</li>
+            <li id="nominee">M2 examinations</li>
+
+        </ul>
+        @Html.ValSummary()
+        @TabHelper.DisplayPage("agency", () => Html.PartialFor(model => model.Agency, "_Agency"), 0, false)
+        @TabHelper.DisplayPage("nominee", () => Html.PartialFor(model => model.CorporateNominee, "_Nominee"), 1, false)
+        @TabHelper.DisplayPage("M2examinations", () => Html.PartialFor(model => model.Agency, "_M2Examinations"), 2, true)
+
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Administrative", "Agency", 1);
+        addBreadCrumb("Agency Update", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+
+        $("#submit-button", "#main-content").click(function () {
+            if (mainViewModel.hasOwnProperty("DateOfExam")) {
+                mainViewModel.Agency.DateOfExam = mainViewModel.DateOfExam;
+            }
+            jsonPost("#main-content", "@Url.Action("SaveAgency")", mainViewModel,
+                function (response) {
+                    if(response.Result)
+                    {
+                        alert("Agency saved successfully");
+                        window.location.href = "Agency";
+                    }
+                }
+            );
+        });
+    });
+</script>
+
+@TabHelper.RegisterTabScript()

@@ -1,0 +1,14 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Accounts.LogOnViewModel
+@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+@section PageTitle {
+Unauthorized
+}
+@section CssScript{
+   
+}
+<div id="mainContent">
+    Unauthorized to view the page. Please <a href="@Url.Action("LogOn", "Account")">Login</a>
+</div>

@@ -1,0 +1,55 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using Microsoft.Practices.Unity
+@using MTAoarsGeneral.ViewModels.Shared
+@using MTAoarsGeneral.Utilities.IoC
+@using MTAoarsGeneral.Utilities.Interfaces
+@using MTAoarsGeneral.Utilities.Constants
+@model IEnumerable<MTAoarsGeneral.ViewModels.Operations.RenewalListViewModel>
+
+<div id="list-content">
+    <div id="list-grid"></div>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        $("#list-grid").kendoGrid({
+            dataSource: { data:  new kendo.data.ObservableArray(@Html.Raw(@Json.Encode(Model)))},
+            columns: [
+                {field:"CompanyName", title:"Company Name"}, "Year", "Quarter",
+                
+                {field:"ID", title:'Details', template:"<button class='k-button' onclick='javascript:showDetails(${ID})'><span class='k-icon k-i-pencil'></span>Details</button>"}
+            ]
+        });
+
+    });
+
+</script>
+
+    
+                
+          
+     @if (Html.IsMTA()) {
+        
+         <a class="k-button" id="process-button"><span class="k-icon k-i-search"></span>Process</a>
+     }
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("List", "javascript:showDiv('#index-list')", 1);
+
+        $("#process-button").click(function () {
+            location.href = "@Url.Action("Process")";
+        });
+
+       
+
+    });
+
+    function showDetails(id) {
+        viewPost($("#list-content"), "@Url.Action("Details")", {id:id}, function(result) {
+            postPage("#index-details", result);
+        });
+    }
+</script>

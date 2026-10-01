@@ -1,0 +1,18 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Operations.QualificationViewModel
+           
+<table class="mta-panel" style="width:100%">
+    <tr>
+        <th>@Html.LabelFor(model=>model.EducationalQualification)</th>
+        <td>@Html.BindDropDownListFor(model => model.EducationalQualification, Url.Action("EducationalQualifications", "Lookup"))</td>
+        <th>@Html.LabelFor(model => model.SchoolName)</th>
+        <td>@Html.BindTextBoxFor(model => model.SchoolName, 100)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.Year)</th>
+        <td>@Html.BindTextBoxFor(model => model.Year, 4)</td>
+        <th></th>
+        <td></td>
+    </tr>
+</table>

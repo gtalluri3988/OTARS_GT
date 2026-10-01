@@ -1,0 +1,96 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Accounts.LogOnViewModel
+@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+@section PageTitle {
+LogOn
+}
+@section CssScript{
+    @Html.Script("~/Scripts/ui/ui.tabs.js")
+    <script type="text/javascript">
+        $(function () {
+            $("#tabs").tabs();
+
+            $("form").submit(function (e) {
+               submitData(function (data) {
+                    onRegistrationSuccess(data, "tabs");
+                });
+                return false;
+            });
+
+             $("#captcha").click(function(){
+                $(this).attr("src", "@Url.Action("CaptchaImage")?time=" + (new Date()).getTime());
+                return false;
+            });
+
+            setInterval(function() {
+                $("#captcha").attr("src", "@Url.Action("CaptchaImage")?time=" + (new Date()).getTime());
+            }, 30000);
+
+            $("input").keypress(function(e) {
+                if(e.which == 13) {
+                    $("form").submit();
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+        });
+        
+
+    </script>
+}
+<div id="progressbar"></div>
+<div id="mainContent">
+    @using (Html.BeginForm("LogOn", "Account")) {
+  
+        <div id="tabs">
+            <ul>
+                <li><a href="#login">Login</a></li>
+            </ul>
+            <div id="login">
+                @Html.ValSummary()
+                <ul>
+                    <li>
+                        <label for="email" class="desc">
+                            @Html.LabelFor(model => model.UserName)
+                        </label>
+                        <div>
+                            @Html.TextBoxFor(model => model.UserName, new { @class = "k-textbox large" })
+                            @Html.ValMsgFor(model => model.UserName)
+                        </div>
+                    </li>
+                    <li>
+                        <label for="password" class="desc">
+                            @Html.LabelFor(model => model.Password)
+                        </label>
+                        <div>
+                            @Html.PasswordFor(model => model.Password, new { @class = "k-textbox large" })
+                            @Html.ValMsgFor(model => model.Password)
+                        </div>
+                    </li>
+                     <li>
+                        <div>
+                          <input type="image" id="captcha" src="@Url.Action("CaptchaImage")" alt="click to refresh" />
+                        </div>
+                        <label class="desc">
+                            Enter the character as seen on the image (click it to refresh):
+                            @Html.TextBoxFor(model => model.CaptchaKey, new { @class = "k-textbox large" })
+                        </label>
+                    </li>
+                    <li class="buttons">
+                        <div>
+                            <button id="submit" class="ui-state-default ui-corner-all float-right ui-button"
+                                type="submit">
+                                Submit</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    }
+
+ 
+</div>

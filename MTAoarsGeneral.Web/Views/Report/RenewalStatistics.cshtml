@@ -1,0 +1,45 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.RenewalStatisticsReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>Renewal Statistics Report Parameters - @Model.Caption</caption>
+    <tr>
+        <th>Year</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Year, Url.Action("LastFiveYears", "Lookup"), required:true)
+        </td>
+   
+        <th>Quarter</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Quarter, Url.Action("AllQuarters", "Lookup"), required:true)
+        </td>
+    </tr>
+    <tr>
+        <th>Corporate Status</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.RegistrationCategory, Url.Action("RegistrationCategories", "Lookup"), required:true)
+        </td>
+        <th>&nbsp;</th>
+        <th>
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Renewal Statistical Report", "#", 2);
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+          viewModel.RegistrationCategory = viewModel.RegistrationCategory.Code;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=RenewalStatistics")", viewModel, "#report");
+        });
+
+    });
+</script>

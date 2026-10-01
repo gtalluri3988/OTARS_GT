@@ -1,0 +1,49 @@
+@model MTAoarsGeneral.ViewModels.Administrative.ReferredSearchViewModel
+@using MTAoarsGeneral.Utilities.Mvc
+
+<div id="MainContent" data-page-div="true">
+    @Html.ValidationSummary()
+    <table class="mta-panel">
+        <caption>Referred Member Detail</caption>
+        @Html.HiddenFor(x => x.ReferredMember.ID)
+        <tr>
+            <th>New IC Number</th>
+            <th>Name</th>
+            <th>Reason</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>@Html.BindTextBoxFor(x => x.ReferredMember.ICNumber)</td>
+            <td>@Html.BindTextBoxFor(x => x.ReferredMember.Name)</td>
+            <td>@Html.BindDropDownListFor(x => x.ReferredMember.ReasonID, Url.Action("Reason", "Lookup", new { categoryID = Model.ReferredMember.CategoryID }))</td>
+
+            <td class="for-button"><button id="SubmitButton" class="k-button"><span></span>Save</button></td>
+        </tr>
+    </table>
+</div>
+
+
+<script type="text/javascript">
+    
+    var ViewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+
+    kendo.bind($('#MainContent'), ViewModel);
+
+    $('#SubmitButton','#MainContent').click(function () {
+        jsonPost("#MainContent", "@Url.Action("UpdateReferred")", ViewModel, function(output){
+
+            alert(output.Message);
+
+            viewPost("#MainContent", "@Url.Action("ReferredEdit")", { id: output.Data }, function (Output) {
+                addBreadCrumb("Referred", "Referred", 1);
+                addBreadCrumb("Detail", "#", 2);
+                $("#MainContent").html(Output);
+            });
+        });
+    });
+
+    function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+</script>

@@ -1,0 +1,77 @@
+@using MTAoarsGeneral.Utilities.Mvc
+<div id="header-list-content">
+    <div id="header-list-grid"></div>
+</div>
+<script type="text/javascript">
+    var startViewModel = {Company:{ID:@Html.GetIdentity().CompanyID}};
+    $(function () {
+        addBreadCrumb("Header", "javascript:showDiv('#create-start')", 1);
+
+        var getStatusAsync = getAsyncFunction("@Url.Action("ReferredHeaderStatuses", "Lookup")");
+        var getCompaniesAsync = getAsyncFunction("@Url.Action("Companies", "Lookup")");
+
+        var headerSchema = {
+            model:{
+                id:"ID",
+                fields: {
+                    CreatedDate: {type:"datetime", format:"dd/MM/yyyy"},
+                    CompanyID:{type:"number"},
+                    StatusID:{type:"number"}
+                }
+            }
+        }
+
+         var gridDataSource = new kendo.data.DataSource({
+            type: "odata", serverPaging: true, serverFiltering: true, pageSize: 5, serverSorting: true, 
+            transport: {
+                read: { 
+                    url: masterDataServiceUrl + "/ReferredHeaders",
+                    headers: {  DataServiceVersion: "2.0", MaxDataServiceVersion: "2.0" }
+                }
+            },
+            @if(!Html.IsISMOrMTA()) {
+                @:filter: {"filters":[{"field":"CompanyID","operator":"eq","value":@Html.GetIdentity().CompanyID}]},
+            }
+            schema: headerSchema
+        });
+
+
+        $.when(getCompaniesAsync()).done(function(companies) {
+            $.when(getStatusAsync()).done(function(statuses) {
+                
+                $("#header-list-grid").kendoGrid({
+                    dataSource: gridDataSource,
+                    pageable:true, sortable:true, filterable:true, 
+                    columns:[
+                        {field:"CompanyID", values:companies, title:"Company"},
+                        {field:"StatusID", values:statuses, title:"Status"},
+                        {field:"CreatedDate", title:"Created Date", format:"{0:dd/MM/yyyy}", template:"#=formatDate(CreatedDate)#"},
+                        {field:"ID", title:"View", template:"<button class='k-button' onclick='javascript:viewDetails(#=ID#)'><span class='k-icon k-i-search'></span>View</button>"},
+                    ],
+                    toolbar:[{template:"<button onclick='onCreateNewClick()' class='k-button'><span class='k-icon k-i-plus'></span>Create New</button>"}]
+                });
+
+            });
+        });
+
+    });
+
+
+    function viewDetails(id) {
+        startViewModel.ID = id;
+        loadPage("#create-list", "@Url.Action("List")/" + id);
+    }
+
+    function onCreateNewClick() {
+        jsonPost("#header-list-content", '@Url.Action("AddHeader")', startViewModel, function (response) {
+            startViewModel.ID = response.Data;
+            viewPost("#header-list-content", response.RedirectUrl, startViewModel, function (result) {
+                postPage("#create-list", result);
+            });
+        });
+    }
+
+    function refreshHeaderGrid() {
+        $("#header-list-grid").data("kendoGrid").dataSource.read();
+    }
+</script>

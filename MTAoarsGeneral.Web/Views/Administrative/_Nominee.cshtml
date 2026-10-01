@@ -1,0 +1,31 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.CorporateNomineeViewModel
+<table class="mta-panel" style="width: 100%">
+    <caption>
+        Agent Nominee Details
+    </caption>
+    <tr>
+        <th>@Html.LabelFor(model => model.Name)</th>
+        <td>@Html.BindTextBoxFor(model => model.Name)</td>
+        <th>@Html.LabelFor(model => model.NewICNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.NewICNumber)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.TbeCategory)</th>
+        <td>@Html.BindDropDownListFor(model => model.TbeCategory, Url.Action("TbeCategories", "Lookup"))</td>
+        <th>@Html.LabelFor(model => model.OldICNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.OldICNumber)</td>
+    </tr>
+    <tr>
+        <th>Date Appointed</th>
+        <td><input data-role="datepicker" data-bind="value:DateAppointed" data-format="dd/MM/yyyy" /></td>
+
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.IsBancaStaff)</th>
+        <td>@Html.BindEditorFor(model => model.IsBancaStaff)Banca staff</td>
+        <th>@Html.LabelFor(model => model.Remarks)</th>
+        <td>@Html.BindTextBoxFor(model => model.Remarks)</td>
+    </tr>
+</table>

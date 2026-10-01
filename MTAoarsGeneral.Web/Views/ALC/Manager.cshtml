@@ -1,0 +1,21 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.ALCHeaderViewModel
+      
+<table class="mta-panel" style="width:100%">
+    <caption>Details of Agent / Corporate Nominee</caption>
+    <tr>
+        <th>@Html.LabelFor(model=>model.AgencyManager.Name)</th>
+        <td>@Html.BindTextBoxFor(model => model.AgencyManager.Name, 75)</td>
+        <th>@Html.LabelFor(model => model.AgencyManager.RegistrationNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.AgencyManager.RegistrationNumber, 25)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.AgencyManager.ICNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.AgencyManager.ICNumber, 250)</td>
+    </tr>
+    
+   
+</table>     
+
+
+

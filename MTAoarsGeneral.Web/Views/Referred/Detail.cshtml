@@ -1,0 +1,128 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Maintenance.ReferredDetailViewModel
+<div id="detail-content" align="center">
+
+    @Html.ValSummary()
+    <table class="mta-panel" style="width: 80%">
+        <caption>
+            Referred Member - New
+        </caption>
+        <tr>
+            <th>New IC Number</th>
+            <td>@Html.BindTextBoxFor(model => model.ICNumber)</td>
+            <th>Old IC Number</th>
+            <td>@Html.BindTextBoxFor(model => model.OldICNumber)</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>@Html.BindTextBoxFor(model => model.Name)</td>
+            <th>Agency Number</th>
+            <td>@Html.BindTextBoxFor(model => model.AgencyNumber)</td>
+        </tr>
+        <tr>
+            <th>@Html.LabelFor(model => model.IsGeneral)</th>
+            <td colspan="3">@Html.BindEditorFor(model => model.IsGeneral)</td>
+        </tr>
+        <tr>
+            <th>Category</th>
+            <td colspan="3">@Html.BindRelateDropDownListFor(model => model.Category, @Url.Action("ReferredCategories", "Lookup", new { IncludeDefault = true }), model => model.Reason, @Url.Action("ReferredReasons", "Lookup", new { IncludeDefault = true }))</td>
+        </tr>
+        <tr>
+            <th>Reason</th>
+            <td colspan="3">@Html.BindDropDownListFor(model => model.Reason, @Url.Action("ReferredReasons", "Lookup", new { IncludeDefault = true }))</td>
+        </tr>
+        <tr>
+            <th>
+                Date of Offence
+            </th>
+            <td>
+                <span>@Html.EditorFor(model => model.DateOfOffence, "DateEditor", isReadonly: false)</span>
+
+            </td>
+        </tr>
+
+        <tr>
+            <th>
+                Date of Investigation or Internal Inquiry Initiated
+            </th>
+            <td>
+                <span>@Html.EditorFor(model => model.DateOfInvestigationInitiated, "DateEditor", isReadonly: false)</span>
+
+            </td>
+        </tr>
+
+        <tr>
+            <th>
+                Date of Investigation or Internal Inquiry Completed
+            </th>
+            <td>
+                <span>@Html.EditorFor(model => model.DateOfInvestigationCompleted, "DateEditor", isReadonly: false)</span>
+
+            </td>
+        </tr>
+        <tr>
+            <th>Action Taken by Licensed Insurer Against Agent</th>
+            <td colspan="3">@Html.BindDropDownListFor(model => model.ActionTaken, @Url.Action("ReferredActionTaken", "Lookup", new { IncludeDefault = true }))</td>
+        </tr>
+
+        <tr>
+            <th>
+                Date Action Taken
+            </th>
+            <td>
+                <span>@Html.EditorFor(model => model.DateActionTaken, "DateEditor", isReadonly: false)</span>
+
+            </td>
+        </tr>
+        <tr>
+            <th>Whether Police Report Lodged / Charge Made Against the Agent (if applicable)</th>
+            <td colspan="3">@Html.BindDropDownListFor(model => model.PoliceReportLogged, @Url.Action("ReferredPoliceReportLodged", "Lookup", new { IncludeDefault = true }))</td>
+        </tr>
+        <tr>
+            <th>Comments</th>
+            <td colspan="3">@Html.BindTextBoxFor(model => model.Comments)</td>
+        </tr>
+        <tr>
+            <th colspan="4">Documents</th>
+        </tr>
+        <tr>
+            <td colspan="4"><input type="file" id="referredDocuments" name="referredDocuments" /></td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <button id="submit-button" class="k-button">
+                        <span class="k-icon k-i-arrow-e"></span>Save
+                    </button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+</div>
+<script type="text/javascript">
+    var detailViewModel;
+    $(function () {
+        addBreadCrumb("Details", "javascript:showDiv('#create-detail')", 3);
+
+        $("#referredDocuments").kendoUpload({
+            async: {
+                saveUrl:"UploadFile",
+                removeUrl:"RemoveFile"
+            }
+        });
+
+        detailViewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+        detailViewModel.HeaderID = startViewModel.ID;
+        kendo.bind($("#detail-content"), detailViewModel);
+
+        $("#submit-button", "#detail-content").click(function() {
+            jsonPost("#detail-content", '@Url.Action("AddDetail")', detailViewModel, function (response) {
+                loadPage("#create-list", "@Url.Action("List")/" + startViewModel.ID);
+            });
+        });
+
+    });
+
+</script>

@@ -1,0 +1,483 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Enquiries.SearchViewModel
+@{
+    Layout = "~/Views/Shared/_EnquiryLayout.cshtml";
+}
+<style type="text/css">
+    .k-tooltip-validation {
+        color: #ff0000;
+        font-weight: bold;    font-size: 0.8rem;
+    }
+    .k-tooltip {
+        position:relative;
+        list-style:none;
+        z-index:1;
+    }
+    span.k-dropdown{width: 80%;}
+    table.table caption 
+    {
+        caption-side:top;
+        background-color: #0199cb;
+        font-weight: bold;
+        font-size: 1.1rem;
+        text-align: left;
+        padding-left: 6px;
+        color: #fff;
+    }
+    .mta-panel td[scope="row"] {
+        background-color: #e1e1e1!important;
+    }
+    .mta-error-summary{margin:5px 0; display:none;}
+    label{margin-bottom:0;}
+</style>
+@section CssScript{
+    <script type="text/javascript">
+        $(function () {
+            
+
+             $("#captcha").click(function(){
+                $(this).attr("src", "@Url.Action("../Account/CaptchaImage")?time=" + (new Date()).getTime());
+                return false;
+            });
+
+            setInterval(function() {
+                $("#captcha").attr("src", "@Url.Action("../Account/CaptchaImage")?time=" + (new Date()).getTime());
+            }, 30000);
+
+            $("input").keypress(function(e) {
+                if(e.which == 13) {
+                   //$("#submit-button").click();
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+        });
+        
+
+    </script>
+}
+ <div id="info-window">
+ </div>
+ 
+<div id="enquiry-content" align="center">
+    @using (Html.BeginForm("Result", "Enquiry", FormMethod.Post)) {
+        <div style="width:50%;text-align:center">
+            @Html.ValSummary()
+        </div>
+        <table class="table table-sm table-bordered mb-0 mta-panel" style="border-bottom: none;">
+            <caption>Enquiry</caption>
+            <tbody>
+                <tr>
+                    <td scope="row">
+                        <label for="RegistrationNumber">
+                            MTA Agency Number</label><br />
+                        (e.g. MTA-Z99999)
+                    </td>
+                    <td>
+                        @Html.BindTextBoxFor(model => model.RegistrationNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        OR
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        <label for="ICNumber">
+                            NRIC / Passport Number</label><br />
+                        (e.g. 999999999999 or X9999999)
+                    </td>
+                    <td>
+                        @Html.BindTextBoxFor(model => model.ICNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        And
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">@Html.LabelFor(model => model.Company)</td>
+                    <td>@Html.BindDropDownListFor(model => model.Company, Url.Action("EnquiryCompanies", "Lookup"))
+                    </td>
+                </tr>
+                <tr>
+                    <td scope="row">
+                        Enter the character as seen on the image :
+                        <br />
+                        (click the image to refresh)
+                    </td>
+                    <td>
+                        @Html.BindTextBoxFor(model => model.CaptchaKey,0,false,true)
+                        <br />
+                        <input type="image" id="captcha" src="@Url.Action("../Account/CaptchaImage")" alt="click to refresh" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: right;border-bottom: none;">
+                        <button id="submit-button" type="button" class="k-button">
+                            <span class="k-icon k-i-tick"></span>Submit</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        @Html.Hidden("LookupCompany.ID")
+        @Html.Hidden("LookupCompany.Description")
+    }
+</div>
+<div id="terms-condition" style="display: none;margin-top:15px" align="center" >
+    <table class="table table-sm table-bordered mb-0 mta-panel" style="border-bottom: none;">
+        <caption>
+            Terms & Condition</caption>
+        <tr>
+            <td>
+                <div style="height: 300px; overflow: auto;">
+                    <p class="MsoNormal" style='margin-bottom: 6.0pt; text-align: justify; line-height: normal'>
+                        <b style='mso-bidi-font-weight: normal'><span lang="EN" style='font-size: 14.0pt;
+                            mso-bidi-font-size: 12.5pt; mso-ascii-font-family: Calibri; mso-hansi-font-family: Calibri;
+                            color: #1F497D; mso-themecolor: text2; mso-ansi-language: EN'>TERMS AND CONDITIONS</span><span
+                                lang="EN-US" style='color: #1F497D; mso-themecolor: text2'><o:p></o:p></span></b></p>
+                    <p class="MsoNormal" style='text-align: justify'>
+                        <span lang="EN" style='mso-ansi-language: EN'>TERMS OF USE
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>By using this Website you agree to comply
+                            with and be bound by the terms and conditions set out below including the disclaimer
+                            and jurisdictional clause. Please read these terms and conditions carefully before
+                            proceeding and then print a copy for your future reference. If you do not agree
+                            to these terms and conditions and the Privacy Policy, please do not use this Website.
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p class="MsoNormal" style='text-align: justify'>
+                        <span lang="EN" style='mso-ansi-language: EN'>1. PERSONAL USE ONLY <span style='color: #003575'>
+                            <o:p></o:p>
+                        </span></span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>You may make personal, non-commercial use
+                            of all of the information (&quot;Information&quot;) you access in this Website.
+                            However, by using the Service, you agree not to reformat, copy, sell, store, distribute,
+                            transmit, display, reproduce, modify, migrate, create derivative works from, or
+                            otherwise exploit any of the Information content or data related to any portion
+                            of the Service without MTA`s written permission.
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p class="MsoNormal" style='text-align: justify'>
+                        <span lang="EN" style='mso-ansi-language: EN'>2. MODIFICATIONS AND TERMINATION OF SERVICE
+                            <span style='color: #003575'>
+                                <o:p></o:p>
+                            </span></span>
+                    </p>
+                    <p class="MsoNormal" style='text-align: justify'>
+                        <span lang="EN" style='font-size: 10.5pt; line-height: 115%; mso-ascii-font-family: Calibri;
+                            mso-hansi-font-family: Calibri; color: #333333; mso-ansi-language: EN'>MTA reserves
+                            the right at any time and from time to time to modify, update, suspend or discontinue
+                            all or part of the Service with or without prior notice to you. You agree that MTA
+                            will not be liable to you for any modification, suspension or discontinuance of
+                            the Service. You agree that MTA may, under some circumstances and without prior
+                            notice to you, terminate your use of and access to the Service. Some of the reasons
+                            for such termination may include, but not be limited to, (a) a breach or violation
+                            of the Terms and Conditions or other incorporated agreements or guidelines, (b)
+                            a request by law enforcement or another government agency, (c) MTA`s decision to
+                            discontinue or change all or part of the Service or how MTA choose to provide it,
+                            (d) technical or security issues or problems, and/or (e) fraudulent or illegal activities.
+                            All terminations will be subjected to MTA’s sole discretion and you agree that MTA
+                            will not be liable for any termination of your use of or access to the Service.</span><span
+                                lang="EN" style='mso-ansi-language: EN'><o:p></o:p></span></p>
+                    <p class="MsoNormal" style='text-align: justify'>
+                        <span lang="EN" style='mso-ansi-language: EN'>3. YOUR DEALINGS WITH THIS WEBSITE’S ADVERTISERS
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>Your correspondence or business dealings
+                            with, or participation in promotions of, advertisers found on or through the Service,
+                            including payment and delivery of related goods or services, and any other terms,
+                            conditions, warranties or representations associated with such dealings, are solely
+                            between you and such advertiser. You acknowledge and agree that MTA will not be
+                            responsible or liable for any loss or damage of any sort incurred as the result
+                            of any such dealings or as the result of the presence of such advertisers on the
+                            Service.
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p class="MsoNormal" style='text-align: justify'>
+                        <span lang="EN" style='mso-ansi-language: EN'>4. LINKS TO OTHER WEBSITES <span style='color: #003575'>
+                            <o:p></o:p>
+                        </span></span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>MTA provides links to other websites. You
+                            acknowledge and agree that, because MTA has no control over these linked websites,
+                            MTA is not responsible or liable for any <span style='mso-spacerun: yes'></span>
+                            privacy practices, content, advertising, products, resources, information or other
+                            materials contained and available <span style='mso-spacerun: yes'></span>in it.
+                            You further acknowledge and agree that MTA will not be liable for any loss whatsoever
+                            for any damages caused by or incurred in connection with the use of or reliance
+                            on the information, materials or services available through any of these linked
+                            websites.
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p class="MsoNormal" style='text-align: justify'>
+                        <span lang="EN" style='mso-ansi-language: EN'>5. THIS WEBSITE PROPRIETARY RIGHTS <span
+                            style='color: #003575'>
+                            <o:p></o:p>
+                        </span></span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>You acknowledge and agree that the Service
+                            and all data, information, details or materials on this Website contained proprietary
+                            and confidential information that is protected by applicable copyright, trademarks
+                            and other intellectual property laws (MTA's &quot;Proprietary Information&quot;).
+                            All data, information, details or materials on this Website, including such Proprietary
+                            Information, may only be used for personal, non-commercial purposes, and you agree
+                            not to sell, transfer, reproduce, duplicate, distribute, publish, modify, migrate,
+                            store, copy, download or transmit any material from this Website unless and until
+                            you have obtained our prior written consent. The Proprietary Information covered
+                            by this prohibition, including, but not limited to the software programming, html,
+                            other code text, graphics, logos, photographs contained in this Website.
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p class="MsoNormal" style='text-align: justify'>
+                        <span lang="EN" style='mso-ansi-language: EN'>6. NO ILLEGAL USE <span style='color: #003575'>
+                            <o:p></o:p>
+                        </span></span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>As a condition of your use of and access
+                            to this Website, you agree not to use the Services for any unlawful purpose or in
+                            any way that violates these Terms &amp; Conditions. You also agree not to use the
+                            Services in any way that could damage, disable, overburden, or impair the Website
+                            or any MTA server, or the associated networks, or interfere with any other party's
+                            use and enjoyment of any Services.
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p class="MsoNormal" style='text-align: justify'>
+                        <span lang="EN" style='mso-ansi-language: EN'>7. DISCLAIMER OF WARRANTIES: <span
+                            style='color: #003575'>
+                            <o:p></o:p>
+                        </span></span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>You expressly understand and agree that:
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p style='margin-left: 36.0pt; text-indent: -18.0pt; mso-list: l0 level1 lfo1; tab-stops: list 36.0pt'>
+                        <![if !supportLists]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                            mso-fareast-font-family: Calibri; color: #333333; mso-ansi-language: EN'><span style='mso-list: Ignore'>a.<span
+                                style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+                            </span></span><![endif]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                                mso-bidi-font-family: "Times New Roman"; color: #333333; mso-ansi-language: EN'>Your
+                                use of the service is at your sole risk. MTA provides the service to you on an &quot;as
+                                is&quot; and &quot;as available&quot; basis. MTA and its owners, shareholders, subsidiaries,
+                                affiliates, officers, employees, agents, partners and licensors expressly disclaim
+                                all warranties of any kind, whether express or implied, including, but not limited
+                                to the implied warranties of merchantability, fitness for a particular purpose,
+                                non-infringement and freedom from computer viruses or worms in connection with such
+                                service.
+                                <o:p></o:p>
+                            </span>
+                    </p>
+                    <p style='margin-left: 36.0pt; text-indent: -18.0pt; mso-list: l0 level1 lfo1; tab-stops: list 36.0pt'>
+                        <![if !supportLists]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                            mso-fareast-font-family: Calibri; color: #333333; mso-ansi-language: EN'><span style='mso-list: Ignore'>b.<span
+                                style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+                            </span></span><![endif]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                                mso-bidi-font-family: "Times New Roman"; color: #333333; mso-ansi-language: EN'>MTA
+                                and its owners, shareholders, subsidiaries, affiliates, officers, employees, agents,
+                                partners and licensors make no warranty that:
+                                <o:p></o:p>
+                            </span>
+                    </p>
+                    <p style='margin-left: 72.0pt; text-indent: -72.0pt; mso-text-indent-alt: -18.0pt;
+                        mso-list: l0 level2 lfo1; tab-stops: list 72.0pt'>
+                        <![if !supportLists]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                            mso-fareast-font-family: Calibri; color: #333333; mso-ansi-language: EN'><span style='mso-list: Ignore'><span
+                                style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>i.<span style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span></span></span><![endif]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                                mso-bidi-font-family: "Times New Roman"; color: #333333; mso-ansi-language: EN'>the
+                                service will meet your requirements;
+                                <o:p></o:p>
+                            </span>
+                    </p>
+                    <p style='margin-left: 72.0pt; text-indent: -72.0pt; mso-text-indent-alt: -18.0pt;
+                        mso-list: l0 level2 lfo1; tab-stops: list 72.0pt'>
+                        <![if !supportLists]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                            mso-fareast-font-family: Calibri; color: #333333; mso-ansi-language: EN'><span style='mso-list: Ignore'><span
+                                style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>ii.<span style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span></span></span><![endif]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                                mso-bidi-font-family: "Times New Roman"; color: #333333; mso-ansi-language: EN'>the
+                                service will be uninterrupted, timely, secure or error-free;
+                                <o:p></o:p>
+                            </span>
+                    </p>
+                    <p style='margin-left: 72.0pt; text-indent: -72.0pt; mso-text-indent-alt: -18.0pt;
+                        mso-list: l0 level2 lfo1; tab-stops: list 72.0pt'>
+                        <![if !supportLists]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                            mso-fareast-font-family: Calibri; color: #333333; mso-ansi-language: EN'><span style='mso-list: Ignore'><span
+                                style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>iii.<span style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span></span></span><![endif]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                                mso-bidi-font-family: "Times New Roman"; color: #333333; mso-ansi-language: EN'>the
+                                results that may be obtained from the use of the service will be accurate, complete,
+                                or reliable;
+                                <o:p></o:p>
+                            </span>
+                    </p>
+                    <p style='margin-left: 72.0pt; text-indent: -72.0pt; mso-text-indent-alt: -18.0pt;
+                        mso-list: l0 level2 lfo1; tab-stops: list 72.0pt'>
+                        <![if !supportLists]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                            mso-fareast-font-family: Calibri; color: #333333; mso-ansi-language: EN'><span style='mso-list: Ignore'><span
+                                style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>iv.<span style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span></span></span><![endif]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                                mso-bidi-font-family: "Times New Roman"; color: #333333; mso-ansi-language: EN'>the
+                                quality of any products, services, information or other material accessed, purchased
+                                or obtained by you through the service will meet your expectations;
+                                <o:p></o:p>
+                            </span>
+                    </p>
+                    <p style='margin-left: 72.0pt; text-indent: -72.0pt; mso-text-indent-alt: -18.0pt;
+                        mso-list: l0 level2 lfo1; tab-stops: list 72.0pt'>
+                        <![if !supportLists]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                            mso-fareast-font-family: Calibri; color: #333333; mso-ansi-language: EN'><span style='mso-list: Ignore'><span
+                                style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>v.<span style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span></span></span><![endif]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                                mso-bidi-font-family: "Times New Roman"; color: #333333; mso-ansi-language: EN'>any
+                                errors will be corrected.
+                                <o:p></o:p>
+                            </span>
+                    </p>
+                    <p style='margin-left: 36.0pt; text-indent: -18.0pt; mso-list: l0 level1 lfo1; tab-stops: list 36.0pt'>
+                        <![if !supportLists]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                            mso-fareast-font-family: Calibri; color: #333333; mso-ansi-language: EN'><span style='mso-list: Ignore'>c.<span
+                                style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+                            </span></span><![endif]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                                mso-bidi-font-family: "Times New Roman"; color: #333333; mso-ansi-language: EN'>All
+                                material and information obtained through the use of the service is accessed at
+                                your own discretion and risk, and you will be solely responsible for any damage
+                                to your computer system or loss of data that results from the accessing of any such
+                                material.
+                                <o:p></o:p>
+                            </span>
+                    </p>
+                    <p style='margin-left: 36.0pt; text-indent: -18.0pt; mso-list: l0 level1 lfo1; tab-stops: list 36.0pt'>
+                        <![if !supportLists]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                            mso-fareast-font-family: Calibri; color: #333333; mso-ansi-language: EN'><span style='mso-list: Ignore'>d.<span
+                                style='font: 7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+                            </span></span><![endif]><span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif";
+                                mso-bidi-font-family: "Times New Roman"; color: #333333; mso-ansi-language: EN'>No
+                                advice or information, whether oral or written, obtained by you from this Website
+                                or its affiliates or partners through or from the service shall create any warranty
+                                whatsoever.
+                                <o:p></o:p>
+                            </span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>MTA may occasionally update or change these
+                            Terms &amp; Conditions, so we encourage you to view them often. Your continued use
+                            of the Service constitutes your agreement to these Terms &amp; Conditions and any
+                            updates.
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>You hereby agree to indemnify and keep fully
+                            indemnified MTA against any action, claim, demand, expenses suffered or incurred
+                            by MTA arising from, but not limited to, (a) your use or misuse of the content on
+                            this Website and other websites linked to this Website and the services provided
+                            therein, (b) your breach or non-observance of these Terms and Conditions, and (c)
+                            infringement of rights of any third party in conjunction with your use or access
+                            to this Website.<o:p></o:p></span></p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>10. GOVERNING LAW AND JURISDICTION<o:p></o:p></span></p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>These Terms and Conditions shall be governed
+                            by and construed in accordance with the laws of Malaysia. By accessing this Website
+                            and/or using the services offered through this Website, you hereby consent to submit
+                            to the exclusive jurisdiction of the courts in Malaysia.
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                    <p>
+                        <span lang="EN" style='font-size: 10.5pt; font-family: "Calibri","sans-serif"; mso-bidi-font-family: "Times New Roman";
+                            color: #333333; mso-ansi-language: EN'>I have read, understand and agree to the
+                            terms and conditions set forth above.
+                            <o:p></o:p>
+                        </span>
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center">
+                <button id="dont-agree-button" class="k-button">
+                    <span class="k-icon k-i-tick"></span>Dont Agree</button>
+                <button id="agree-button" class="k-button">
+                    <span class="k-icon k-i-tick"></span>Agree</button>
+            </td>
+        </tr>
+    </table>
+</div>
+<p class="text-center" style="font-size:0.8rem;">Information is updated as at @DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")</p>
+<div id="result-content" style="display: none">
+</div>
+<script type="text/javascript">
+
+    var searchViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        kendo.bind($("#enquiry-content"), searchViewModel);
+
+        $("#submit-button").click(function() {
+            jsonPost("#enquiry-content", "@Url.Action("SearchSubmit")", searchViewModel, function(response) {
+               $("#enquiry-content").hide();
+               $("#terms-condition").show();
+            });
+        });
+
+        $("#agree-button").click(function() {
+           /* jsonPost("#enquiry-content", "@Url.Action("Result")", searchViewModel, function(response) {
+               $("#enquiry-content").hide();
+               $("#terms-condition").hide();
+               $("#result-content").html(response);
+               $("#result-content").show();
+            });*/
+            $("#LookupCompany_ID").val(searchViewModel.Company.ID);
+            $("#LookupCompany_Description").val(searchViewModel.Company.Description);
+            $("form").submit();
+        });
+
+        $("#dont-agree-button").click(function() {
+                $("#enquiry-content").show();
+               $("#terms-condition").hide();
+        });
+
+    });
+</script>

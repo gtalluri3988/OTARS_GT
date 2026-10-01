@@ -1,0 +1,37 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.ALCHeaderViewModel
+<div id="main-content">
+
+
+@Html.ValSummary()
+    <div id="tabs">
+    
+        <ul>
+            <li class="k-state-active" id="nominee">Nominee</li>
+            <li id="address">Address</li>
+            <li id="manager">Manager</li>
+            <li id="directors">Director</li>
+            <li id="shareholders">Shareholders</li>
+        </ul>
+        @TabHelper.DisplayPage("nominee",
+                    () => Html.PartialFor(model => model, "Nominee"),
+                    0, false)
+        @TabHelper.DisplayPage("address",
+                          () => Html.PartialFor(model => model.Address, "Address"),
+                   1, false)
+        @TabHelper.DisplayPage("manager",
+                    () => Html.PartialFor(model => model, "Manager"),
+                    2, false)
+       @TabHelper.DisplayPage("directors",
+                    () => Html.PartialFor(model => model.Directors, "Directors"),
+                    3, false)
+
+            @TabHelper.DisplayPage("shareholders",
+                    () => Html.PartialFor(model => model.Shareholders, "Shareholders"),
+                    4, true)
+    </div>
+
+    <input type="hidden" id="submit-url" value="@Url.Action("IndividualSubmit")" />
+ </div>
+            
+@TabHelper.RegisterTabScript()

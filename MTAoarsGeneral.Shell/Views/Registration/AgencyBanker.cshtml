@@ -1,0 +1,27 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Operations.AgencyBankerViewModel
+<div class="two-column">
+    <div class="column">
+        <fieldset>
+            <ul class="form">
+               @Html.ListItemDropDown(model=>model.BankID, Model.Banks)
+               @Html.ListItemDropDown(model=>model.AccountTypeID, Model.AccountTypes)
+               
+            </ul>
+        </fieldset>
+    </div>
+    <div class="column column-right">
+        <fieldset>
+            <ul class="form">
+                <li>
+                    <br /> <br /> <br /> <br />
+                </li>
+                @Html.ListItemTextBox(model=>model.AccountNumber)
+            </ul>
+        </fieldset>
+    </div>
+</div>
+<div class="clear">
+</div>
+@Html.PartialFor(model => model.Address, "Address")

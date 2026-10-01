@@ -1,0 +1,35 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AgencyDisplayViewModel
+           
+@section  PageTitle{
+Complete
+}
+@section Breadcrumb {
+    <a href="#" title="Layout Options">Operations</a> > <a href="#" title="Two column
+layout">Index</a>
+}
+<div id="mainContent">
+    <div class="column-content-box">
+        <div class="content-box
+content-box-header ui-corner-all">
+            <div class="ui-state-default ui-corner-top ui-box-header">
+                <span class="ui-icon float-left ui-icon-notice"></span>Registration complete successfully
+            </div>
+             <div class="content-box-wrapper">
+                <h2> Regisration under @Model.TypeDescription category is completed successfully.</h2>
+
+                @{Html.RenderPartial("~/Views/Agency/Details.cshtml", Model);}
+                <button id="next-button" class="ui-state-default ui-corner-all float-right ui-button" type="button">
+                                    Next</button>
+                                    <br /><br /><br />
+             </div>
+        </div>
+    </div>
+     
+</div>
+
+<script type="text/javascript">
+    $("#next-button").click(function() {
+        location.href = "@Url.Action("Start")";
+    });
+</script>

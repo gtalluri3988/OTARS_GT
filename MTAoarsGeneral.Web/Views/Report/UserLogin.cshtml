@@ -1,0 +1,44 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Reports.UserLoginReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>User login Report Parameters</caption>
+    <tr>
+        <th>From Date</th>
+        <td>
+            @Html.EditorFor(model => model.FromDate, "DateEditor")
+        </td>
+   
+        <th>To Date</th>
+        <td>
+            @Html.EditorFor(model => model.ToDate, "DateEditor")
+        </td>
+        <th>
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("User Login", "#", 2);
+
+       
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        viewModel.FromDate = getO3Date(viewModel.FromDate);
+        viewModel.ToDate = getO3Date(viewModel.ToDate);
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+           reportPost("#parameters-table", 
+                            "@Url.Content(String.Format("~/Rdls/Display.aspx?report={0}", LookupConstants.Reports.UserLogin))", 
+                            viewModel, 
+                            "#report");
+        });
+
+    });
+</script>

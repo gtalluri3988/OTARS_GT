@@ -1,0 +1,23 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AgencyViewModel
+               @{
+               var readOnly=(bool)( ViewData["ReadOnly"]?? false);
+           }
+
+<table class="mta-panel" style="width:100%">
+    <caption>Agency Details</caption>
+    <tr>
+        <th>@Html.LabelFor(model => model.Name)</th>
+        <td>@Html.BindTextBoxFor(model => model.Name,isReadonly:readOnly)</td>
+        <th>@Html.LabelFor(model => model.BusinessRegistrationNumber)</th>
+        <td> @Html.BindTextBoxFor(model=>model.BusinessRegistrationNumber,isReadonly:true)</td>
+    </tr>
+     @if (Model.ShouldDisplayAuthorizedCapital.GetValueOrDefault()) {
+        <tr>
+            <th>@Html.LabelFor(model => model.AuthorizedCapital)</th>
+            <td> @Html.BindTextBoxFor(model => model.AuthorizedCapital,isReadonly:readOnly)</td>
+            <th>@Html.LabelFor(model => model.PaidupCapital)</th>
+            <td> @Html.BindTextBoxFor(model => model.PaidupCapital,isReadonly:readOnly)</td>
+        </tr>
+     }           
+</table>

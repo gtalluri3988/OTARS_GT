@@ -1,0 +1,42 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Shared.HomeViewModel
+@section  PageTitle{
+Home page
+}
+
+<div id="home-content" style="text-align:center">
+<table cellpadding="60px" style="width:70%">
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Mail/Index")" />
+                <img src="@Url.Content("~/Content/Images/email.jpg")" alt="Mail" /> <br />
+                <label class="desc">Mail (@Model.TotalMail)</label>
+             
+        </td>
+        <td>
+        <a href="@Url.Content("~/Invoice/Index")" />
+            <img src="@Url.Content("~/Content/Images/invoice.jpg")" alt="Invoice" /><br />
+                <label class="desc">Invoice (@Model.TotalInvoice)</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+        @{
+            var renewalUrl = (Html.IsISM() || Html.IsMTA()) ? "~/Renewal/Approve" : "~/Renewal";
+        }
+        <a href="@Url.Content("~/Registration/Create")" />
+            <img src="@Url.Content("~/Content/Images/register.jpg")" alt="Registration" />
+            <br />
+                <label class="desc">Registration</label>
+        </td>
+        <td>
+        <a href="@Url.Content(renewalUrl)" />
+            <img src="@Url.Content("~/Content/Images/renewal.jpg")"  alt="Renewal"/>
+            <br />
+                <label class="desc">Renewal (@Model.TotalRenewal)</label>
+        </td>
+    </tr>
+</table>
+</div>
+
+

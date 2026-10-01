@@ -1,0 +1,47 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Maintenance.ReferredHeaderViewModel
+
+<div id="start-content" align="center">
+    @Html.ValSummary()
+    <table class="mta-panel" style="width:80%">
+        <caption>Referred Member - Start</caption>
+        <tr>
+            <th>Company</th>
+            <td>
+                    @if (Html.IsMTA() || Html.IsISM()) {
+                    @Html.BindDropDownListFor(model => model.Company, Url.Action("Companies", "Lookup"))
+                    } else {
+                        @Model.Company.Description
+                    }
+            </td>
+            </tr>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <button id="submit-button" class="k-button"><span class="k-icon k-i-arrow-e"></span>Next</button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var startViewModel;
+    $(function () {
+        addBreadCrumb("Start", "javascript:showDiv('#create-start')", 1);
+
+        startViewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+        kendo.bind($("#start-content"), startViewModel);
+
+        $("#submit-button", "#start-content").click(function () {
+            jsonPost("#start-content", '@Url.Action("AddHeader")', startViewModel, function (response) {
+                startViewModel.ID = response.Data;
+                viewPost("#start-content", response.RedirectUrl, startViewModel, function (result) {
+                    postPage("#create-list", result);
+                });
+            });
+        });
+
+    });
+</script>

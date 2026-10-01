@@ -1,0 +1,122 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.CorporateNomineeViewModel
+      
+<table class="mta-panel" style="width:100%">
+    <caption>Details of Agent / Corporate Nominee</caption>
+    <tr>
+        <th>@Html.LabelFor(model=>model.Name)</th>
+        <td>@Html.BindTextBoxFor(model=>model.Name, 75)</td>
+        <th>@Html.LabelFor(model=>model.NewICNumber)</th>
+        <td id="CorporateNominee_NewICNumber">@Model.NewICNumber.Trim()</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.Race)</th>
+        <td>@Html.BindDropDownListFor(model=>model.Race, Url.Action("Races", "Lookup"))</td>
+        <th>@Html.LabelFor(model=>model.OldICNumber)</th>
+        <td>@Html.BindTextBoxFor(model=>model.OldICNumber, 25)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.MaritalStatus)</th>
+        <td>@Html.BindDropDownListFor(model => model.MaritalStatus, Url.Action("MaritalStatuses", "Lookup"))</td>
+        <th>@Html.LabelFor(model=>model.Religion)</th>
+        <td>@Html.BindDropDownListFor(model => model.Religion, Url.Action("Religions", "Lookup"))</td>
+    </tr>
+    <tr>
+        <th> @Html.LabelFor(model=>model.BirthDate)</th>
+        <td>
+             @if (Model.BirthDate.HasValue) {
+                <span>@Model.BirthDate.Value.ToString("dd/MM/yy")</span>
+                @Html.HiddenFor(model => model.BirthDate)
+             } else {
+                <span>@Html.EditorFor(model => model.BirthDate, "DateEditor")</span>
+             }
+        </td>
+        <th>Gender</th>
+        <td>
+             @if (Model.Gender != null) {
+                @Model.Gender.Description
+                       
+             } else {
+                @Html.BindDropDownListFor(model => model.Gender, Url.Action("Genders", "Lookup"))
+             }
+        </td>
+    </tr>
+    <tr>
+        <th></th>
+        <td> 
+        
+             @Html.BindEditorFor(model => model.IsCitizen) Citizen
+             @Html.BindEditorFor(model => model.IsBumiputera) Bumiputera
+        </td>
+        <th>Date Appointed</th>
+        <td>
+             <input data-role="datepicker" data-bind="value:DateAppointed" data-format="dd/MM/yyyy"/>
+        </td>
+
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.Phone)</th>
+        <td>@Html.BindTextBoxFor(model=>model.Phone, 20)</td>
+        <th>@Html.LabelFor(model=>model.Mobile)</th>
+        <td>@Html.BindTextBoxFor(model => model.Mobile, 20)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.Email)</th>
+        <td>@Html.BindTextBoxFor(model => model.Email, 30)</td>
+        <th>@Html.LabelFor(model => model.Fax)</th>
+        <td>@Html.BindTextBoxFor(model => model.Fax, 20)</td>
+    </tr>
+
+    <tr>
+        <th>Upload Photograph</th>
+        <td><input type="file" id="photo"  name="photo" /></td>
+        <th></th>
+        <td></td>
+    </tr>
+</table>     
+
+<script type="text/javascript">
+
+    $(function () {
+        $("#photo").kendoUpload({
+            async: {
+                saveUrl: "UploadPhoto"
+            },
+            upload: function (e) {
+                if (e.files && e.files[0]) {
+                    var f = e.files[0]; 
+                    if (f.name.replace(f.extension,'').toUpperCase() != $('#CorporateNominee_NewICNumber').text())//#CorporateNominee_AgencyNumber label[for="CorporateNominee_NewICNumber"]
+                    {
+                        alert("File name must be IC no of the agent only.");
+                        e.preventDefault();
+                    }
+                    else if ([".jpg", ".png", ".jpeg"].indexOf(f.extension.toLowerCase()) < 0) {
+                        alert("File type " + f.extension.toLowerCase() + " is not supported.");
+                        e.preventDefault();
+                    } else if (e.files[0].size > 300000) {
+                        alert("File size exceeded 300 KB.");
+                        e.preventDefault();
+                    }
+                } else {
+                    e.preventDefault();
+                }
+            },
+            error: function (e) {
+                alert("Failed to upload photo");
+            },
+            success: function (e) {
+                // An array with information about the uploaded files
+                var files = e.files;
+
+                if (e.operation == "upload" && e.XMLHttpRequest.status == 200) {
+                    alert("Successfully uploaded photo");
+                } else {
+                    alert("Failed to upload photo");
+                }
+            },
+            multiple: false
+        });
+    });
+</script>
+
+

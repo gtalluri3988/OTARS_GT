@@ -1,0 +1,34 @@
+@model List<MTAoarsGeneral.ViewModels.Operations.MemberDisplayViewModel>
+@if (Model.Count > 0) {
+    <h4>
+        <a href="#">Partners</a></h4>
+    <div class="hastable">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        New IC @@ Passport Num
+                    </th>
+                    <th>
+                        Old IC / Passport
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var partner in Model) {
+                    <tr>
+                        <td>@partner.Name
+                        </td>
+                        <td>@GlobalHelper.Coalesce(partner.NewICNumber, partner.PassportNumber)
+                        </td>
+                        <td>@partner.OldICNumber
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

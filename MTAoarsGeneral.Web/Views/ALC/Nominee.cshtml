@@ -1,0 +1,66 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.ALCHeaderViewModel
+      
+<table class="mta-panel" style="width:100%">
+    <caption>Details of Agent / Corporate Nominee</caption>
+    <tr>
+        <th>@Html.LabelFor(model=>model.RegistrationNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.RegistrationNumber, 15)</td>
+        <th>@Html.LabelFor(model=>model.BusinessRegistrationNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.BusinessRegistrationNumber, 25)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.Name)</th>
+        <td>@Html.BindTextBoxFor(model => model.Name, 250)</td>
+        <th>@Html.LabelFor(model=>model.IntermediaryType)</th>
+        <td>@Html.BindTextBoxFor(model => model.IntermediaryType, 15)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.Company)</th>
+        <td>@Html.BindDropDownListFor(model => model.Company, Url.Action("Companies", "Lookup"))</td>
+        <th>@Html.LabelFor(model=>model.PaidupCapital)</th>
+        <td>@Html.BindTextBoxFor(model => model.PaidupCapital)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.Status)</th>
+        <td>
+            <select data-bind="value:Status" data-role="dropdownlist" id="Nominee_Status">
+                <option value="Active">Active</option>
+                <option value="Terminated">Terminated</option>
+            </select>
+                
+        </td>
+        <th>@Html.LabelFor(model=>model.DateAppointed)</th>
+        <td>@Html.EditorFor(model => model.DateAppointed, "DateEditor")</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.ValidFrom)</th>
+        <td>@Html.EditorFor(model => model.ValidFrom, "DateEditor")</td>
+        <th>@Html.LabelFor(model=>model.ValidTo)</th>
+        <td>@Html.EditorFor(model => model.ValidTo, "DateEditor")</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.DateTerminated)</th>
+        <td>@Html.EditorFor(model => model.DateTerminated, "DateEditor")</td>
+        <th>@Html.LabelFor(model=>model.Phone)</th>
+        <td>@Html.BindTextBoxFor(model => model.Phone, 20)</td>
+    </tr>
+    <tr>
+         <th>@Html.LabelFor(model=>model.Fax)</th>
+         <td>@Html.BindTextBoxFor(model => model.Fax, 20)</td>
+         <th>@Html.LabelFor(model=>model.Comments)</th>
+         <td>@Html.BindTextBoxFor(model => model.Comments, 8000)</td>
+    </tr>
+   
+</table>     
+
+<script type="text/javascript">
+    $(function () {
+        $("#Nominee_Status").kendoDropDownList({
+            optionLabel: "Select"
+        });
+    });
+</script>
+
+
+

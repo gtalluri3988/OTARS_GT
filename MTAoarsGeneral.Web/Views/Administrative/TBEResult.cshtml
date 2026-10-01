@@ -1,0 +1,91 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.TBEEnquirySearchViewModel
+
+<div id="enquiry-search" data-page-div="true">
+    @Html.ValSummary()
+    <div id="search-content">
+        <table class="mta-panel">
+            <caption>Search</caption>
+            <tr>
+                <th>IC Number</th>
+                <td>@Html.BindTextBoxFor(model => model.ICNumber, 12)</td>
+                <td class="for-button"><button id="search-button" class="k-button"><span class="k-icon k-i-search"></span>Search</button></td>
+            </tr>
+        </table>
+    </div>
+    &nbsp;
+    <div id="agency-grid">
+    </div>
+</div>
+
+<div id="enquiry-detail" data-page-div="true">
+</div>
+
+<script type="text/javascript">
+    var viewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+    );
+
+    addBreadCrumb("TBE Result", "javascript:showDiv('#enquiry-search')", 1);
+
+    $(function () {
+        kendo.bind($("#enquiry-search"), viewModel);
+
+        function bindGrid() {
+             $("#agency-grid").kendoGrid({
+                dataSource:{
+                    data:viewModel.Results,
+
+                },
+                selectable:true,
+                columns:[
+                    {field:"ICNumber", title:"IC Number", editable:true},
+                    {field:"Name", title:"Name"},
+                    {field:"Exam", title:"Exam"},
+                    {field:"ExamType", title:"Exam Type"},
+                    {field:"Grade", title:"Grade"},
+                    {field:"Result", title:"Result"},
+                    { field: "Company", title: "Company" },
+                    { field: "Edit", title: "", template: showTemplate}
+                ]
+
+            });
+        }
+
+         $("#search-button").click(function() {
+             jsonPost("#enquiry-search", "@Url.Action("SearchTBE")", { ICNumber: viewModel.ICNumber }, function (response) {
+                hideSummary("#enquiry-search");
+                 viewModel.Results=[];
+                 viewModel.Message = response.Message;
+                for(var i = 0; i < response.Data.length; i++) {
+                    viewModel.Results.push(response.Data[i]);
+                }
+                bindGrid();
+                 if (viewModel.Results.length > 0) {
+                    $("#agency-grid").show();
+                }else {
+                    $("#agency-grid").hide();
+                     addErrorToSummary("#enquiry-search", viewModel.Message);
+
+                }
+            });
+        });
+
+     });
+    function showTemplate(data) {
+        if (data.ID <= 0)
+            return '';
+        return "<button class='k-button' onclick='showDetails(" + data.ID + ",\"" + data.Exam + "\")'><span class='k-icon k-i-pencil'></span>Edit</button>";
+    }
+    function showDetails(id, ResultType) {
+        viewPost("#enquiry-search", "@Url.Action("Details")", { id: id, ResultType: ResultType }, function(response) {
+            addBreadCrumb("EditResult", "#", 2);
+            showDiv("#enquiry-detail");
+            $("#enquiry-detail").html(response);
+        });
+    }
+    function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+</script>

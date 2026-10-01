@@ -1,0 +1,18 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Maintenance.MaintenanceViewModel
+
+@section  PageTitle{
+Maintenance
+}
+
+<div id="main-content">
+    <div id="exceptionDialog">
+    </div>
+  @{
+      ViewData["ActionName"] = Model.ActionName;
+  }
+    @Html.Partial(Model.ViewName, Model.Registration)
+   
+  
+</div>
+@TabHelper.RegisterTabScript()

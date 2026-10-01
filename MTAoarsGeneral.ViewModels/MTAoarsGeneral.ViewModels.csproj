@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6415FDAA-9A50-472F-8D6E-67117040C40E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MTAoarsGeneral.ViewModels</RootNamespace>
+    <AssemblyName>MTAoarsGeneral.ViewModels</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Accounts\LogOnViewModel.cs" />
+    <Compile Include="Administrative\ReferredSearchViewModel.cs" />
+    <Compile Include="Administrative\RenewalDetailsViewModel.cs" />
+    <Compile Include="Enquiries\SearchViewModel.cs" />
+    <Compile Include="Interfaces\IExcelViewModel.cs" />
+    <Compile Include="Interfaces\IExistableRenewalList.cs" />
+    <Compile Include="Interfaces\IExistableCompanyGuarantor.cs" />
+    <Compile Include="Interfaces\IExistableAddressAgencyBoardMembers.cs" />
+    <Compile Include="Interfaces\IExistableIntermediary.cs" />
+    <Compile Include="Interfaces\IExistableAgency.cs" />
+    <Compile Include="Interfaces\IExistableNewIC.cs" />
+    <Compile Include="Interfaces\IExistableAgencyBanker.cs" />
+    <Compile Include="Interfaces\IExistableBoardMembers.cs" />
+    <Compile Include="Interfaces\IExistableGuarantor.cs" />
+    <Compile Include="Interfaces\IExistableTbeDetails.cs" />
+    <Compile Include="Interfaces\IExistableTerminationList.cs" />
+    <Compile Include="Interfaces\INotificationValueProvider.cs" />
+    <Compile Include="Interfaces\INotificationVariableSource.cs" />
+    <Compile Include="Maintenance\AdminActivityViewModel.cs" />
+    <Compile Include="Maintenance\ChangeCompanyViewModel.cs" />
+    <Compile Include="Maintenance\AdminActivityDetailViewModel.cs" />
+    <Compile Include="Maintenance\IbfimExcelViewModel.cs" />
+    <Compile Include="Maintenance\MaintenanceViewModel.cs" />
+    <Compile Include="Maintenance\ReferredAttachmentViewModel.cs" />
+    <Compile Include="Maintenance\ReferredDetailViewModel.cs" />
+    <Compile Include="Maintenance\ReferredHeaderViewModel.cs" />
+    <Compile Include="Maintenance\RegistrationExcelViewModel.cs" />
+    <Compile Include="Maintenance\SearchViewModel.cs" />
+    <Compile Include="Maintenance\ChangeNomineeViewModel.cs" />
+    <Compile Include="Maintenance\UploadViewModel.cs" />
+    <Compile Include="Masters\ComplaintViewModel.cs" />
+    <Compile Include="Masters\ActivityViewModel.cs" />
+    <Compile Include="Masters\CompanyViewModel.cs" />
+    <Compile Include="Masters\AgencyTypeViewModel.cs" />
+    <Compile Include="Masters\ReferredActionTakenViewModel.cs" />
+    <Compile Include="Masters\ReferredCategoryViewModel.cs" />
+    <Compile Include="Masters\ReferredReasonViewModel.cs" />
+    <Compile Include="Masters\MTAAwardViewModel.cs" />
+    <Compile Include="Masters\TbeExemptionViewModel.cs" />
+    <Compile Include="Masters\ReferredMemberViewModel.cs" />
+    <Compile Include="Masters\StateViewModel.cs" />
+    <Compile Include="Masters\ReligionViewModel.cs" />
+    <Compile Include="Masters\RaceViewModel.cs" />
+    <Compile Include="Masters\MemberLevelViewModel.cs" />
+    <Compile Include="Masters\InsuranceQualificationViewModel.cs" />
+    <Compile Include="Masters\EducationalQualificationViewModel.cs" />
+    <Compile Include="Masters\DesignationViewModel.cs" />
+    <Compile Include="Masters\CourseCategoryViewModel.cs" />
+    <Compile Include="Masters\GuarantorTypeViewModel.cs" />
+    <Compile Include="Masters\TrainingListViewModel.cs" />
+    <Compile Include="Masters\TrainingViewModel.cs" />
+    <Compile Include="Masters\RoleMasterViewModel.cs" />
+    <Compile Include="Masters\UserMasterViewModel.cs" />
+    <Compile Include="Notifications\BatchTerminationVariableSource.cs" />
+    <Compile Include="Notifications\BatchRenewalVariableSource.cs" />
+    <Compile Include="Notifications\ChangeNomineeVariableSource.cs" />
+    <Compile Include="Notifications\ChangeCorporateStatusVariableSource.cs" />
+    <Compile Include="Notifications\ChangeACNVariableSource.cs" />
+    <Compile Include="Notifications\ChangeCompanyVariableSource.cs" />
+    <Compile Include="Notifications\CBCProcessVariableSource.cs" />
+    <Compile Include="Notifications\ConflictVariableSource.cs" />
+    <Compile Include="Notifications\ConflictNotReleasedVariableSource.cs" />
+    <Compile Include="Notifications\RenewalReminderVariableSource.cs" />
+    <Compile Include="Notifications\ExcelUploadVariableSource.cs" />
+    <Compile Include="Notifications\ResignedVariableSource.cs" />
+    <Compile Include="Notifications\UpdateAgencyVariableSource.cs" />
+    <Compile Include="Notifications\UpdatePartnersVariableSource.cs" />
+    <Compile Include="Notifications\UpdateBoardMembersVariableSource.cs" />
+    <Compile Include="Notifications\UpdateGuarantorVariableSource.cs" />
+    <Compile Include="Notifications\UpdateAddressVariableSource.cs" />
+    <Compile Include="Notifications\RenewalRejectionVariableSource.cs" />
+    <Compile Include="Notifications\RenewedListValueProvider.cs" />
+    <Compile Include="Notifications\RenewalSubmissionVariableSource.cs" />
+    <Compile Include="Notifications\NewMailViewModel.cs" />
+    <Compile Include="Notifications\InvoiceVariableSource.cs" />
+    <Compile Include="Notifications\MailListViewModel.cs" />
+    <Compile Include="Notifications\MailReplyViewModel.cs" />
+    <Compile Include="Notifications\MailViewModel.cs" />
+    <Compile Include="Notifications\NotReleasedVariableSource.cs" />
+    <Compile Include="Notifications\RenewalVariableSource.cs" />
+    <Compile Include="Notifications\RegistrationVariableSource.cs" />
+    <Compile Include="Notifications\RenewedVariableSource.cs" />
+    <Compile Include="Notifications\TerminatedVariableSource.cs" />
+    <Compile Include="Notifications\TerminationListValueProvider.cs" />
+    <Compile Include="Operations\AdministrativeAgentIndividualViewModel.cs" />
+    <Compile Include="Operations\AdministrativeAgentPartnershipViewModel.cs" />
+    <Compile Include="Operations\AdministrativeAgentSoleProprietorshipViewModel.cs" />
+    <Compile Include="Operations\AdministrativeAgentViewModel.cs" />
+    <Compile Include="Operations\AdministrativeSearchAgentResponseViewModel.cs" />
+    <Compile Include="Operations\AdministrativeSearchAgentViewModel.cs" />
+    <Compile Include="Operations\AgencyBankerViewModel.cs" />
+    <Compile Include="Operations\AgencyDisplayViewModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Operations\AgencySearchArchiveResponseViewModel.cs" />
+    <Compile Include="Operations\AgencySearchRequestViewModel.cs" />
+    <Compile Include="Operations\AgencySearchResponseViewModel.cs" />
+    <Compile Include="Operations\AgencyViewModel.cs" />
+    <Compile Include="Operations\AdditionalCorporateNomineeViewModel.cs" />
+    <Compile Include="Operations\AdministrativeAgentCorporateViewModel.cs" />
+    <Compile Include="Operations\ALCHeaderViewModel.cs" />
+    <Compile Include="Operations\CBCStartViewModel.cs" />
+    <Compile Include="Operations\CBCHeaderViewModel.cs" />
+    <Compile Include="Operations\CBCDetailViewModel.cs" />
+    <Compile Include="Operations\ConflictAttachmentViewModel.cs" />
+    <Compile Include="Operations\PhotoUploadEnquiryViewModel.cs" />
+    <Compile Include="Operations\RegistrationResponseViewModel.cs" />
+    <Compile Include="Operations\RegistrationUploadViewModel.cs" />
+    <Compile Include="Operations\RenewalApproveHeaderViewModel.cs" />
+    <Compile Include="Operations\EnquiryViewModel.cs" />
+    <Compile Include="Operations\InvoiceListViewModel.cs" />
+    <Compile Include="Operations\InvoiceViewModel.cs" />
+    <Compile Include="Operations\MaintenanceSearchResponseViewModel.cs" />
+    <Compile Include="Operations\MaintenanceSearchViewModel.cs" />
+    <Compile Include="Operations\MemberList.cs" />
+    <Compile Include="Operations\RegistrationReinstationViewModel.cs" />
+    <Compile Include="Operations\RegistrationStartViewModel.cs" />
+    <Compile Include="Operations\RenewalPageViewModel.cs" />
+    <Compile Include="Operations\RenewalUploadViewModel.cs" />
+    <Compile Include="Operations\TBEEnquiryViewModel.cs" />
+    <Compile Include="Operations\TBEResultViewModel.cs" />
+    <Compile Include="Operations\TerminationSearchResponseViewModel.cs" />
+    <Compile Include="Operations\RenewalHeaderViewModel.cs" />
+    <Compile Include="Operations\RenewalDetailViewModel.cs" />
+    <Compile Include="Operations\RegistrationConflictViewModel.cs" />
+    <Compile Include="Operations\CorporateRegistrationViewModel.cs" />
+    <Compile Include="Operations\RenewalListViewModel.cs" />
+    <Compile Include="Operations\ShareholderViewModel.cs" />
+    <Compile Include="Operations\DirectorViewModel.cs" />
+    <Compile Include="Operations\SoleProprietorshipRegistrationViewModel.cs" />
+    <Compile Include="Operations\PartnershipRegistrationViewModel.cs" />
+    <Compile Include="Operations\MemberExperienceViewModel.cs" />
+    <Compile Include="Operations\PartnerViewModel.cs" />
+    <Compile Include="Operations\RegistrationInclusionViewModel.cs" />
+    <Compile Include="Operations\SpouseViewModel.cs" />
+    <Compile Include="Operations\CorporateNomineeViewModel.cs" />
+    <Compile Include="Operations\QualificationViewModel.cs" />
+    <Compile Include="Operations\GuarantorViewModel.cs" />
+    <Compile Include="Operations\IndividualRegistrationViewModel.cs" />
+    <Compile Include="Interfaces\IMemberViewModel.cs" />
+    <Compile Include="Operations\RegistrationIndexViewModel.cs" />
+    <Compile Include="Operations\RegistrationViewModel.cs" />
+    <Compile Include="Operations\TerminationDetailViewModel.cs" />
+    <Compile Include="Operations\TerminationSearchViewModel.cs" />
+    <Compile Include="Reports\AdministrativeAuditTrailReportViewModel.cs" />
+    <Compile Include="Reports\AsciiReportViewModel.cs" />
+    <Compile Include="Reports\ActiveAgentsStatisticsReportViewModel.cs" />
+    <Compile Include="Reports\BulkRegistrationReportViewModel.cs" />
+    <Compile Include="Reports\AgentsReportViewModel.cs" />
+    <Compile Include="Reports\ConsolidateReportViewModel.cs" />
+    <Compile Include="Reports\PhotoUploadSummaryReportViewModel.cs" />
+    <Compile Include="Reports\ResignedActiveAgentsReportViewModel.cs" />
+    <Compile Include="Reports\TBEExaminationViewModel.cs" />
+    <Compile Include="Reports\TBEExemptionViewModel.cs" />
+    <Compile Include="Reports\TBESpecialAgentsReportViewModel.cs" />
+    <Compile Include="Reports\ReferredListingReportViewModel.cs" />
+    <Compile Include="Reports\TrainingDetailReportViewModel.cs" />
+    <Compile Include="Reports\InvoiceDetailReportViewModel.cs" />
+    <Compile Include="Reports\RenewalAsciiReportViewModel.cs" />
+    <Compile Include="Reports\SummaryReportViewModel.cs" />
+    <Compile Include="Reports\CPDReportViewModel.cs" />
+    <Compile Include="Reports\RenewalStatisticsReportViewModel.cs" />
+    <Compile Include="Reports\NewRegistrationStatisticsReportViewModel.cs" />
+    <Compile Include="Reports\TBEResultsReportViewModel.cs" />
+    <Compile Include="Reports\TerminationListReportViewModel.cs" />
+    <Compile Include="Reports\TerminationSummaryReportViewModel.cs" />
+    <Compile Include="Reports\UserLoginReportViewModel.cs" />
+    <Compile Include="Reports\InvoiceReportViewModel.cs" />
+    <Compile Include="Shared\AddressViewModel.cs" />
+    <Compile Include="Shared\PhotoViewModel.cs" />
+    <Compile Include="Shared\GridPageViewModel.cs" />
+    <Compile Include="Shared\GridFilterViewModel.cs" />
+    <Compile Include="Shared\GridSortViewModel.cs" />
+    <Compile Include="Shared\HomeViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MTAoarsGeneral.DomainModels\MTAoarsGeneral.DomainModels.csproj">
+      <Project>{118E7748-25C1-4C61-9976-872869877EC3}</Project>
+      <Name>MTAoarsGeneral.DomainModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MTAoarsGeneral.Utilities\MTAoarsGeneral.Utilities.csproj">
+      <Project>{341D5B26-2F90-4B0C-84FA-07CDCA80E4F1}</Project>
+      <Name>MTAoarsGeneral.Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

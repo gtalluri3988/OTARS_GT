@@ -1,0 +1,38 @@
+@using MTAoarsGeneral.Utilities.Constants
+@model List<MTAoarsGeneral.ViewModels.Operations.AgencyPrincipalDisplayViewModel>
+@{
+    var exist = Model.Exists(x => !string.IsNullOrEmpty(x.PhotoPath));  
+}           
+@if (exist)
+{ 
+    <br />
+    <table class="mta-panel four-columns-grid">
+    <caption>Photograph</caption>
+        @foreach (var i in Model)
+        {
+            <tr>
+                <th>@i.AgencyNumber</th>
+                <td colspan="3">
+                    @if (!string.IsNullOrEmpty(i.PhotoPath))
+                    {
+                        <a href="@i.PhotoPath" target="_blank">Click to view photograph</a>
+                    }
+                    else { 
+                        <text>No Photo Available</text>
+                    }
+                </td>
+            </tr>
+            
+        }
+    </table>
+}
+else
+{ 
+    <br />
+    <table class="mta-panel four-columns-grid">
+    <caption>Photograph</caption>
+        <tr>
+            <td colspan="4">NO PHOTO UPLOADED</td>
+        </tr>
+    </table>
+}

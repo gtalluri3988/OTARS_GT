@@ -1,0 +1,52 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.AgentsReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>Agencies Report</caption>
+    
+    <tr>
+        <th>From Date</th>
+        <td>
+            @Html.EditorFor(model => model.FromDate, "DateEditor")
+        </td>
+        <th>To Date</th>
+        <td>
+            @Html.EditorFor(model => model.ToDate, "DateEditor")
+        </td>
+    </tr>
+    <tr>
+        <th>Report For</th>
+        <td>
+            <select id="report-for" data-bind="value:ReportFor">
+                <option value='Active'>Active</option>
+                <option value='Terminated'>Terminated</option>
+            </select>
+        </td>
+   
+         <th colspan="2">
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("ALC Report", "#", 2);
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        viewModel.ReportFor = "Active";
+        kendo.bind($("#parameters-table"), viewModel);
+
+        $("#report-for").kendoDropDownList({});
+        
+        $("#fetch-button").click(function () {
+            if(viewModel.FromDate == null) delete viewModel.FromDate;
+            if(viewModel.ToDate == null) delete viewModel.ToDate;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=ALC")", viewModel, "#report");
+        });
+
+    });
+</script>

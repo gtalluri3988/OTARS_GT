@@ -1,0 +1,58 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Reports.RenewalAsciiReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>Download to Renewal Ascii Report Parameters</caption>
+    <tr>
+        <th>From Date</th>
+        <td>
+            @Html.EditorFor(model => model.FromDate, "DateEditor")
+        </td>
+   
+        <th>To Date</th>
+        <td>
+            @Html.EditorFor(model => model.ToDate, "DateEditor")
+        </td>
+    </tr>
+    <tr>
+        <th>Type</th>
+        <td>
+            <select id="StatusCode" data-bind="value:StatusCode1">
+                <option value="REN">Renewed</option>
+                <option value="TER">Terminated</option>
+            </select>
+        </td>
+        <th colspan="2">
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Renewal Ascii", "#", 2);
+
+        $("#StatusCode").kendoDropDownList();
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)));
+        viewModel.FromDate = getO3Date(viewModel.FromDate);
+        viewModel.ToDate = getO3Date(viewModel.ToDate);
+        viewModel.StatusCode1 = 'REN';
+
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+            if(viewModel.StatusCode1 == 'TER') viewModel.StatusCode2 = 'GEN';
+            else viewModel.StatusCode2 = null;
+           reportPost("#parameters-table", 
+                            "@Url.Content(String.Format("~/Rdls/Display.aspx?report={0}", LookupConstants.Reports.RenewalAscii))", 
+                            viewModel, 
+                            "#report");
+        });
+
+    });
+</script>

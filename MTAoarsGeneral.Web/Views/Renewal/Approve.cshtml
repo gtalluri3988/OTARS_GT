@@ -1,0 +1,34 @@
+﻿<div id="approve-content">
+    <div id="approve-header" data-page-div="true">
+    </div>
+    <div id="approve-details" data-page-div="true">
+    </div>
+    <div id="approve-complete" data-page-div="true">
+        
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        loadPage("#approve-header", '@Url.Action("ApproveHeader")');
+    });
+
+    function loadPage(selector, action) {
+        $("div[data-page-div='true']").hide();
+        $(selector).load(action + "?time=" + (new Date()).getTime());
+        $(selector).show();
+    }
+
+    function postPage(selector, content) {
+        $("div[data-page-div='true']").hide();
+        $(selector).html(content);
+        $(selector).show();
+    }
+
+    function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+
+    
+</script>

@@ -1,0 +1,86 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.CorporateNomineeViewModel
+<div class="two-column">
+    <div class="column">
+        <fieldset>
+            <ul class="form">
+               @Html.ListItemTextBox(model => model.Name)
+               @Html.ListItemDropDown(model => model.RaceID, Model.Races)
+               @Html.ListItemDropDown(model => model.MaritalStatusID, Model.MaritalStatuses)
+                <li>
+                    <label class="desc" for="race">
+                        @Html.LabelFor(model=>model.BirthDate) <span class="mandatory">*</span></label>
+                    <div>
+                        @if (Model.BirthDate.HasValue) {
+                            <span>@Model.BirthDate.Value.ToString("dd/MM/yy")</span>
+                            @Html.HiddenFor(model => model.BirthDate)
+                        } else {
+                            <span>
+                                @Html.EditorFor(model => model.BirthDate, "DateEditor")
+                            </span>
+                             @Html.ValMsgFor(model => model.BirthDate)
+                        }</div>
+                </li>
+                <li>
+                 <label class="desc" for="Religion">
+                        Select</label>
+                    <div>
+                        @Html.EditorFor(model => model.IsCitizen) Citizen
+                        @Html.EditorFor(model => model.IsBumiputera) Bumiputera
+                        @Html.HiddenFor(model => model.ICTypeID)
+                        @Html.HiddenFor(model => model.NewICNumber)
+                        @Html.HiddenFor(model => model.PassportNumber)
+                        @Html.HiddenFor(model => model.LevelID)
+                        @Html.HiddenFor(model => model.IsBancaStaff)
+                    </div>
+                </li>
+
+                  @Html.ListItemTextBox(model => model.Phone)
+                  @Html.ListItemTextBox(model => model.Email)
+                
+            </ul>
+        </fieldset>
+    </div>
+    <div class="column column-right">
+        <fieldset>
+            <ul class="form">
+                 <li>
+                    <label class="desc" for="old_NRIC_Number">
+                        @Html.LabelFor(model => model.NewICNumber)</label>
+                    <div>
+                        @Model.NewICNumber</div>
+                </li>
+                 @Html.ListItemTextBox(model => model.OldICNumber)
+                 @Html.ListItemDropDown(model=>model.ReligionID, Model.Religions)
+                <li>
+                    <label class="desc" for="Gender">
+                        @Html.LabelFor(model => model.GenderID)</label>
+                    <div>
+                        @if (Model.GenderID.HasValue) {
+                            @GlobalHelper.GetLookupDescription(Model.Genders, Model.GenderID)
+                            @Html.HiddenFor(model => model.GenderID)
+                       
+                        } else {
+                            <span>
+                                @Html.RadioButtonListFor(model => model.GenderID, Model.Genders)
+                                @Html.ValMsgFor(model=>model.GenderID)
+                            </span>
+                        }</div>
+                </li>
+               
+               @Html.ListItemDateEditor(model=>model.JoinedOn)
+               @Html.ListItemTextBox(model => model.Mobile)
+               @Html.ListItemTextBox(model => model.Fax)
+               @Html.HiddenFor(model=>model.TbeCategoryID)
+            </ul>
+        </fieldset>
+    </div>
+</div>
+
+<div class="clear"></div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("select").kendoDropDownList();
+        $("input[type=text]", "*[for=date]").kendoDatePicker({ format: "dd/MM/yyyy" });
+    });
+</script>

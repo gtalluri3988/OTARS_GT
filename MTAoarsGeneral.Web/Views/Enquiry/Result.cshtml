@@ -1,0 +1,293 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model List<MTAoarsGeneral.ViewModels.Enquiries.SearchResultViewModel>
+    @{
+        Layout = "~/Views/Shared/_EnquiryLayout.cshtml";
+    }
+
+    @section CssScript{
+        <style>
+        .star{
+            font-size: 16px;
+        }
+        .rated{
+            color:orange;
+
+        }
+        .card
+        {
+            width: 40%;
+            min-width: 360px;
+            background: url('@Url.Content("~/Content/Images/Company/mta-logo.png")') no-repeat center center;
+            background-size: 22em;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        /* On mouse-over, add a deeper shadow */
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        }
+
+        /* Add some padding inside the card container */
+        .container {
+            padding: 2px 16px;
+        }
+
+        img {
+            border-radius: 5px 5px 0 0;
+        }
+        .text,.label{ font-size: 0.75rem;}
+        .text
+        {
+            width: 80%;
+            margin: 5px auto 3px auto;
+            background-color: #F9F5F2;
+            padding: 0.1em;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            border-radius: 10px;
+            text-align: center;
+            }
+        .photo{ width: 120px; height: 160px; }
+        .logo{width:100px;height:70px;}
+        @@media (max-width: 768px) {
+            .card{width:auto;}
+        }
+        @@media screen and (min-width: 1250px) {
+                  footer {
+                    position: relative;
+                  }
+                }
+                label{margin-bottom:0;}
+                .card-img-overlay-bg{
+                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                transition: 0.3s;
+                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                transition: 0.3s;
+                border-radius: 15px;
+                background-color: rgba(214,238,224,0.9);padding: 10px 5px 0px 5px;
+
+                }
+            table.table caption
+            {
+                caption-side:top;
+                background-color: #0199cb;
+                font-weight: bold;
+                font-size: 1.1rem;
+                text-align: left;
+                padding-left: 6px;
+                color: #fff;
+            }
+            @@media print {
+                  .card
+                    {
+                        -webkit-print-color-adjust: exact !important;   /* Chrome, Safari */
+                        printer-colors:exact !important;
+                        color-adjust: exact !important;
+                    }
+                    .container {
+                        min-width:100px !important;
+                    }
+                  
+            }
+    </style>
+}
+<div id="info-window"></div>
+
+<div id="logon-content" class="mt-2" align="center">
+@if (Model.Count > 1)
+{
+    <table class="table table-sm table-bordered mb-0 mta-panel summary-panel" style="border-bottom: none;">
+        <caption>Please choose your agent type as the following</caption>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td><a href="javascript:showResult('@item.IntermediaryType')">@item.IntermediaryType</a></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+@foreach (var item in Model)
+{
+    
+    <div class="card mr-0 mb-3 result-panel" data-intermediary-type="@item.IntermediaryType" style="display:none">
+        <div class="card-img-overlay-bg">
+        <div class="rounded float-left"><img class="logo" src="@Url.Content("~/Content/Images/mta-logo.png")" alt="Malaysian Takaful Association" /></div>
+        <figure class="rounded float-right text-right mb-0">
+            <img class="logo" src="@Url.Content("~/Content/Images/Company/" + @item.ICNumber + ".png")" alt="@item.Company"/>
+            <figcaption class="text-nowrap" style="font-size:70%;margin-top: -15px;">A member of Malaysian Takaful Association</figcaption>
+        </figure>
+        <div class="clearfix"></div>
+            
+            <div class="container">
+                @if (!item.ValidTo.HasValue)
+                {
+                    <div><strong style="color:#FF0000;">NO RECORD FOUND FOR THE FOLLOWING DETAILS</strong></div>
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(item.Photo))
+                    { 
+                        <img class="photo" src="@Url.Content("~/Content/Images/nophoto.png")" alt="No photo available"/>
+                    }
+                    else
+                    {
+                        @*<div class="photo" style="background-image: url('@item.Photo'); background-size: cover; position: relative; margin:0 auto; border-radius: 5px;">
+                            <div style="position:absolute; bottom: 5px; right: 0; width:55%; background-color: #3fa0b3; line-height:14px">
+                                <span style="font-size:9px; font-weight: bold; vertical-align:top; color: #fff;">MTA-F98833</span>
+                            </div>
+                        </div>*@
+                        <img class="photo" src="@item.Photo" alt="Avatar" />
+                    }
+                }
+                
+                @if (item.ValidTo.HasValue)
+                {
+                    <div class="label">@Html.LabelFor(model => item.RegistrationNumber) </div> 
+                    <div class="text">@item.RegistrationNumber</div>
+                    <div class="label">@Html.LabelFor(model => item.AgentName) </div> 
+                    <div class="text">@((!string.IsNullOrEmpty(item.AgentName) ? item.AgentName : "").ToUpper())</div>
+                    if (!string.IsNullOrEmpty(item.CorporateNominee))
+                    { 
+                        <div class="label">@Html.LabelFor(model => item.CorporateNominee) </div> 
+                        <div class="text">@((!string.IsNullOrEmpty(item.CorporateNominee) ? item.CorporateNominee : "").ToUpper())</div>
+                    }
+                    <div class="label">@Html.LabelFor(model => item.Company) </div> 
+                    <div class="text">@((!string.IsNullOrEmpty(item.Company) ? item.Company : "").ToUpper())</div>
+                    <div class="label">@Html.LabelFor(model => item.IntermediaryType) </div> 
+                    <div class="text">@((!string.IsNullOrEmpty(item.IntermediaryType) ? item.IntermediaryType : "").ToUpper())</div>
+                    <div class="label">@Html.LabelFor(model => item.ValidTo) </div> 
+                    <div class="text">@(item.ValidTo.HasValue ? item.ValidTo.Value.ToString("dd-MM-yyyy") : "")</div>
+                    
+                    <div class="label">@Html.LabelFor(model => item.MTAAwards) </div>   
+                    <div class="text">@((!string.IsNullOrEmpty(item.MTAAwards) ? item.MTAAwards : "").ToUpper())</div>
+
+                    <div class="label">@Html.LabelFor(model => item.SocialMediaAddress) </div> 
+                    <div class="text">@((!string.IsNullOrEmpty(item.SocialMediaAddress) ? item.SocialMediaAddress : "").ToUpper())</div>
+
+                    <div class="label">@Html.LabelFor(model => item.JoinMonthYear) </div>
+                    <div class="text">@((!string.IsNullOrEmpty(item.JoinMonthYear) ? item.JoinMonthYear : "").ToUpper())</div>
+                    if (item.M2Exam != null && item.M2Exam.Code != "Exempted")
+                    {
+                        <div class="label">Designation</div>
+                        <div class="text">Professional Takaful Advisor(PTA)</div>
+
+                    }
+
+                    if (item.Rating != null)
+                    {
+                        <div class="label">@Html.LabelFor(model => item.Rating)</div>
+                        <div class="text">
+                            @for (var i = 1; i <= 5; i++)
+                            {
+                                if (i <= item.Rating)
+                                {
+                                    <span class="fa fa-star star rated"></span>
+                                }
+                            }
+                        </div>
+                    }
+                    if (!string.IsNullOrEmpty(item.Qr))
+                    { 
+                        <img src="@item.Qr" alt="qr" style="width:100px;margin: 0 auto;"/>
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(item.RegistrationNumber))
+                    { 
+                        <div class="label">@Html.LabelFor(model => item.RegistrationNumber) </div> 
+                        <div class="text">@((!string.IsNullOrEmpty(item.RegistrationNumber) ? item.RegistrationNumber : "").ToUpper())</div>
+                    }
+                    if (!string.IsNullOrEmpty(item.Qr))
+                    { 
+                        <div class="label">@Html.LabelFor(model => item.ICNumber) </div>
+                        <div class="text" style="height: 20px;"></div>
+                    }
+                    <div class="label">@Html.LabelFor(model => item.Company) </div> 
+                    <div class="text">@((!string.IsNullOrEmpty(item.Company) ? item.Company : "").ToUpper())</div>
+                }
+            </div>
+            
+            <p style="font-style: italic;font-size: 0.65em;margin-bottom: 5px;">Information is updated as at @DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")</p>
+            <div style="font-size: 0.65em;">
+                <p>Malaysian Takaful Association 21st Floor, Menara Takaful Malaysia No 4, Jalan Sultan Sulaiman 50000 Kuala Lumpur</p>
+            </div>
+        </div>
+        
+    </div>
+    
+}
+    
+</div>
+<div class="mx-auto mt-3 d-print-none" style="width:200px;">
+    <button id="back-button" type="button" class="k-button back-button"><span class="k-icon k-i-tick"></span>Back</button>
+    <button id="quit-button" type="button" class="k-button"><span class="k-icon k-i-close"></span>Quit</button>
+</div>
+<div style="display:none" id="thank-you-content" align="center">
+    <table class="mta-panel">
+        <tr>
+            <th>Thank you for using the system.</th>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+
+        $("#quit-button").click(function () {
+            $("#thank-you-content").show();
+            $("#logon-content").hide();
+        });
+
+        @if (Model.Count == 1)
+        {
+            <text>
+                $(".result-panel").show();
+                $(".header, footer").addClass('d-none');
+                $('#logon-content').removeClass('mt-2');
+            </text>
+        }
+
+         $("#back-button").click(function () {
+          @if (Model.Count == 1)
+          {
+            <text>
+                location.href = "Search";
+            </text>
+          }
+          else
+          {
+            <text>
+                if($('.summary-panel').is(':visible')){
+                    location.href = "Search";
+                }else{
+                    $(".result-panel").hide();
+                    $(".summary-panel").show();
+                    $(".header, footer").removeClass('d-none');
+                    $('#logon-content').addClass('mt-2');
+                }
+            </text>
+          }
+        });
+
+    });
+
+    function showResult(type) {
+        $(".summary-panel").hide();
+        $(".result-panel[data-intermediary-type='" + type + "']").show();
+        $(".header, footer").each(function() {
+            if (!$(this).hasClass('d-none'))
+                $(this).addClass('d-none');
+        });
+    }
+    </script>
+

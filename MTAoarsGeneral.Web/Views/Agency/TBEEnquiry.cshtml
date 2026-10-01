@@ -1,0 +1,76 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.TBEEnquirySearchViewModel
+<div id="enquiry-search" data-page-div="true">
+    @Html.ValSummary()
+    <div id="search-content">
+        <table class="mta-panel">
+            <caption>Search Agency</caption>
+            <tr>
+                <th>IC Number</th>
+                <td>@Html.BindTextBoxFor(model => model.ICNumber, 12)</td>
+                <td style="text-align:right">
+                    <button class="k-button" id="search-button"><span class="k-icon k-i-search"></span>Search</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    
+    <div id="agency-grid">
+    </div>
+</div>
+<script type="text/javascript">
+     var viewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+        );
+        addBreadCrumb("Enquiry", "javascript:showDiv('#enquiry-search')", 1);
+    $(function () {     
+        kendo.bind($("#enquiry-search"), viewModel);
+
+        function bindGrid() {
+             $("#agency-grid").kendoGrid({
+                dataSource:{
+                    data:viewModel.Results,
+                    
+                },
+                selectable:true,
+                columns:[
+                    {field:"ICNumber", title:"IC Number", editable:false}, 
+                    //{field:"AgencyTypeDescription", title:"Registration Type", width:"125px"},
+                    //{field:"IntermediaryTypeDescription", title:"Corporate Status", width:"125px"}, 
+                    {field:"Name", title:"Name"},
+                    {field:"Exam", title:"Exam"},                    
+                    {field:"ExamType", title:"Exam Type"},
+                    {field:"Grade", title:"Grade"},
+                    {field:"Result", title:"Result"},
+                    {field:"Company", title:"Company"}                   
+                ]
+               
+            });
+        }
+      
+         $("#search-button").click(function() {
+            jsonPost("#enquiry-search", "@Url.Action("SearchTBE")", {icNumber:viewModel.ICNumber}, function(response) {
+                hideSummary("#enquiry-search");       
+                viewModel.Results=[];   
+                viewModel.Message=response.Message;    
+                for(var i = 0; i < response.Data.length; i++) {
+                    viewModel.Results.push(response.Data[i]);                
+                }                        
+                bindGrid();                 
+                if(viewModel.Results.length > 0) {                    
+                    $("#agency-grid").show();
+                }else {
+                    $("#agency-grid").hide();
+                    addErrorToSummary("#enquiry-search", viewModel.Message);
+                  
+                }
+            });
+        });
+
+     });
+      function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+     }
+</script>

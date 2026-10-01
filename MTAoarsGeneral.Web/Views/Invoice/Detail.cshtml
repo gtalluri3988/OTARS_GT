@@ -1,0 +1,60 @@
+@using MTAoarsGeneral.Utilities.Constants
+@model long
+@{
+    ViewBag.Title = "Details";
+    Layout = "";
+}
+
+<div id="invoice-detail-grid"></div>
+
+<script type="text/javascript">
+    $(function () {
+        var gridDataSource = new kendo.data.DataSource({
+            type: "odata",
+            serverPaging: true,
+            serverFiltering: true,
+            pageSize: 5,
+            serverSorting: true,
+            transport: {
+                read: {
+                    url: masterDataServiceUrl + "/InvoiceViewDetails",
+                    headers: {
+                        DataServiceVersion: "2.0",
+                        MaxDataServiceVersion: "2.0"
+                    }
+                }
+            },
+            schema: {
+                model: {
+                    fields: {
+                        Date: {type:"date"},
+                        Amount: {type:"number"}
+                    }
+                }
+            }
+           ,filter:{"filters":[{"field":"InvoiceID","operator":"eq","value": @Model}]}
+           ,sort:[{field:"Date",dir:"desc"}]
+
+        });
+
+         var grid = $("#invoice-detail-grid").kendoGrid({
+            dataSource: gridDataSource,
+            pageable:true,
+            sortable:true,
+            filterable:true,
+            selectable:true,
+            columns:[
+                { field: "Date", format: "{0:dd/MM/yyyy}" },
+                "Description",
+                { field: "AgencyNumber", title: "Agency Number" },
+                { field: "AgencyName", title: "Agency Name" },
+                { field: "IntermediaryTypeDescription", title: "Intermediary Type" },
+                { field: "CompanyName", title: "Company Name" },
+                { field: "NewBusinessRegistrationNumber", title: "New Business Reg No." },
+                { field: "IsBancaStaff", title: "Banca", template: "# if(IsBancaStaff) {# Yes # } else { # No # } #" },
+                { field: "Amount", format: "{0:0.00}", attributes: { style: "text-align:right" } }
+            ]
+        });
+
+    });
+</script>

@@ -1,0 +1,162 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Maintenance.AdminActivityViewModel
+
+<div id="admin-activity-wrapper">
+    <div id="admin-activity-header" data-page-div="true">
+        <table class="mta-panel">
+            <caption>Activity</caption>
+            <tr>
+                <th>Company</th>
+                @if (Html.IsMTA() || Html.IsISM()) {
+                    <td>
+                        @Html.BindDropDownListFor(model => model.Company, Url.Action("Companies", "Lookup"))
+                    </td>
+                } else {
+                    <td>@Model.Company.Description</td>
+                }
+                <th>Invoice Date</th>
+                <td>@Html.EditorFor(model => model.InvoiceDate, "DateEditor")</td>
+           </tr>
+           <tr>
+                <th>Activity</th>
+                <td>@Html.BindDropDownListFor(model => model.Activity, Url.Action("AdminActivities", "Lookup"), required:true)</td>
+                <th>&nbsp;</th>
+                <td>&nbsp;</td>
+           </tr>
+           <tr>
+            <td colspan="4"><button class="k-button" id="header-next"><span class="k-icon k-i-arrow-e"></span>Next</button></td>
+           </tr>
+        </table>
+
+    </div>
+    <div id="admin-activity-parameter" data-page-div="true">
+        <table class="mta-panel" id="parameters-table">
+        <caption>Search</caption>
+        <tr>
+            <th>From Date</th>
+            <td>
+                @Html.EditorFor(model => model.SearchFromDate, "DateEditor")
+            </td>
+   
+            <th>To Date</th>
+            <td>
+                @Html.EditorFor(model => model.SearchToDate, "DateEditor")
+            </td>
+            <th><button id="fetch-by-date-button" class="k-button"><span class="k-icon k-i-search"></span>Fetch</button></th>
+        </tr>
+        <tr>
+            <th>Agency No</th>
+            <td>
+                @Html.BindTextBoxFor(model => model.AgencyNumber)
+            </td>
+            <th colspan="2">
+                <button id="fetch-by-agencynumber-button" class="k-button"><span class="k-icon k-i-search"></span>Fetch</button>
+            </th>
+            <th>&nbsp;</th>
+        </tr>
+    </table>
+    <br />
+    <div id="agency-grid"></div>
+    
+ 
+<button id="process-button" style="display:none"><span class="k-icon k-i-tick"></span> Process </button>
+</div>
+
+ <div id="admin-activity-report" data-page-div="true">
+    <iframe id="report" class="mta-report-frame"></iframe>
+ </div>
+</div>
+<script type="text/javascript">
+     var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+    mainViewModel.Details = new kendo.data.ObservableArray(mainViewModel.Details);
+    $(function () {
+        kendo.bind($("#admin-activity-wrapper"), mainViewModel);
+
+        showDiv("#admin-activity-header");
+        addBreadCrumb("Header", "javascript:showDiv('#admin-actvity-header')", 1);
+        $("#header-next").click(function() {
+            var validator = getValidator("#admin-activity-header", []);
+            if(validator.validate() == false) return;
+            showDiv("#admin-activity-parameter");
+            addBreadCrumb("Parameters", "javascript:showDiv('#admin-actvity-parameters')", 1);
+        });
+
+        $("#fetch-by-agencynumber-button").click(function() {
+            jsonPost("#parameters-table", "@Url.Action("SearchByAgencyNumber")", {agencyNumber:mainViewModel.AgencyNumber},
+                function(response) {
+                    response.IsChargeable = true;
+                    mainViewModel.Details.push(response);
+                    bindGrid();
+                }
+            );
+        });
+
+         $("#fetch-by-date-button").click(function() {
+            jsonPost("#parameters-table", "@Url.Action("SearchByDate")", {fromDate:mainViewModel.SearchFromDate, toDate:mainViewModel.SearchToDate},
+                function(response) {
+                    for(var i = 0; i < response.length; i++) {
+                        mainViewModel.Details.push(response[i]);
+                    }
+                    bindGrid();
+                }
+            );
+        });
+
+        $("#process-button").click(function() {
+            jsonPost("#parameters-table", "@Url.Action("SaveAdminActivity")",  mainViewModel, function(response) {
+                reportPost("#parameters-table", 
+                    "@Url.Content(String.Format("~/Rdls/Display.aspx?report={0}", LookupConstants.Reports.AdminActivity))",
+                    {display:"1"},
+                    "#report");
+                showDiv("#admin-activity-report");
+                addBreadCrumb("Report", "javascript:showDiv('#admin-actvity-report')", 1);
+            });
+
+        });
+
+    });
+    var firstTime = false;
+    var adminActivitySchema = {model : {
+        fields: {
+            AgencyNumber: {type:"string", editable:false},
+            IntermediaryTypeDescription: {type:"string", editable:false},
+            NomineeName: {type:"string", editable:false},
+            NomineeICNumber: {type:"string", editable:false},
+            IsChargeable: {type: "boolean"}
+        }
+    }};
+    function bindGrid() {
+        if(firstTime == false) { 
+            $("#agency-grid").kendoGrid({
+                dataSource: {data: mainViewModel.Details, schema: adminActivitySchema},
+                editable:true,
+                columns:[
+                    {field: "AgencyNumber", title:"Agency Number"},
+                    {field: "IntermediaryTypeDescription", title:"Intermediary Type"},
+                    {field: "NomineeName", title:"Name"},
+                    {field: "NomineeICNumber", title:"IC Number", editable:false},
+                    {field: "IsChargeable", title:"<input id='ischargeable-all' type='checkbox' onclick='javascript:checkAll()'>Chargeable" 
+                        , template:"#if(IsChargeable){#Yes#}else{# No#}#"}
+                ]
+            });
+            $("#process-button").show();
+            firstTime = true;
+        }
+    }
+
+     function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+
+    function  checkAll() {
+    var checked = $("#ischargeable-all").prop("checked");
+        for(var i = 0; i < mainViewModel.Details.length;i++) {
+            mainViewModel.Details[i].IsChargeable = checked;
+        }
+        $("#agency-grid").data("kendoGrid").refresh();
+    }
+</script>

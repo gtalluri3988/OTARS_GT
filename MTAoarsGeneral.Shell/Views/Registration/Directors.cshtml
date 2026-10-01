@@ -1,0 +1,87 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Interfaces.IExistableBoardMembers
+
+<div class="hastable" id="directorContent" class="k-content">
+
+    <button data-bind="event:{click:addDirector}" type="button" class="k-button" style="width:200px">
+        Add new</button>
+        @Html.ValMsgFor(model=>model.Directors.Count)
+    <br />
+    <br />
+    <table id="kendoGrid">
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                 <th>
+                    IC Type
+                </th>
+                <th>
+                    New IC @@ Passport Num
+                </th>
+                <th>
+                    Old IC / Passport
+                </th>
+                <th>
+                    Delete
+                </th>
+            </tr>
+        </thead>
+        <tbody data-bind="template:{name:'director-template', foreach:directors}">
+        </tbody>
+    </table>
+    <script type="text/html" id="director-template">
+		<tr>
+			<td>
+				<input data-bind="value:Name" class="k-textbox"/>
+			</td>
+             <td>
+				<select data-bind="options:$parent.icTypes, value:ICTypeID,
+					optionsText:'Description',
+					optionsValue:'ID'" >
+				</select>
+			</td>
+			<td><input data-bind="value:ICNumber" class="k-textbox"/></td>
+			<td><input data-bind="value:OldICNumber" class="k-textbox"/></td>
+            <td> <a class="k-button" data-bind="event:{click:$parent.deleteDirector}"><span class="k-icon k-i-close"></span></a></td>
+		</tr>
+    </script>
+  <input type="hidden" name="@ViewData.TemplateInfo.HtmlFieldPrefix.GetModelProperty("Directors")" data-bind="jsonHidden:directors" />
+</div>
+<script type="text/javascript">
+    var directorViewModel = null;
+    $(document).ready(function () {
+
+        function DirectorModel() {
+            var self = this;
+
+            self.directors = ko.observableArray([]);
+
+            self.icTypes =  ko.observableArray(@Html.Raw(@Json.Encode(Model.ICTypes)));
+
+            self.load = function () {
+                ko.mapping.fromJS(@Html.Raw(@Json.Encode(Model.Directors)), self.directors);
+            }
+
+            self.addDirector = function () {
+                self.directors.push(ko.mapping.fromJS({
+                    Name: "", ICNumber: "", OldICNumber: "", ICTypeID:""
+
+                }));
+            }
+
+            self.deleteDirector = function () {
+                self.directors.remove(this);
+            }
+        }
+
+        directorViewModel = new DirectorModel();
+        directorViewModel.load();
+        ko.applyBindings(directorViewModel, document.getElementById("directorContent"));
+
+
+    });
+    
+</script>

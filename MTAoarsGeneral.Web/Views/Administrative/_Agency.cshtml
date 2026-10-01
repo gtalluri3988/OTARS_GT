@@ -1,0 +1,27 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants;
+@model MTAoarsGeneral.ViewModels.Operations.AgencyViewModel
+
+<table class="mta-panel" style="width:100%">
+    <caption>Agency Details</caption>
+    <tr>
+        <th>@Html.LabelFor(model => model.Name)</th>
+        <td>@Html.BindTextBoxFor(model => model.Name)</td>
+        <th>@Html.LabelFor(model => model.BusinessRegistrationNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.BusinessRegistrationNumber)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(x => x.Rating)</th>
+        <td>@Html.BindDropDownListFor(model => model.Rating, @Url.Action("Rating", "Lookup"))</td>
+        <th>@Html.LabelFor(model => model.NewBusinessRegistrationNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.NewBusinessRegistrationNumber)</td>
+    </tr>
+
+    @if (Model.StatusID > 0)
+    {
+        <tr>
+            <th>Termination Status</th>
+            <td>@Html.BindDropDownListFor(model => model.StatusID, @Url.Action("TerminationActions", "Lookup", new { IncludeDefault = true, selected = string.Join(";", LookupConstants.TerminationAction.Terminate, LookupConstants.TerminationAction.Resign) }))</td>
+        </tr>
+    }
+</table>

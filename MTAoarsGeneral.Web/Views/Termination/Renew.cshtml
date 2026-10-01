@@ -1,0 +1,144 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions;
+@model MTAoarsGeneral.ViewModels.Operations.TerminationSearchViewModel
+<div id="main-content" >
+    @Html.ValidationSummary()
+    <table class="mta-panel" id="search-content" style="align:center">
+        <caption>Search Agency</caption>
+        <tr>
+            <th>Agency Number</th>
+            <td>@Html.BindTextBoxFor(model=>model.AgencySearch.AgencyNumber)</td>
+            <td class="for-button"><button id="search-button" class="k-button"><span class="k-icon k-i-search"></span>Search</button></td>
+        </tr>
+        @*<tr>
+        <td colspan="3">
+        Or
+        </td>
+        </tr>
+       
+        <tr>
+           @using (Html.BeginForm("UploadRecoveryRenew", "Termination", FormMethod.Post, new { enctype = "multipart/form-data" }))
+           {
+        <th>
+        Excel Upload
+        </th>
+        <td>
+        <input type="file" id="fileTermination" name="fileTermination" />
+        </td>
+        <td>
+        <button id="upload-button" class="k-button"><span class="k-icon k-i-search"></span>Upload</button>
+        </td>
+           
+           }
+        </tr>*@
+    </table>
+    <br />
+    
+    @Html.ValSummary()
+    <div id="termination-agents" ></div>
+</div>
+
+<div id='complete-content'>
+   <div class="k-block k-success-colored">Terminated agents have been registered.</div> 
+</div>
+
+<script type="text/javascript">
+     var viewModel = kendo.observable(
+            @Html.Raw(Json.Encode(Model))
+        );
+    var terminationActions = @Html.Raw(Json.Encode(Model.TerminationActions));
+    $(function () {
+        $('#complete-content').hide();
+        addBreadCrumb("Reappoint", "@Url.Action("Renew", "Termination")", 1);
+        kendo.bind($("#main-content"), viewModel);
+
+        var schema = {
+            id:"AgencyID",
+            model: {
+                fields: {
+                    AgencyNumber:{editable:false}, AgencyTypeDescription: {editable:false}, IntermediaryTypeDescription:{editable:false},
+                    NomineeName:{editable:false}, NomineeNewICNumber: {editable:false}, ValidFromLabel:{editable:false},
+                    ValidToLabel: {editable:false}
+                }
+            }
+        }   
+
+        function bindGrid() {
+            $("#termination-agents").kendoGrid({
+                dataSource:{
+                    data:viewModel.TerminationAgents,
+                    schema:schema
+                },
+                editable:true,
+                navigatable:true,
+                height:"250px",
+                columns:[
+                    {field:"AgencyNumber", title:"Agency Number", editable:false, width:"125px"}, 
+                    {field:"AgencyTypeDescription", title:"Registration Type", width:"125px"},
+                    {field:"IntermediaryTypeDescription", title:"Corporate Status", width:"125px"}, 
+                    {field:"NomineeName", title:"Nominee Name"},
+                    {field:"NomineeNewICNumber", title:"New IC", width:"100px"}, {field:"ValidFromLabel", title:"Valid From", width:"100px"},
+                    {field:"ValidToLabel", title:"Valid To", width:"100px"},
+                    {command:["destroy"], width:"100px"},
+                ],
+                toolbar:[{template:"<button class='k-button' onclick='javascript:terminate()'><span class='k-icon k-i-cancel'></span>Submit</button>"}]
+            });
+        }
+
+        var firstTime = true;
+
+        $("#search-button").click(function() {
+            jsonPost("#main-content", "@Url.Action("SearchRecoveryAgent")", viewModel.AgencySearch, function(response) {
+               //response.Data.ScheduledOn = new Date(parseInt(response.Data.ScheduledOn.substr(6)))
+               if(checkExists(response.Data) == false) {
+                   response.Data.ScheduledOn = "";
+                    viewModel.TerminationAgents.push(response.Data);
+                    if(firstTime) {
+                        bindGrid();
+                        firstTime = false;
+                    }
+                }
+            },function(data, textStatus, jqxhr){
+                alert('Not able to search Agent.');hideProgressBar();
+            });
+        });
+
+        if(viewModel.TerminationAgents!=null)
+        {
+            if(viewModel.TerminationAgents.length>0)
+            {
+                bindGrid();
+               firstTime=false;
+           }
+        }
+
+    });
+
+    function terminate() {
+        if(validate() == false) return;
+         jsonPost("#main-content", "@Url.Action("Renew")", viewModel, function(response) {
+             addBreadCrumb("Complete", "#", 2);
+             $('#main-content').hide();
+             $('#complete-content').show();
+         },function(data, textStatus, jqxhr){
+                alert('Registration unsuccessful.');hideProgressBar();
+            });
+         
+    }
+
+    function validate() {
+        hideSummary("#main-content");
+        return true;
+    }
+
+    function checkExists(agent) {
+        hideSummary("#main-content");
+        for(var i = 0; i < viewModel.TerminationAgents.length; i++) {
+            if(viewModel.TerminationAgents[i].AgencyNumber == agent.AgencyNumber) {
+                addErrorToSummary("#main-content", "Agent is already exist in the grid");
+                return true;
+            }
+        }
+        return false;
+    }
+</script>

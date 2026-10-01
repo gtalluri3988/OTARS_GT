@@ -1,0 +1,46 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.BulkRegistrationReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>CPD Report Parameters</caption>
+    <tr>
+        <th>Year</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Year, Url.Action("RecentYears", "Lookup"), required:true)
+        </td>
+   
+       <th>Valid</th>
+        <td>
+            <select id="is-valid" data-bind="value:IsValid">
+                <option value='All'>All</option>
+                <option value='true'>Yes</option>
+                <option value='false'>No</option>
+            </select>
+        </td>
+        <th>
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Bulk Registration", "#", 2);
+
+        
+        $("#is-valid").kendoDropDownList({});
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        viewModel.IsValid = "All";
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+          // if(typeof(viewModel.IntermediaryTypeID) !== "object") viewModel.IntermediaryTypeID = viewModel.IntermediaryTypeID.ID;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=BulkRegistration")", viewModel, "#report");
+        });
+
+    });
+</script>

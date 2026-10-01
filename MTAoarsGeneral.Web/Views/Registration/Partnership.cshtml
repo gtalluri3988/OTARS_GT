@@ -1,0 +1,84 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.PartnershipRegistrationViewModel
+<script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+</script>
+
+<div id="main-content">
+     @Html.ValSummary()
+    <div id="tabs">
+        <ul>
+            <li class="k-state-active" id="agency">Agency</li>
+            <li id="nominee">Nominee</li>
+            <li id="address">Address</li>
+            <li id="qualification">Qualification</li>
+            <li id="banker">Banker</li>
+            <li id="partners">Partners</li>
+            <li id="guarantor">Guarantor</li>
+        </ul>
+
+        @TabHelper.DisplayPage("agency",
+                    () => Html.PartialFor(model => model.Agency, "Agency"),
+                    0, false)
+
+         @TabHelper.DisplayPage("nominee",
+                    () => Html.PartialFor(model => model.CorporateNominee, "CorporateNominee"),
+                    1, false)
+
+        @TabHelper.DisplayPage("address",
+                          () => Html.PartialFor(model => model.Address, "Address"),
+                   2, false)
+
+            @TabHelper.DisplayPage("qualification",
+                    () => Html.PartialFor(model => model.CorporateNominee.Qualification, "Qualification"),
+                    3, false)
+
+            @TabHelper.DisplayPage("banker",
+                    () => Html.PartialFor(model => model.AgencyBanker, "AgencyBanker"),
+                    4, false)
+
+             @TabHelper.DisplayPage("partners",
+                    () => Html.PartialFor(model => model, "Partners"),
+                    5, false)
+
+            @TabHelper.DisplayPage("guarantor",
+                        () => Html.PartialFor(model => model.Guarantor, "Guarantor"),
+                      6, true)
+
+    </div>
+    <input type="hidden" id="submit-url" value="@Url.Action("PartnershipSubmit")" />
+</div>
+
+
+
+
+@TabHelper.RegisterTabScript()
+
+
+
+
+<script type="text/javascript">
+
+    $(function () {
+        
+       addBreadCrumb("Entry", "javascript:showDiv('#create-main')", 3);
+
+        kendo.bind($("#main-content"), mainViewModel);
+
+        $("#submit-button", "#main-content").click(function() {
+//            if($('.k-filename').length < 1) {
+//                alert("Please upload agent's photograph"); return false;
+//            }
+            jsonPost("#main-content", "@Url.Action("PartnershipCheck")", mainViewModel, function(response) {
+                viewPost("#main-content", response.RedirectUrl, mainViewModel, function (result) {
+                    postPage("#create-confirm", result);
+                });
+            });
+        });
+
+        
+    });
+    </script>

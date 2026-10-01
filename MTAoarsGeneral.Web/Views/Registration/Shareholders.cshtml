@@ -1,0 +1,115 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model List<MTAoarsGeneral.ViewModels.Operations.ShareholderViewModel>
+
+
+    @Html.ValidationMessageFor(model => model.Count)
+
+    <div id="shareholders-grid">
+    </div>
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            var schema = {
+                model: {
+                    fields:{
+                        Name: { type: "string" },
+                        OldICNumber: { type: "string" },
+                        ICNumber: { type: "string" },
+                       ICType: { defaultValue: { ID: "", Code: "", Description: "" } },
+                     //  ICType: { defaultValue: { ID: "1", Code: "NEWIC", Description: "New IC" } },
+                        ShareAmount: { type: "number", validation: { required: true } },
+                        SharePercentage: { type: "number" },
+                        NewBusinessRegistrationNumber: {
+                            type: "string",
+                            validation: {
+                                required: false,
+                                newbusinessregistrationnumbervalidation: function (input) {
+                                    if (input.is("[name='NewBusinessRegistrationNumber']") && input.val() != "") {
+                                        input.attr("data-newbusinessregistrationnumbervalidation-msg", "New BR No. should be 12 digits");
+                                        var isValid = /^\d{12}$/.test(input.val());
+                                        if (isValid) {
+                                            var inputYear = parseInt(input.val().substring(0, 4));
+                                            isValid = (inputYear >= 2019 && inputYear <= (new Date()).getFullYear());
+                                        }
+                                        if (isValid) {
+                                            var inputBusinessType = parseInt(input.val().substring(4, 6));
+                                            isValid = inputBusinessType <= 6;
+                                        }
+                                        return isValid;
+                                    }
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            $("#shareholders-grid").kendoGrid({
+                dataSource: { data: mainViewModel.Shareholders, schema: schema },
+                editable:true,
+                selectable:true,
+                navigatable:true,
+                sortable:true,
+                columns:[
+                    { field: "Name", title: "Name" },
+                    { field: "ICType", title: "IC Type", template: "#=ICType.Description#", editor: icTypeEditor },
+                    { field: "ICNumber", title: "IC Number" },
+                    { field: "OldICNumber", title: "Old IC Number" },
+                    {
+                        field: "NewBusinessRegistrationNumber",
+                        title: "New Business Reg. No."
+                    },
+                    { field: "ShareAmount", title: "Share Amount" },
+                    { field: "SharePercentage", title: "Share Percentage" },
+                    { command: ["destroy"] }
+                ],
+                toolbar: ["create", { text: "CopyDirectors", template: "<button class='k-button' onclick='javascript:copyDirectors()'><span class='k-icon k-i-plus'></span>Copy Directors</button>" }],
+            });
+
+        });
+
+        function icTypeEditor(container, options) {
+            $('<input data-value-field="ID" data-text-field="Description"  data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                autoBind: true,
+                dataTextField: "Description",
+                dataValueField: "ID",
+                dataSource: {
+                    transport: {
+                        read:"@Url.Action("ICTypes", "Lookup")"
+                    }
+                }
+            });
+        }
+
+        function copyDirectors(e) {
+            var directors = mainViewModel.Directors;
+            for(var i = 0; i < directors.length; i++) {
+                var d = directors[i];
+                if(isExists(mainViewModel.Shareholders, "ICNumber", d.ICNumber)) continue;
+                mainViewModel.Shareholders.push(
+                    {Name:d.Name, ICType: d.ICType, ICNumber:d.ICNumber, OldICNumber:d.OldICNumber, ShareAmount:0, SharePercentage:0}
+                );
+            }
+        }
+
+        function isExists(array, property, value) {
+            for(var  i = 0; i < array.length; i++) {
+                if(array[i][property] == value) return true;
+            }
+            return false;
+        }
+
+        $(document).ready(function () {
+            $('#shareholders-grid').find('.k-grid-content').css('min-height', '200px');
+        });
+
+    </script>
+
+
+

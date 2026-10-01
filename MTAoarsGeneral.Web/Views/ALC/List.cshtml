@@ -1,0 +1,243 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.ALCHeaderViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+    @Html.Script("~/Scripts/Underscore.js")
+}
+<div id="alc-content">
+    <div id="alc-grid">
+    </div>
+    <br />
+    <div id="alc-search" style="display: none">
+        @Html.Partial("Search", Model)
+    </div>
+    <br />
+    <div id="alc-details" style="display: none">
+        @Html.Partial("Edit", Model)
+    </div>
+</div>
+<script type="text/x-kendo-template" id="toolbar-template">
+    <table width="100%">
+        <tr>
+            <td style="text-align:right"><button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button></td>
+        </tr>
+    </table>     
+</script>
+<div id="confirm-window">
+    Details Save, Press Next to continue with same agent or Cancel to key in New Agent
+    <div style="float: right; padding-top: 15px">
+        <button class="k-button" id="confirm-ok-button">
+            <span class="k-icon k-i-tick"></span>Next</button>
+        <button class="k-button" id="confirm-cancel-button">
+            <span class="k-icon k-i-cancel"></span>Cancel</button>
+    </div>
+</div>
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model));
+    var confirmWindow;
+    var master;
+    var  currentCompany,currentState, directorsGrid, shareholdersGrid, gridDataSource;
+    $(function () {
+       addBreadCrumb("ALC", "@Url.Action("List")", 2);
+       confirmWindow = $("#confirm-window").kendoWindow({
+            modal: true,
+            visible:false,
+            title: "Confirm"
+       }).data("kendoWindow");
+      
+      
+       gridDataSource = new kendo.data.DataSource({
+            type: "odata",
+            serverPaging: true,
+            serverFiltering: true,
+            pageSize: 5,
+            serverSorting: true,
+            transport: {
+                read: {
+                    url: masterDataServiceUrl + "/ALCHeaderWithMembers",
+                    headers: {
+                        DataServiceVersion: "2.0",
+                        MaxDataServiceVersion: "2.0"
+                    },
+                    data: {
+                        "$expand":"Address,ALCMembers,Company"
+                    }
+                },
+                destroy: {
+                    url: function (data) {
+                        return masterDataServiceUrl + "/ALCHeaders(" + data.ID + "L)";
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    headers: { CurrentOperation: "Delete"}
+                }
+            },
+            schema:{
+                model: {
+                    id:"ID",
+                    fields: {
+                        ValidFrom: {type:"date"},
+                        ValidTo: {type:"date"}
+                    }
+                }
+            },
+            //filter:{"filters":[{"field":"StartDate","operator":"gt","value": '1/1/1900'},{"field":"StartDate","operator":"lt","value": '1/1/1900'}],"logic":"and"},
+            sort:[{field:"Name",dir:"desc"}]
+        });
+        
+        var grid = $("#alc-grid").kendoGrid({
+            dataSource: gridDataSource,
+            pageable:true,
+            sortable:true,
+            filterable:true,
+            selectable:true,
+            editable:"inline",
+            columns: [
+                { field: "Name", attributes: {"style":"  text-transform: uppercase"}},
+                { field: "RegistrationNumber", title:"RegistrationNumber", attributes: {"style":"  text-transform: uppercase"} },
+                { field: "Company.Name", title:"Company" },
+                { field: "ValidFrom", title:"Valid From", format:"{0:dd/MM/yyyy}" },
+                { field: "ValidTo", title:"Valid To", format:"{0:dd/MM/yyyy}" },
+                { field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+                { command: ["destroy"]}
+            ],
+            toolbar:kendo.template($("#toolbar-template").html())
+        });
+           
+        var dropdown = grid.find("#Year").kendoDropDownList({
+            dataValueField:'ID', dataTextField:'Description',
+            optionLabel: {
+                ID:null, Description:''
+            },
+            dataSource: {
+                type:'jsonp',
+                transport:{read:'@Url.Action("CPDYears", "Lookup")'}
+            },
+            change:function() {
+                var value = this.value();
+                if(value) {
+                    var startDate = new Date(parseInt(value) - 1, 11, 31);
+                    var endDate = new Date(value,11 ,31);
+                   
+                    var filter = {"filters":[{"field":"CompanyID","operator":"eq","value":@Html.GetIdentity().CompanyID},{"field":"StartDate","operator":"gt","value": startDate},{"field":"StartDate","operator":"lt","value": endDate}],"logic":"and"};
+                    grid.data("kendoGrid").dataSource.filter(filter);
+                }else {
+                    grid.data("kendoGrid").dataSource.filter({});
+                }
+            }
+        });
+
+        master = new Master({
+            url: masterDataServiceUrl + "/ALCHeaders",
+            gridSelector: "#alc-grid", detailsSelector: "#alc-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateALC")",
+            beforeValidate: function(item) {
+                /*if(item.CompanyID != null && typeof(item.CourseID) === "object") item.CourseID = item.CourseID.ID;
+                if(item.TrainingTypeID != null && typeof(item.TrainingTypeID) === "object") item.TrainingTypeID = item.TrainingTypeID.ID;
+                item.Year = grid.find("#Year").val();*/
+                
+            },
+            beforeDetailsBind: function(item) {
+                if(!item.ALCMembers) return;
+                item.Directors = _.where(item.ALCMembers.results, {Designation:"Director"});
+                item.Shareholders = _.where(item.ALCMembers.results, {Designation:"Shareholder"});
+                item.AgencyManager = _.findWhere(item.ALCMembers.results, {Designation:"Manager"});
+                if(item.Address && item.Address.StateID) item.Address.State = item.Address.StateID;
+                directorsGrid.data("kendoGrid").dataSource.data(item.Directors);
+                shareholdersGrid.data("kendoGrid").dataSource.data(item.Shareholders);
+            },
+            beforeStringify: function(input, original) {
+                var item = $.extend(true, {}, modelItem);
+                for (var prop in item) {
+                    if (original[prop] == null) continue;
+                    if (typeof (original[prop]) === "object") item[prop]=original[prop];
+                    else item[prop] = original[prop] + "";
+                }
+
+                if(item.Company != null) item.CompanyID = item.Company.ID + "";
+                if(item.Address.State != null) item.Address.StateID = item.Address.State.ID + "";
+                if(item.Status != null) item.Status = item.Status.value;
+                delete item.Company;
+                delete item.Address.State;
+                delete item.Address;
+                var members = [];
+                members.push({
+                    Name: item.AgencyManager.Name, ICNumber: item.AgencyManager.ICNumber, RegistrationNumber: item.AgencyManager.RegistrationNumber,
+                    Designation: "Manager"
+                });
+                for(var i = 0; i < item.Directors.length; i++) {
+                   item.Directors[i].Designation ="Director";
+                   members.push(item.Directors[i]);
+                }
+                for(var i = 0; i < item.Shareholders.length; i++) {
+                   item.Shareholders[i].Designation ="Shareholder";
+                   members.push(item.Shareholders[i]);
+                }
+                delete item.AgencyManager;
+                delete item.Shareholders;
+                delete item.Directors;
+                item.ALCMembers = members;
+                return item;
+            },
+            afterSave: function(action, currentItem) {
+                $("#alc-grid").data("kendoGrid").dataSource.read();
+               /* currentItem.set("TrainingTypeID", null);
+                currentItem.set("CreditHours", 0);
+                currentItem.set("IsStructured", false);
+                currentItem.set("IntermediaryTypeID", null);
+                currentItem.set("IsStructured", false);
+                currentItem.set("StartDate", getCurrentDate());
+                currentItem.set("EndDate", getCurrentDate());
+                currentItem.set("OrganizedBy", null);
+                currentItem.set("ReferenceNumber", null);
+                currentItem.set("BankName", null);*/
+                confirmWindow.center().open();
+            }
+        });
+
+        $("#confirm-ok-button").click(function() {
+            master.refresh();
+            $("#training-details").show();
+            confirmWindow.close();
+        });
+
+        $("#confirm-cancel-button").click(function() {
+            $("#alc-search").hide();
+            confirmWindow.close();
+        });
+    });
+
+    function onEditClick() {
+        master.editClick();
+        $("#alc-grid").hide();
+        addBreadCrumb("Update", "@Url.Action("List")", 3);
+    }
+    
+    function onAddClick() {
+        var validator = getValidator("#alc-grid");
+        if(validator.validate() == false) return;
+        addBreadCrumb("Add", "@Url.Action("List")", 3);
+        $("#alc-grid").hide();
+        $("#alc-details").show();
+        master.addClick();
+        
+       // $("#alc-details").hide();
+    }
+
+     $("#submit-button").click(function() {
+        var currentItem =master.getCurrent();
+        currentItem.Directors = directorsGrid.data("kendoGrid").dataSource.data();
+        currentItem.Shareholders = shareholdersGrid.data("kendoGrid").dataSource.data();
+        if(currentItem.Status) currentItem.Status = currentItem.Status.value;
+        if(currentItem.Address && parseFloat(currentItem.Address.State)) {
+            currentItem.Address.StateID = currentItem.Address.State;
+            delete currentItem.Address.State;
+       }
+        jsonPost("#alc-details", "Save", currentItem, function (response) {
+            gridDataSource.read();
+            $("#alc-grid").show();
+            $("#alc-details").hide(); 
+            addBreadCrumb("ALC", "@Url.Action("List")", 2);
+        });
+    });
+</script>

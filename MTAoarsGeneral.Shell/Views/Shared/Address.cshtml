@@ -1,0 +1,30 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Shared.AddressViewModel
+<div class="two-column">
+    <div class="column">
+        <fieldset>
+            <ul>
+                @Html.ListItemTextBox(model => model.Address1)
+                
+                
+                 @Html.ListItemTextBox(model => model.City)
+               
+                 @Html.ListItemTextBox(model => model.PostalCode)
+            </ul>
+        </fieldset>
+    </div>
+    <div class="column column-right">
+        <fieldset>
+            <ul>
+               
+                @Html.ListItemTextBox(model => model.Address2)
+               
+                 @Html.ListItemDropDown(model => model.StateID, Model.States)
+               
+            </ul>
+        </fieldset>
+    </div>
+</div>
+<div class="clear">
+</div>

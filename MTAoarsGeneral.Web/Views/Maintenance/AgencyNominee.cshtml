@@ -1,0 +1,94 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.CorporateNomineeViewModel
+<table class="mta-panel" style="width: 100%">
+    <caption>
+        Agent Nominee Details</caption>
+    <tr>
+        <th>
+            @Html.LabelFor(model => model.Name)
+        </th>
+        <td>
+            @Html.BindTextBoxFor(model => model.Name)
+        </td>
+        <th>@Html.LabelFor(model => model.NewICNumber)
+        </th>
+        <td>
+            @Model.NewICNumber
+        </td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.Race)
+        </th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Race, Url.Action("Races", "Lookup"))
+        </td>
+        <th>@Html.LabelFor(model => model.OldICNumber)
+        </th>
+        <td>@Html.BindTextBoxFor(model => model.OldICNumber)
+        </td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.MaritalStatus)
+        </th>
+        <td>
+            @Html.BindDropDownListFor(model => model.MaritalStatus, Url.Action("MaritalStatuses", "Lookup"))
+        </td>
+        <th>@Html.LabelFor(model => model.Religion)
+        </th>
+        <td>@Html.BindDropDownListFor(model => model.Religion, Url.Action("Religions", "Lookup"))
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.LabelFor(model => model.BirthDate)
+        </th>
+        <td>
+            @if (Model.ICType.Code == LookupConstants.ICTypes.NewIc) {
+                @Html.DisplayFor(model => model.BirthDate)
+            } else {
+                <span>@Html.EditorFor(model => model.BirthDate, "DateEditor")</span>
+            }
+        </td>
+        <th>
+            Gender
+        </th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Gender, Url.Action("Genders", "Lookup"))
+        </td>
+    </tr>
+    <tr>
+        <th>
+        </th>
+        <td>
+            @Html.BindEditorFor(model => model.IsCitizen) Citizen
+            @Html.BindEditorFor(model => model.IsBumiputera) Bumiputera
+           
+        </td>
+        <th>Date Appointed
+        </th>
+        <td>
+            <input data-role="datepicker" data-bind="value:DateAppointed" data-format="dd/MM/yyyy"/>
+        </td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.Phone)
+        </th>
+        <td>@Html.BindTextBoxFor(model => model.Phone)
+        </td>
+        <th>@Html.LabelFor(model => model.Mobile)
+        </th>
+        <td>@Html.BindTextBoxFor(model => model.Mobile)
+        </td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.Email)
+        </th>
+        <td>@Html.BindTextBoxFor(model => model.Email)
+        </td>
+        <th>@Html.LabelFor(model => model.Fax)
+        </th>
+        <td>@Html.BindTextBoxFor(model => model.Fax)
+        </td>
+    </tr>
+</table>

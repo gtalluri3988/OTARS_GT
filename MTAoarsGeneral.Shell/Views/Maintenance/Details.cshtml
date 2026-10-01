@@ -1,0 +1,18 @@
+ @using MTAoarsGeneral.Utilities.Mvc
+  @using MTAoarsGeneral.ViewModels.Interfaces
+ @model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+            
+      
+            @if(Model is IExistableAgency)
+            {
+               @TabHelper.DisplayPage("agency", "Details for Agency",
+                              () => Html.PartialFor(model => model.Agency, "../Registration/Agency"),
+                         nextPage: "nominee")     
+            }
+           
+     @TabHelper.DisplayPage("nominee", "Details for corporate nominee",
+                              () => Html.PartialFor(model => model.CorporateNominee, "../Registration/CorporateNominee"),
+                              previousPage:Model is IExistableAgency?"agency":null,
+                         nextPage: (string)(ViewData["NextPage"]??string.Empty))          
+         
+               

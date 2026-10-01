@@ -1,0 +1,47 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.RenewalApproveHeaderViewModel
+
+<div id="approve-header-content">
+    <table class="mta-panel">
+       <caption>Search</caption> 
+        <tr>
+            <th>Company</th>
+             <td colspan="3">
+                @Html.BindDropDownListFor(model => model.Company, Url.Action("Companies", "Lookup"))
+            </td>
+        </tr>
+        <tr>
+            <th>Year</th>
+             <td>
+                @Html.BindDropDownListFor(model => model.Year, Url.Action("RecentYears", "Lookup"))
+            </td>
+            <th>Quarter</th>
+             <td>
+                @Html.BindDropDownListFor(model => model.Quarter, Url.Action("RecentQuarters", "Lookup"))
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align:right" colspan="4">
+                <button class="k-button" id="search-button"><span class="k-icon k-i-search"></span>Search</button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var approveHeaderViewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+
+    $(function () {
+        addBreadCrumb("Header", "javascript:showDiv('#approve-header')", 1);
+
+        kendo.bind($("#approve-header-content"), approveHeaderViewModel); 
+
+        $("#search-button", "#approve-header-content").click(function() {
+            viewPost("#approve-header-content", '@Url.Action("ApproveDetails")', approveHeaderViewModel, function (result) {
+                postPage("#approve-details", result);
+            });
+        });
+
+    });
+
+</script>

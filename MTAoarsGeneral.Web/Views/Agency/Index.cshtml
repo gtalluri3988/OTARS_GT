@@ -1,0 +1,58 @@
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.AgencyDisplayViewModel
+@{
+    var aaa = Request.QueryString["iframe"];
+}
+<table class="mta-panel four-columns-grid">
+    <caption>Particulars</caption>
+    <tr>
+        <th>Name</th>
+        <td>
+            @if (Model.IsIndividual)
+            {
+                @Model.Nominee.Name
+            }
+            else
+            {
+                @Model.Name
+            }
+        </td>
+
+        @if (Model.BusinessRegistrationNumber != null)
+        {
+            <th>Businesss Registration Number</th>
+            <td>@Model.BusinessRegistrationNumber</td>
+        }
+        else
+        {
+            <th>Is Parttime</th>
+            <td>@Html.DisplayFor(model => model.Nominee.IsPartTime)</td>
+        }
+    </tr>
+    <tr>
+        <th></th>
+        <td></td>
+        <th>New Businesss Registration Number</th>
+        <td>@Model.NewBusinessRegistrationNumber</td>
+    </tr>
+
+    @if (Model.AuthorizedCapital != null)
+    {
+        <tr>
+            <th>Authorized Captial</th>
+            <td>@Html.DisplayFor(model => model.AuthorizedCapital, "Decimal")</td>
+            <th>Paidup Capital</th>
+            <td>@Html.DisplayFor(model => model.PaidupCapital, "Decimal")</td>
+        </tr>
+    }
+    @if (Model.Nominee.Level != null)
+    {
+        <tr>
+            <th>Rank</th>
+            <td>@Html.DisplayFor(model => model.Nominee.Level)</td>
+            <th></th>
+            <td></td>
+        </tr>
+    }
+</table>

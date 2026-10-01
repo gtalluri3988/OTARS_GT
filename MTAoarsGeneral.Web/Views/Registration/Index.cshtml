@@ -1,0 +1,175 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationIndexViewModel
+@section CssScript {
+    @Html.StyleSheet("~/Content/css/ui/ui.datepicker.css")
+    @Html.Script("~/Scripts/ui/ui.datepicker.js")
+}
+<style type="text/css">
+    .k-loading-mask {
+        display: none !important;
+    }
+    k-loading {
+        display: none !important;
+    }
+    
+    .k-multiselect-wrap {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 5px;
+    }
+        .k-multiselect-wrap .k-input {
+            width: 300px !important ; /* Adjust the width as needed */
+        }
+    span.k-icon.k-loading.k-loading-hidden {
+        display: none !important;
+    }
+    .custom-multi-select .k-input {
+        width: 300px; /* Adjust the width as needed */
+    }
+</style>
+
+<div id="index-content" align="center">
+    @using (Html.BeginForm("Index", "Registration"))
+    {
+        @Html.ValSummary()
+        @Html.HiddenFor(model => model.IsGeneral)
+        <table class="mta-panel" style="width:80%">
+            <caption>Registration</caption>
+            <tr>
+                <th>@Html.LabelFor(model => model.ICType)</th>
+                <td> @Html.BindDropDownListFor(model => model.ICType, Url.Action("ICTypes", "Lookup"))</td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.ICNumber)</th>
+                <td>@Html.BindTextBoxFor(model => model.ICNumber, 25)</td>
+            </tr>
+            @if (Model.AgencyType.Code != LookupConstants.AgencyType.Individual)
+            {
+                <tr>
+                    <th>@Html.LabelFor(model => model.BusinessRegistrationNumber)</th>
+                    <td>@Html.BindTextBoxFor(model => model.BusinessRegistrationNumber, 15)</td>
+                </tr>
+            }
+            @if (Model.AgencyType.Code == LookupConstants.AgencyType.Individual)
+            {
+                <tr>
+                    <th>@Html.LabelFor(model => model.IsPartTime)</th>
+                    <td>@Html.BindEditorFor(model => model.IsPartTime)</td>
+                </tr>
+            }
+            <tr>
+                <th> @Html.LabelFor(model => model.TbeCategory)</th>
+                @if (Html.IsMTA() || Html.IsISM())
+                {
+                    <td> @Html.BindDropDownListFor(model => model.TbeCategory, Url.Action("TbeCategoriesAdmin", "Lookup"))</td>
+                }
+                else
+                {
+                    <td> @Html.BindDropDownListFor(model => model.TbeCategory, Url.Action("TbeCategories", "Lookup"))</td>
+                }
+            </tr>
+
+            <tr>
+                <th> @Html.LabelFor(model => model.M2Exam)</th>
+
+                <td>
+                    @Html.BindDropDownListFor(model => model.M2Exam, Url.Action("GetM2Exams", "Lookup"))
+                </td>
+
+            </tr>
+            <tr>
+                <th> @Html.LabelFor(model => model.DateOfExam)</th>
+
+                <td>
+                    <input data-role="datepicker" data-bind="value:DateOfExam" data-format="dd/MM/yyyy" />
+                </td>
+
+            </tr>
+            <tr>
+                <th>Date 1st Join as Agent</th>
+                <td>
+                    <div style="float:left">
+                        @Html.BindDropDownListFor(model => model.JoinMonth, Url.Action("AllMonths", "Lookup"))
+                    </div>
+                    <div style="float:left">
+                        @Html.BindDropDownListFor(model => model.JoinYear, Url.Action("RecentYears", "Lookup"))
+                    </div>
+
+                </td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.MTAAwards)</th>
+        <td>
+
+        
+        @*    @Html.BindDropDownListFor(model => model.MTAAwards, Url.Action("MTAAwards", "Lookup"))*@
+                @Html.BindMultiDropDownListFor(model => model.MTAAwards, Url.Action("MTAAwards", "Lookup"))
+
+        </td>
+
+
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.SocialMediaAddress)</th>
+        <td>@Html.BindTextBoxFor(model => model.SocialMediaAddress, 100)</td>
+    </tr>
+
+
+    <tr>
+        <th></th>
+        <td>
+            @Html.BindEditorFor(model => model.IsBancaStaff)Banca staff
+            @Html.BindEditorFor(model => model.AllowConflict) Allow conflict
+        </td>
+    </tr>
+    <tfoot>
+        <tr>
+            <td colspan="2">
+                <button id="submit-button" class="k-button"><span class="k-icon k-i-arrow-e"></span>Next</button>
+            </td>
+        </tr>
+    </tfoot>
+    </table>
+
+}
+
+    </div>
+
+    <script type="text/javascript">
+     var indexViewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+    $(function () {
+       addBreadCrumb("@Model.AgencyType.Description", "javascript:showDiv('#create-index')", 2);
+
+
+       kendo.bind($("#index-content"), indexViewModel);
+        indexViewModel.set("IsGeneral", true);
+        indexViewModel.set("IsFamily", false);
+
+        $("#submit-button", "#index-content").click(function () {
+            jsonPost("#index-content", '@Url.Action("IndexCheck")', indexViewModel, function (response) {
+                viewPost("#index-content", response.RedirectUrl, indexViewModel, function (result) {
+                    postPage("#create-main", result);
+                });
+            },
+            null,
+            function (response) {
+                if (response.Errors) {
+                    const regExp = /^This Agent \/ Corporate Nominee .* is currently registered as an .* as .*$/;
+                    $(response.Errors).each(function (i, error) {
+                        if (regExp.test(error.Value)) {
+                            if (error.Value.indexOf('Non Banca') > -1)
+                                alert('This Agent already register under Non-Banca Status');
+                            else
+                                alert('This Agent already register under Banca Status');
+                        }
+                        if (error.Key == "DateOfExam") {
+                            alert(error.Value)
+                        }
+                    });
+                }
+            });
+            return false;
+        });
+    });
+    </script>

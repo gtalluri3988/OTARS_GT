@@ -1,0 +1,135 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@section  PageTitle{
+Mail
+}
+@section Breadcrumb {
+   <a href="@Url.Action("Index", "Home")" title="Home">Home</a> > Mails
+}
+<div id="mainContent">
+    <div id="list" class="content-divs">
+    </div>
+    <div id="new" class="content-divs">
+        <div id="newContent">
+        </div>
+        <div id="newButton">
+            <a href="#" data-linkto="Inbox" class="btn ui-state-default ui-corner-all"><span
+                class="ui-icon ui-icon-grip-dotted-horizontal"></span>Back To Inbox </a><a href="#"
+                    data-linkto="SendNew" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-grip-dotted-horizontal">
+                    </span>Send</a>
+        </div>
+    </div>
+</div>
+<div id="detail" class="content-divs" style="display: none">
+    <div id="detailContent">
+    </div>
+    <div id="detailButton">
+        <a href="#" data-linkto="Inbox" class="btn ui-state-default ui-corner-all"><span
+            class="ui-icon ui-icon-grip-dotted-horizontal"></span>Back to Inbox </a><a href="#"
+                data-linkto="Reply" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-grip-dotted-horizontal">
+                </span>Reply </a>
+    </div>
+</div>
+<div id="reply" class="content-divs" style="display: none">
+    <div id="replyContent">
+    </div>
+    <div id="replyButton">
+        <a href="#" data-linkto="SendReply" class="btn ui-state-default ui-corner-all"><span
+            class="ui-icon ui-icon-grip-dotted-horizontal"></span>Send </a><a href="#" data-linkto="Detail"
+                class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-grip-dotted-horizontal">
+                </span>Back </a><a href="#" data-linkto="Inbox" class="btn ui-state-default ui-corner-all">
+                    <span class="ui-icon ui-icon-grip-dotted-horizontal"></span>Back to Inbox
+        </a>
+    </div>
+</div>
+</div>
+<div id="details">
+</div>
+<script type="text/javascript">
+    var wnd, detailsTemplate;
+    var currentMailId = "";
+    $(document).ready(function () {
+         $(".content-divs").hide();
+         $("#list").load("@Url.Action("Inbox")" + "?time=" + (new Date()).getTime());
+         $("#list").show();
+
+         $("a[data-linkto='Detail']").click(function() {
+            $(".content-divs").hide();
+            $("#detail").show();
+        });
+
+        $("a[data-linkto='Reply']").click(function() {
+            $(".content-divs").hide();
+            $("#replyContent").load("@Url.Action("Reply")/" + currentMailId + "?time=" + (new Date()).getTime());
+            $("#reply").show();
+        });
+
+        $("a[data-linkto='SendReply']").click(function() {
+            var action = $("form", "#replyContent").attr("action");
+                submitData(function (data) {
+                    if (data.IsRedirect) {
+                        $.post(action,
+                            $("form", "#replyContent").serialize(),
+                            function (confirmationResult) {
+                               $(".content-divs").hide();
+                               $("#list").show();
+                            }
+                            );
+                    } else {
+                        onRegistrationSuccess(data, "#mainContent");
+                    }
+                });
+        });
+
+         $("a[data-linkto='SendNew']").click(function() {
+            var action = $("form", "#newContent").attr("action");
+                submitData(function (data) {
+                    if (data.IsRedirect) {
+                        $.post(action,
+                            $("form", "#newContent").serialize(),
+                            function (confirmationResult) {
+                               $(".content-divs").hide();
+                               $("#list").show();
+                            }
+                            );
+                    } else {
+                        onRegistrationSuccess(data, "#mainContent");
+                    }
+                });
+        });
+       
+    });
+
+    function showDetails(e) {
+         e.preventDefault();
+         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+         currentMailId = dataItem.ID;
+        $(".content-divs").hide();
+        $("#detailContent").load("@Url.Action("Detail")/" + dataItem.ID + "?time=" + (new Date()).getTime());
+         $("#detail").show();
+    }
+
+    function loadOutbox() {
+
+         $("a[data-linkto='Outbox']").click(function() {
+            $(".content-divs").hide();
+            $("#list").load("@Url.Action("Outbox", "Mail")" + "?time=" + (new Date()).getTime());
+            $("#list").show();
+        });
+
+         $("a[data-linkto='New']").click(function() {
+            $(".content-divs").hide();
+            $("#newContent").load("@Url.Action("New", "Mail")" + "?time=" + (new Date()).getTime());
+            $("#new").show();
+        });
+    }
+
+    function loadInbox() {
+         $("a[data-linkto='Inbox']").click(function() {
+            $(".content-divs").hide();
+            $("#list").load("@Url.Action("Inbox")" + "?time=" + (new Date()).getTime());
+            $("#list").show();
+        });
+
+    }
+    
+</script>

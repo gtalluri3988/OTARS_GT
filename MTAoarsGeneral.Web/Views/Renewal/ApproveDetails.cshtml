@@ -1,0 +1,135 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Mvc;
+@using MTAoarsGeneral.Utilities.Extensions
+@using Microsoft.Practices.Unity
+@using MTAoarsGeneral.ViewModels.Shared
+@using MTAoarsGeneral.Utilities.IoC
+@using MTAoarsGeneral.Utilities.Interfaces
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.RenewalHeaderViewModel
+           
+<div id="details-content">
+     <div id="details-grid" style="clear:both"></div>
+     <div id="details-grid-norecord" class="k-block k-error-colored">No record found</div>
+</div>
+
+
+
+<script type="text/javascript">
+    var detailsGrid ;
+    var currentItems = [];
+    $(function () {
+        addBreadCrumb("Details", "javascript:showDiv('#approve-details')", 2);
+        var gridColumns =  [
+                            {field:"AgencyName", title:"Agency Name", sortField:"Agency.Name"}, 
+                            {field:"AgencyNumber", title:"Agency Number", sortField:"Agency.AgencyPrincipals.Any(AgencyNumber{condition})"},  
+                            {field: "AgencyTypeDescription", title:"Corporate Status", sortField:"Agency.LookupAgencyType.Description"},
+                            {field: "IntermediaryTypeDescription", title:"Intermediary Type", sortField:"LookupIntermediaryType.Description"},
+                            { field: "RenewalStatus",  template:"#=RenewalStatus.Description#" , title:"Renewal Status", sortField:"LookupRenewalDetailStatus.Description"}
+                     ];
+        dataSource = new kendo.data.DataSource({
+            type: "jsonp",
+            transport: {
+                read: {
+                    url: '@Url.Action("ApprovedPagedDetails")',
+                    data: { headerId: '@Model.ID' },
+                    type: "POST",
+                    contentType: 'application/json'
+                },
+                update: {
+                    url: '@Url.Action("Update")',
+                    dataType: "jsonp"
+                },
+                parameterMap: function (options, operation) {
+                    var input = JSON.stringify(options);
+                    for(var i = 0; i < gridColumns.length; i++) {
+                        input = input.replace(gridColumns[i].field, gridColumns[i].sortField);
+                    }
+                    return input;
+                }
+            },
+            batch: true,
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering: true,
+            pageSize: 30,
+            schema: {
+                data: "Data", total: "TotalRecords",
+                model: {
+                    id: "ID",
+                    fields: {
+                        ID: { editable: false, nullable: false },
+                        AgencyName: { editable: false, type: "string" },
+                        AgencyNumber: { editable:false, type: "string" },
+                        StatusDescription: {editable:false, type: "string" },
+                        Description: { type: "string" },
+                        AgencyTypeDescription:{editable:false},
+                        IntermediaryTypeDescription:{editable:false},
+                        RenewalStatus: {defaultValue:{ID:"1", Description:"Generated"}}
+                    }
+                }
+            }
+        });
+
+        detailsGrid = $("#details-grid").kendoGrid({
+            dataSource: dataSource,
+            navigatable: true,
+            filterable:true,
+            pageable:{
+                refresh:true,
+                pageSizes: [30, 50, 100, 150]
+            },
+            height: 400,
+            toolbar: [{text:"Accept", template:"<button class='k-button' onclick='javascript:acceptDetails()'><span class='k-icon k-i-tick'></span>Accept</button>"}, 
+                      {text:"Reject", template:"<button class='k-button' onclick='javascript:rejectDetails()'><span class='k-icon k-i-cancel'></span>Reject</button>"}
+                      ],
+            columns:gridColumns,
+            editable: false,
+            dataBound: function(e) {
+                if(detailsGrid.dataSource._data.length == 0) {
+                    $("#details-grid").hide();
+                    $("#details-grid-norecord").show();
+                }else {
+                    $("#details-grid").show();
+                    $("#details-grid-norecord").hide();
+                }
+            }
+        }).data("kendoGrid");
+
+    });
+
+   
+     function acceptDetails() {
+            saveChanges("Save", detailsGrid.dataSource, '@Url.Action("AcceptDetails")', function(response) {
+               processReponse(response);
+            });
+     }
+
+    function rejectDetails() {
+        saveChanges("Submit", detailsGrid.dataSource, '@Url.Action("RejectDetails")', function(response) {
+           processReponse(response);
+        }, true);
+    }
+
+    function processReponse(response) {
+        addBreadCrumb("Complete", "javascript:showDiv('#approve-complete')", 2);
+        var msg = '<div class="k-block k-success-colored">' + response.Status + '</div> ';
+        postPage('#approve-complete', msg);
+    }
+
+    function saveChanges(action, dataSource, url, method, force) {
+       // showProgressBar();
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {id:@Model.ID},
+            success: function (response) {
+              //  hideProgressBar();
+                currentItems = [];
+                if (method != null) method(response);
+            }
+        });
+        processReponse({Status:"Records has been submitted to process"});
+    }
+
+</script>

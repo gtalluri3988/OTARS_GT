@@ -1,0 +1,41 @@
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.GuarantorDisplayViewModel
+<h4>
+    <a href="#">Guarantors</a></h4>
+<div class="hasdetailtable">
+    <table>
+        <tr>
+            <td>
+                <b>Type</b>
+            </td>
+            <td colspan="3">@Model.TypeDescription
+            </td>
+        </tr>
+        @if (Model.TypeCode != LookupConstants.GuarantorTypes.NoGuarantee) {
+            <tr>
+                <td>
+                    <b>Description</b>
+                </td>
+                <td>@Model.Details
+                </td>
+                <td>
+                    <b>Amount</b>
+                </td>
+                <td>@Model.Amount
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>From</b>
+                </td>
+                <td>@Html.DisplayFor(model => model.FromDate, "Date")
+                </td>
+                <td>
+                    <b>To</b>
+                </td>
+                <td>@Html.DisplayFor(model => model.ToDate, "Date")
+                </td>
+            </tr>
+        }
+    </table>
+</div>

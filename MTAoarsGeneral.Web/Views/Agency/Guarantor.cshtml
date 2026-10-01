@@ -1,0 +1,30 @@
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.GuarantorDisplayViewModel
+
+<table class="mta-panel four-columns-grid">
+<caption>Guarantors</caption>
+    <tr>
+        <th>Type</th>
+        <td colspan="3">@Model.GuarantorType.Description
+        </td>
+    </tr>
+    @if (Model.GuarantorType.Code != LookupConstants.GuarantorTypes.NoGuarantee) {
+        <tr>
+            <th>Description</th>
+            <td>@Model.Details
+            </td>
+            <th>Amount</th>
+            <td>@Model.Amount
+            </td>
+        </tr>
+        <tr>
+            <th>From</th>
+            <td>@Html.DisplayFor(model => model.FromDate, "Date")
+            </td>
+            <th>To</th>
+            <td>@Html.DisplayFor(model => model.ToDate, "Date")
+            </td>
+        </tr>
+    }
+</table>
+

@@ -1,0 +1,177 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.InvoiceSearchViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <tr>
+        <th>
+            Company
+        </th>
+        <td colspan="4">
+            @Html.BindDropDownListFor(model => model.CompanyID, Url.Action("Companies", "Lookup"))
+        </td>
+    </tr>
+    <tr>
+        <th>Year</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Year, Url.Action("RecentYears", "Lookup"), required:true)
+        </td>
+   
+        <th>Month</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Month, Url.Action("AllMonths", "Lookup"), required: true)
+        </td>
+   
+        <th>
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<br />
+<div id="invoice-grid"></div>
+ <br />
+<div id="detailGrid"></div>
+<script type="text/javascript">
+    var currentItems=[];
+    var currentItem;
+     var viewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+        );
+    $(function () {       
+        kendo.bind($("#parameters-table"), viewModel);        
+         $("#fetch-button").click(function() {
+            jsonPost("#parameters-table", "@Url.Action("Search")", {companyId:viewModel.CompanyID,year:viewModel.Year,month:viewModel.Month}, function(response) {  
+               populateInvoices(response);
+            });
+        });
+
+        });
+        function bindGrid() {
+             $("#invoice-grid").kendoGrid({
+                dataSource:{
+                    data:viewModel.Invoices,
+                     pageSize: 10,
+                     model: {
+                            id: "ID",
+                            fields: {
+                               
+                                Number: { editable: false, type: "string" },
+                                CompanyName: { editable:false, type: "string" },
+                                Month: {editable:false, type: "string" },
+                                Year: {editabled:false, type: "string" },
+                                Amount:{editable:false},
+                                DisplayDate:{editable:false},                                
+                                InvoiceStatus: {defaultValue:{ID:"1", Description:"Generated"}},
+                                Remarks:{type:"string"}
+                            }
+                        }
+                    },
+                height: 250,
+                pageable:true,
+                editable:true,
+                selectable:true,
+                columns:[
+                    { field: "Number", title: "Invoice Number", sortField: "Number" },
+                    { field: "CompanyName", title: "Company Name", sortField: "Company.Name" },
+                    { field: "Month", title: "Month", sortField: "Month" },
+                    { field: "Year", title:"Year", sortField: "Year" },
+                    { field: "Amount", title: "Amount", sortField: "Amount", template:"<div style='text-align:right'>#=Amount * -1#</div>" },
+                    { field: "DisplayDate", title: "Date", sortField: "Date" },
+                    { field: "InvoiceStatus", editor:statusEditor, template:"#=InvoiceStatus.Description#" , title:"Invoice Status", sortField:"StatusDescription"},
+                    {field:"Remarks",title:"Remarks"}
+                ],
+                 toolbar: [
+                 {text:"Save", template:"<button class='k-button' onclick='javascript:saveDetails()'><span class='k-icon k-i-tick'></span>Save</button>"},
+                 {text:"Regenerate", template:"<button class='k-button' onclick='javascript:regenerate()'><span class='k-icon k-i-tick'></span>Regenerate</button>"}
+                     ],
+                     change: function(e) {
+                            var item = this.dataItem(this.select());
+                            currentItem=item;
+                            populateDetail(item.ID);                           
+                    },
+                      save: function(e) {
+                currentItems.push(e.model);
+            }
+               
+            });     
+            
+        
+     }   
+      function statusEditor(container,options)
+        {
+              $('<input data-text-field="Description" data-value-field="ID" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: true,
+                            dataTextField:"Description",
+                            dataValueField:"ID",
+                            dataSource: {
+                                data: @Html.Raw(Json.Encode(Model.InvoiceStatuses))
+                            }
+                        });
+        } 
+
+     function populateInvoices(response)
+     {
+                viewModel.Invoices=[];                  
+                for(var i = 0; i < response.length; i++) {
+                    viewModel.Invoices.push(response[i]);                 
+                }           
+                    bindGrid();                   
+                if(viewModel.Invoices.length > 0 ) {                    
+                    $("#invoice-grid").show();
+                      $("#detailGrid").html('');
+                }
+                else{
+                 $("#invoice-grid").hide();
+                 $("#detailGrid").html('');
+                }
+     }
+
+    function populateDetail(id) {
+        currentInvoiceId = id;
+        $("#detailGrid").load("@Url.Action("Detail")/" + id);
+    }
+    
+     
+    function regenerate()
+    {
+        if(currentItem)
+        {
+            viewModel.InvoiceID=currentItem.ID;
+             $.ajax({
+            type:"POST",
+            contentType:"application/json",
+            url:'@Url.Action("Regenerate")',
+            data:kendo.stringify(viewModel),
+            success:function(response) {                
+                infoWindow.content("Invoice Generated Successfully").center().open();
+                currentItems = [];  
+                populateInvoices(response);
+                             
+            }
+        });
+        }
+    }
+
+    function saveDetails()
+    {
+        var model=viewModel;
+        model.Invoices=currentItems;
+        if(model.Invoices.length==0)
+            return;
+         $.ajax({
+            type:"POST",
+            contentType:"application/json",
+            url:'@Url.Action("Save")',
+            data: kendo.stringify(model),
+            success:function(response) {                
+                infoWindow.content("Invoice Saved Successfully").center().open();
+                currentItems = [];               
+                populateInvoices(response);
+            }
+        });
+    }
+
+
+</script>
+

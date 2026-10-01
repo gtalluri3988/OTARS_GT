@@ -1,0 +1,296 @@
+@model MTAoarsGeneral.ViewModels.Administrative.RenewalDetailsViewModel
+@using MTAoarsGeneral.Utilities.Mvc
+
+<div id="details-content" data-page-dive="true">
+    <table class="mta-panel">
+        <tr>
+            <th><b>Takaful Operator</b></th>
+            <td>@Model.Header.CompanyName</td>
+            <th><b>Status</b></th>
+            <td>@Model.Header.Status</td>
+        </tr>
+        <tr>
+            <th><b>Year</b></th>
+            <td>@Model.Header.Year</td>
+            <th><b>Quarter</b></th>
+            <td>@Model.Header.Quarter</td>
+        </tr>
+    </table>
+
+    &nbsp;
+    <div id="details-grid" style="clear:both"></div>
+    <div id="details-grid-norecord" class="k-block k-error-colored">No record found</div>
+</div>
+
+<script type="text/javascript">
+    var detailsGrid ;
+    var currentItems = [];
+    var isCancel=false;
+    var isPageChange=false;
+    var currentPage = 1;
+    var data;
+    $(function () {
+        addBreadCrumb("Details", "#", 2);
+
+        var gridColumns =  [
+                            {field:"AgencyName", title:"Agency Name", sortField:"AgencyName"},
+                            {field:"AgencyNumber", title:"Agency Number", sortField:"AgencyNumber"},
+                            {field:"AgencyTypeDescription", title:"Corporate Status", sortField:"AgencyTypeDescription"},
+                            {field:"IntermediaryTypeDescription", title:"Intermediary Type", sortField:"IntermediaryTypeDescription"},
+                            {field:"IsBancaStaff", title:"Banca", template:"#if(IsBancaStaff){#Yes#}else{#No#}#", sortField:"IsBancaStaff"},
+                            {field:"RenewalStatus", editor:statusEditor, template:"#=RenewalStatus.Description#" , title:"Renewal Status", sortField:"StatusDescription"},
+                            { field: "Remarks", title: "Remarks"}
+        ];
+
+        dataSource = new kendo.data.DataSource({
+            type: "jsonp",
+            transport: {
+                read: {
+                    url: '@Url.Action("PagedDetails")',
+                    data: { headerId: '@Model.Header.ID' },
+                    type: "POST",
+                    contentType: 'application/json'
+                },
+                update: {
+                    url: '@Url.Action("Update")',
+                    dataType: "jsonp"
+                },
+                parameterMap: function (options, operation) {
+                    var input = JSON.stringify(options);
+                    for(var i = 0; i < gridColumns.length; i++) {
+                        input = input.replace(gridColumns[i].field, gridColumns[i].sortField);
+                    }
+                    return input;
+                }
+            },
+            batch: true,
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering: true,
+            pageSize: 30,
+            schema: {
+                data: "RenewalDetail",
+                total: "TotalRecord",
+                model: {
+                    id: "ID",
+                    fields: {
+                        ID: {editable: false, nullable: false },
+                        AgencyName: {editable: false, type: "string" },
+                        AgencyNumber: {editable:false, type: "string" },
+                        AgencyTypeDescription:{editable:false},
+                        IntermediaryTypeDescription:{editable:false},
+                        IsBancaStaff: {type:"boolean", editable: false },
+                        RenewalStatus: {defaultValue:{ID:"1", Description:"Generated"}},
+                        Remarks: { type: "string"}
+                    }
+                }
+            }
+        });
+
+        //dataSource.fetch(function () {
+        //    var data = this.data();
+        //    alert(data,length);
+        //    //for (var i = 0; i < data.length;i++) {
+        //    //    alert(i);
+        //    //}
+        //});
+
+        detailsGrid = $("#details-grid").kendoGrid({
+            dataSource: dataSource,
+            //navigatable: true,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: [30, 50, 100, 150],
+                change: function (e) {
+                    currentPage = e.sender.page();
+                }
+            },
+            height: 400,
+            toolbar: [{ text: "Save", template: "<button class='k-button' onclick='javascript:saveDetails()'><span class='k-icon k-i-tick'></span>Save</button>" }//,
+                //{text:"Submit", template:"<button class='k-button' onclick='javascript:submitDetails()'><span class='k-icon k-i-tick'></span>Submit</button>"},
+                //{text:"ExportToCsv", template:"<button class='k-button' onclick='javascript:exportToCsv()'><span class='k-icon k-i-tick'></span>Export to CSV</button>"},
+                //{ text: "CancelChanges", template: "<button class='k-button' onclick='javascript:cancelChanges()'><span class='k-icon k-i-tick'></span>Cancel Changes</button>" }
+            ],
+            columns: gridColumns,
+            editable: true,
+            edit: function (e) {
+                var fieldName = e.container.find("input").attr("name");
+                var grid = this;
+                var oriStatus = e.model.RenewalStatus.Description;
+                if (e.model.RenewalStatus.Description === 'Generated') {
+                    alert("Unable to update status Generated")
+                    this.closeCell();
+                    $('input[name=Remarks]').prop('required', true);
+                }
+                
+                $("tr[data-uid='" + e.model.uid + "'] td:eq(5)").change(function () {
+                    if (e.model.RenewalStatus.Description === 'Not Release' || e.model.RenewalStatus.Description === 'Terminate') {
+                        grid.tbody.find("tr[data-uid='" + e.model.uid + "'] td:eq(6)").trigger("click");
+                        $('input[name=Remarks]').attr('required', 'required');
+                    }
+                    else if (oriStatus === 'Not Release') {
+                        if (e.model.RenewalStatus.Description !== oriStatus) {
+                            e.model.Remarks = null;
+                            $("tr[data-uid='" + e.model.uid + "'] td:eq(6)").html(null);
+                        }
+                    }
+                });
+
+                if (e.model.RenewalStatus.Description === 'Not Release' || e.model.RenewalStatus.Description === 'Terminate') {
+                    $('input[name=Remarks]').attr('required', 'required');
+                }
+                //alert(kendo.guid());
+
+                //if (e.model.RenewalStatus.Description === 'Generated') {
+                //    //alert("Unable to update status Generated")
+                //    //this.closeCell();
+                //    //this.closeCell();
+                //    //setTimeout(function () {
+                //    //    grid.tbody.find("tr[data-uid='" + e.model.uid + "'] td:eq(5)").css("background-color", "red");
+                //    //});
+                //    $('input[name=Remarks]').prop('required', true);
+                //}
+                //if (e.model.RenewalStatus.Description === 'Not Release') {
+                //    $('input[name=Remarks]').prop('required', true);
+
+                //}
+            },
+            dataBinding: function(e) {
+                if(isCancel || isPageChange)
+                {
+                    if(isPageChange)
+                    {
+                     e.preventDefault();
+                     detailsGrid._progress();
+                    }
+                    isCancel=false;
+                    isPageChange=false;
+                    return;
+                }
+                 saveChanges("Save", detailsGrid.dataSource, '@Url.Action("SaveDetails")', function() {
+                 },false,function(){
+                        e.preventDefault();
+                        detailsGrid._progress();
+                        //isPageChange=true;
+                        //detailsGrid.pager.page(currentPage);
+                        return false;
+                     }
+                 );
+            },
+            save: function(e) {
+                var isFound=false;
+                for(var i=0;i< currentItems.length;i++)
+                {
+                    var item=currentItems[i];
+                    if(item.ID==e.model.ID)
+                    {
+                        isFound=true;
+                        item=e.model;
+                    }
+                }
+                if(!isFound)
+                currentItems.push(e.model);
+            },
+            dataBound: function (e) {
+                if(detailsGrid.dataSource._data.length == 0) {
+                    $("#details-grid").hide();
+                    $("#details-grid-norecord").show();
+                }else {
+                    $("#details-grid").show();
+                    $("#details-grid-norecord").hide();
+                }
+            }
+        }).data("kendoGrid");
+
+    });
+
+    function statusEditor(container, options) {
+        $('<input data-text-field="Description" data-value-field="ID" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: true,
+                            dataTextField:"Description",
+                            dataValueField:"ID",
+                            dataSource: {
+                                data: @Html.Raw(Json.Encode(Model.Header.RenewalDetailStatuses))
+                            }
+                        });
+    }
+
+    function saveRenewalDetails() {
+        saveChanges("Save", detailsGrid.dataSource, '@Url.Action("Save")');
+    }
+
+    function saveDetails() {
+         saveChanges("Save", detailsGrid.dataSource, '@Url.Action("SaveDetails")', function(response) {
+                infoWindow.content(response.Status).center().open();
+            });
+     }
+
+        function submitDetails() {
+             saveChanges("Submit", detailsGrid.dataSource, '@Url.Action("SubmitDetails")', function(response) {
+                infoWindow.content(response.Status).center().open();
+            }, true);
+        }
+
+    function saveChanges(action, dataSource, url, method, force,onFail) {
+        var model = {items:currentItems, action:action, id:@Model.Header.ID};
+        if(model.items.length == 0 && force == true)  {
+           model.items.push(dataSource._data[0]);
+        }
+        if(model.items.length == 0) return;
+        if(!validate(model))
+        {
+            if(onFail)
+            {
+                onFail();
+            }
+            return;
+        }
+        showProgressBar();
+        $.ajax({
+            type:"POST",
+            contentType:"application/json",
+            url:url,
+            data: kendo.stringify(model),
+            success:function(response) {
+                hideProgressBar();
+                currentItems = [];
+                if(method != null) method(response);
+            }
+        });
+    }
+    function validate(model)
+    {
+        addErrorToSummary("#details-content","");
+        hideSummary("#details-content");
+        for(i=0;i<model.items.length;i++)
+        {
+            var status=model.items[i].RenewalStatus.Code;
+            var remarks=model.items[i].Remarks;
+            if ((status == "NR" || status == "TER") && (remarks==null || remarks==""))
+            {
+                addErrorToSummary("#details-content", "Please enter remarks");
+                return false;
+            }
+
+        }
+        return true;
+    }
+    function cancelChanges()
+    {
+        addErrorToSummary("#details-content","");
+        hideSummary("#details-content");
+        isCancel=true;
+        detailsGrid.cancelChanges();
+    }
+    function exportToCsv() {
+       $("#export-form").submit();
+    }
+
+
+
+
+
+</script>

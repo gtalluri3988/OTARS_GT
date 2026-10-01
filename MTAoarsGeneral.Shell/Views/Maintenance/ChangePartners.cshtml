@@ -1,0 +1,27 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+  @using MTAoarsGeneral.ViewModels.Operations 
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+    <div id="maintenanceTabs">
+        <ul>
+          @{ViewData["NextPage"]="partners";}          
+          @Html.Partial("Header",Model,ViewData) 
+            <li><a href="#partners">Partners</a></li>  
+              
+        </ul>
+ @using (Html.BeginForm("SavePartners", "Maintenance", new { id = "mainForm" }))
+ {
+            
+            @Html.ValSummary()
+           @Html.Partial("Details", Model, ViewData)       
+         
+               
+                @TabHelper.DisplayPage("partners", "Partners",
+() => Html.PartialFor(model => ((PartnershipRegistrationViewModel)Model).Partners, "../Registration/Partners"),
+                    previousPage: "nominee",
+                    nextPage: "submit")
+            
+           
+           
+ }
+        
+    </div>

@@ -1,0 +1,60 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.Utilities.IoC
+@using MTAoarsGeneral.Utilities.Interfaces
+@using Microsoft.Practices.Unity
+@using MTAoarsGeneral.ViewModels.Shared
+@model MTAoarsGeneral.ViewModels.Operations.CBCStartViewModel
+
+<div id="start-content" align="center">
+        @Html.ValSummary()
+        <table class="mta-panel" style="width:80%">
+            <caption>CBC</caption>
+             @if (Html.IsMTA() || Html.IsISM()) {
+                <tr>
+                    <th>Company</th>
+                     <td>
+                        @Html.BindDropDownListFor(model => model.Company, Url.Action("Companies", "Lookup"))
+                    </td>
+                </tr>
+             } 
+            <tr>
+                <th style="width:25%">Year</th>
+                <td>
+                    @Html.BindDropDownListFor(model => model.Year, Url.Action("RecentYears", "Lookup"))
+                </td>
+            </tr>
+            <tr>
+                <th style="width:25%">Quarter</th>
+                <td>
+                    @Html.BindDropDownListFor(model => model.Quarter, Url.Action("RecentQuarters", "Lookup"))
+                </td>
+            </tr>
+            <tfoot>
+                <tr>
+                    <td colspan="2">
+                        <button id="submit-button" class="k-button"><span class="k-icon k-i-arrow-e"></span>Next</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        addBreadCrumb("Start", "javascript:showDiv('#create-start')", 1);
+
+        var startViewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+        kendo.bind($("#start-content"), startViewModel);
+
+        $("#submit-button", "#start-content").click(function () {
+            jsonPost("#start-content", '@Url.Action("StartCheck")', startViewModel, function (response) {
+                viewPost("#start-content", response.RedirectUrl, startViewModel, function (result) {
+                    postPage("#create-list", result);
+                });
+            });
+            return false;
+        });
+
+    });
+</script>

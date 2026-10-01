@@ -1,0 +1,47 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.ComplaintViewModel
+<div id="edit-wrapper">
+   
+    <div id="edit-content">
+        <table class="mta-panel" style="width:90%">
+            <tr>
+                <th>Name</th>
+                <td><span data-bind="text:NomineeName"></span></td>
+                <th>IC Number</th>
+                <td><span data-bind="text:NomineeNewICNumber"></span></td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td colspan="3">
+                    <span data-bind="text:Description"></span>
+                </td>
+            </tr>
+            <tr>
+                <th>Action</th>
+                <td colspan="3">
+                    <span data-bind="text:Action"></span>
+                </td>
+            </tr>
+           
+            <tr>
+                <th colspan="4">
+                    <button id="back-button" class="k-button"><span class="k-icon k-i-cancel"></span>Back</button>
+                   
+                </th>
+            </tr>
+        </table>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        addBreadCrumb("View", "javascirpt:showDiv('#complaint-details')", 2);
+
+
+        $("#back-button").click(function () {
+            showDiv("#complaint-grid");
+        });
+
+    });
+</script>

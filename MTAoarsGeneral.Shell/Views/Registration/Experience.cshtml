@@ -1,0 +1,94 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Operations.CorporateNomineeViewModel
+
+<div class="hastable" id="experienceContent" class="k-content">
+
+    <button data-bind="event:{click:addExperience}" type="button" class="k-button" style="width:200px">
+        Add new</button>
+    <br />
+    <br />
+    <table id="kendoGrid">
+        <thead>
+            <tr>
+                <th>
+                    Company
+                </th>
+                <th>
+                    AgecnyCode
+                </th>
+                <th>
+                    Date appointed
+                </th>
+                <th>
+                    Date terminated
+                </th>
+                <th>
+                    Delete
+                </th>
+            </tr>
+        </thead>
+        <tbody data-bind="template:{name:'experience-template', foreach:experiences}">
+        </tbody>
+    </table>
+    <script type="text/html" id="experience-template">
+		<tr>
+			<td>
+				<select data-bind="options:$parent.companies, value:CompanyID,
+					optionsText:'Description',
+					optionsValue:'ID'" >
+				</select>
+			</td>
+			<td><input data-bind="value:AgencyCode" class="k-textbox"/></td>
+			<td><input data-bind="datepicker:ValidFrom"/></td>
+			<td><input data-bind="datepicker:ValidTo"/></td>
+            <td> <a class="k-button" data-bind="event:{click:$parent.deleteExperience}"><span class="k-icon k-i-close"></span></a></td>
+		</tr>
+    </script>
+  <input type="hidden" name="@ViewData.TemplateInfo.HtmlFieldPrefix.GetModelProperty("Experiences")" data-bind="jsonHidden:experiences" />
+</div>
+<script type="text/javascript">
+Date.prototype.toJSON=function()
+{
+   return this.toUTCString();
+}
+    $(document).ready(function () {
+    
+        function ExperienceModel() {
+            var self = this;
+            
+            self.experiences = ko.observableArray([]);
+            self.companies =  ko.observableArray(@Html.Raw(@Json.Encode(Model.Companies)));
+           
+           self.load = function() {
+                ko.mapping.fromJS(@Html.Raw(@Json.Encode(Model.Experiences)), self.experiences)
+           }
+
+            self.addExperience = function() {
+                self.experiences.push(ko.mapping.fromJS({
+                    CompanyID : 0, ValidFrom:new Date(), ValidTo:new Date(), AgencyCode:""
+                }));
+            }
+
+            self.deleteExperience = function() {
+                self.experiences.remove(this);
+            }
+            self.testDate = ko.observable("2012-12-12");
+
+           
+        }
+
+       var experienceViewModel = new ExperienceModel();
+       experienceViewModel.load();
+        $.each(experienceViewModel.experiences, function(index, item) {
+                item.ValidFrom = ko.observable(item.ValidFrom);
+                item.ValidTo = ko.observable(item.ValidTo);
+            });
+       ko.applyBindings(experienceViewModel, document.getElementById("experienceContent"));
+
+        $("#checkExperience").click(function () {
+          //   alert(JSON.stringify(experienceViewModel.experiences()));
+         });
+    });
+    
+</script>

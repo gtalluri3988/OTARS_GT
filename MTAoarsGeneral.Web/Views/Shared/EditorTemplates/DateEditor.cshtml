@@ -1,0 +1,8 @@
+@model System.DateTime?
+@using MTAoarsGeneral.Utilities.Mvc
+
+<div for="date">
+   @Html.BindDate("", (Model.HasValue ? Model.Value.ToString("dd'/'MM'/'yyyy") : ""))
+</div>
+
+

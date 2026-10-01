@@ -1,0 +1,58 @@
+﻿<div id="inbox-content">
+     <div id="outbox-grid"></div>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+    addBreadCrumb("Outbox", "javascript:showDiv('#index-outbox')", 1);
+    var gridColumns = [
+                    { field: "ToCompanyName", title: "To", sortField: "ToCompany.Name" },
+                    { field: "Subject", title: "Subject", sortField: "Subject" },
+                    { field: "CreatedOnDisplay", title:"Received", sortField: "CreatedOn" },
+                    { field: "FromStatusDescription", title: "Status", sortField: "FromStatus.Description" },
+                    { command: { text: "Details", click:showDetails }, title: " ", width: "110px" }];
+
+    $("#outbox-grid").kendoGrid({
+        dataSource: {
+            type: "jsonp",
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering:true,
+            pageSize: 10,
+            transport: {
+                read: {
+                    url:"@Url.Action("SentList", "Mail")",
+                    type: "POST",
+                    contentType: 'application/json'
+                },
+                parameterMap: function (options, type) {
+                    var input = JSON.stringify(options);
+                    for(var i = 0; i < gridColumns.length; i++) {
+                        input = input.replace(gridColumns[i].field, gridColumns[i].sortField);
+                    }
+                    return input;
+                }
+
+            },
+            schema: { 
+                data:"Data", total:"TotalMail"
+            },
+            sort:[{field:"CreatedOn", dir:"desc"}]
+                
+        },
+        height: 280,
+         pageable:{
+            refresh:true,
+            pageSizes: true
+        },
+        sortable: true,
+        filterable:true,
+        columns: gridColumns,
+        toolbar: [{text:"Inbox", template:"<button class='k-button' onclick='javascript:showInbox()'><span class='k-icon k-i-custom'></span>Inbox</button>"}]
+    });
+     
+});
+
+function showInbox() {
+    loadPage("#index-inbox", '@Url.Action("Inbox")');
+}
+</script>

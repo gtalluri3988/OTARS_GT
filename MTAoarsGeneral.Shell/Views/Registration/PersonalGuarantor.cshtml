@@ -1,0 +1,34 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.GuarantorViewModel
+<fieldset>
+    <ul>
+        <li>
+            <label class="desc" for="bank-name">
+                Personal Name</label>
+            <div>
+                @Html.TextBoxFor(model => model.Details, new { @class = "k-textbox small" })
+                @Html.ValMsgFor(model=>model.Details)</div>
+        </li>
+        <li>
+            <label class="desc" for="guarantee-amount">
+                Guarantee Amount</label>
+            <div>
+                @Html.TextBoxFor(model => model.Amount, new { @class = "k-textbox small" })
+                @Html.ValMsgFor(model=>model.Amount)</div>
+        </li>
+        <li>
+            <label class="desc" for="period-from">
+               Period From</label>
+            <div for="date">
+                @Html.EditorFor(model => model.FromDate)
+                @Html.ValMsgFor(model=>model.FromDate)</div>
+        </li>
+        <li>
+            <label class="desc" for="period-from">
+               Period To</label>
+            <div for="date">
+                @Html.EditorFor(model => model.ToDate)
+                @Html.ValMsgFor(model=>model.ToDate)</div>
+        </li>
+    </ul>
+</fieldset>

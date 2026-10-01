@@ -1,0 +1,50 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.Utilities.IoC
+@using MTAoarsGeneral.Utilities.Interfaces
+@using Microsoft.Practices.Unity
+@using MTAoarsGeneral.ViewModels.Shared
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationStartViewModel
+@section  PageTitle{
+    Registration
+}
+@section Breadcrumb {
+   <a href="@Url.Action("Index", "Home")" title="Home">Home</a> > Registration
+}
+
+<div id="mainContent">
+    <div class="column-content-box">
+        <div class="content-box content-box-header ui-corner-all">
+            <div class="ui-state-default ui-corner-top ui-box-header">
+                <span class="ui-icon float-left ui-icon-notice"></span>Registration
+            </div>
+            <div class="content-box-wrapper">
+                @using (Html.BeginForm()) {
+                     @Html.ValSummary()
+                    <fieldset>
+                         <ul class="form">
+                           @{
+                                var dataProvider = ObjectContainer.Container.Resolve<IScopeDataProvider>();
+                                var identity = dataProvider.Get<Identity>(GlobalConstants.CurrentIdentity);
+                            }
+                            @if (identity.IsMTA) {
+                                @Html.ListItemDropDown(model => model.CompanyID, Model.Companies)
+                            } else {
+                                @Html.Hidden("CompanyID", identity.CompanyID)
+                            }
+                            @Html.ListItemDropDown(model => model.AgencyTypeID, Model.AgencyTypes)
+                            
+                             <li class="buttons">
+                                <button class="ui-state-default ui-corner-all float-right ui-button" type="submit">
+                                    Next</button>
+                            </li>
+                        </ul>
+                    </fieldset>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("select").kendoDropDownList();
+</script>

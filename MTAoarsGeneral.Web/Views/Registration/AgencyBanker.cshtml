@@ -1,0 +1,21 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Operations.AgencyBankerViewModel
+
+<table class="mta-panel" style="width:100%">
+    <caption>Banker Details</caption>
+    <tr>
+        <th>@Html.LabelFor(model => model.Bank)</th>
+        <td>@Html.BindDropDownListFor(model => model.Bank, Url.Action("Banks", "Lookup"))</td>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.AccountType)</th>
+        <td>@Html.BindDropDownListFor(model => model.AccountType, Url.Action("BankAccountTypes", "Lookup"))</td>
+        <th>@Html.LabelFor(model => model.AccountNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.AccountNumber, 20)</td>
+    </tr>           
+</table>
+@Html.PartialFor(model => model.Address, "Address")
+

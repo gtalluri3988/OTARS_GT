@@ -1,0 +1,86 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.ViewModels.Operations
+@using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.AgencyDisplayViewModel
+
+<div id="confirm-content"  style="width:100%;text-align:center">
+    <div style="width:80%;text-align:center">
+@Html.ValidationSummary()
+@{
+    var isUpload = false;
+    isUpload= ViewData["IsUpload"] == null ? false : (bool)ViewData["IsUpload"];
+}
+        @Html.PartialFor(model => model, "~/Views/Agency/Index.cshtml")
+        <br />
+        @Html.PartialFor(model => model.Nominee, "~/Views/Agency/Nominee.cshtml")
+        <br />
+        @Html.PartialFor(model => model.Address, "~/Views/Agency/Address.cshtml")
+        <br />
+        @Html.PartialFor(model => model.Nominee.Qualification, "~/Views/Agency/Qualification.cshtml")
+        <br />
+        @if (Model.Spouse != null) {
+            @Html.PartialFor(model => model.Spouse, "~/Views/Agency/Spouse.cshtml")
+            <br />
+        }
+        @if (Model.AgencyBanker != null) {
+            @Html.PartialFor(model => model.AgencyBanker, "~/Views/Agency/AgencyBanker.cshtml")
+            <br />
+        }
+        @Html.PartialFor(model => model.Partners, "~/Views/Agency/Partner.cshtml")
+    
+        @Html.PartialFor(model => model.Directors, "~/Views/Agency/Director.cshtml")
+ 
+        @Html.PartialFor(model => model.Shareholders, "~/Views/Agency/Shareholder.cshtml")
+    
+        @Html.PartialFor(model => model.Guarantor, "~/Views/Agency/Guarantor.cshtml")
+        
+        <br />
+            <table class="mta-panel four-columns-grid">
+            <caption>Photograph</caption>
+                <tr>
+                    <td colspan="4">
+                        @if (string.IsNullOrEmpty(Model.PhotoPath))
+                        {
+                            <text>No Photo Available</text>
+                        }
+                        else
+                        { 
+                            <a href="@Model.PhotoPath" target="_blank">Click to view photograph</a>
+                        }
+                    </td>
+                </tr>
+        </table>
+
+        <br />
+    </div>
+     @if (!isUpload)
+     {
+    <div style="text-align:right;margin-right:30px">
+         <button id="previous-button" class="k-button"><span class="k-icon k-i-arrow-w"></span>Previous</button>
+         <button id="submit-button" class="k-button"><span class="k-icon k-i-tick"></span>Submit</button>
+    </div>
+    <br />
+    }
+</div>
+
+<script type="text/javascript">
+$(function() {
+    addBreadCrumb("Confirm", "javascript:showDiv('#create-confirm')", 4);
+
+    $("#previous-button", "#confirm-content").click(function() {
+        showDiv("#create-main");
+    });
+
+    $("#submit-button", "#confirm-content").click(function () {
+        jsonPost("#confirm-content", $("#submit-url").val(), mainViewModel, function (response) {
+            viewPost("#start-content", response.RedirectUrl, response.Data, function (result) {
+                postPage("#create-complete", result);
+            });
+        });
+        return false;
+    });
+
+});
+</script>
+          

@@ -1,0 +1,78 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.PartnershipRegistrationViewModel
+@section CssScript {
+    @Html.StyleSheet("~/Content/css/ui/ui.datepicker.css")
+    @Html.Script("~/Scripts/ui/ui.tabs.js")
+    @Html.Script("~/Scripts/ui/ui.datepicker.js")
+    
+    @Html.Script("~/Scripts/tablesorter.js")
+    
+    @TabHelper.RegisterJavaScript("partnershipRegistrationTabs", Url.Action("PartnershipCheck"), Url.Action("PartnershipConfirm"), Url.Action("Partnership"))
+}
+@section  PageTitle{
+Partnership Registration
+}
+@section Breadcrumb {
+  <a href="@Url.Action("Index", "Home")" title="Home">Home</a> > Registration
+}
+<div id="mainContent">
+
+    <div id="exceptionDialog">
+    </div>
+    
+      
+    <div id="partnershipRegistrationTabs">
+        <ul>
+            <li><a href="#agency">Agency</a></li>
+            <li><a href="#nominee">Nominee</a></li>
+            <li><a href="#address">Address</a></li>
+             <li><a href="#qualification">Qualification</a></li>
+             <li><a href="#partners">Partners</a></li>
+             <li><a href="#banker">Banker</a></li>
+             <li><a href="#guarantor">Guarantor</a></li>
+        </ul>
+        @using (Html.BeginForm("Partnership", "Registration", new { id = "mainForm" })) {
+             @Html.ValSummary() 
+             @TabHelper.DisplayPage("agency", "Details for Agency",
+                    () => Html.PartialFor(model => model.Agency, "Agency"),
+                    nextPage: "nominee")
+
+             @TabHelper.DisplayPage("nominee", "Details for corporate nominee",
+                    () => Html.PartialFor(model => model.CorporateNominee, "CorporateNominee"),
+                    previousPage: "agency",
+                    nextPage: "address")
+
+           @TabHelper.DisplayPage("address", "Agency address",
+                          () => Html.PartialFor(model => model.Address, "Address"),
+                    previousPage: "nominee",
+                    nextPage: "qualification")
+
+            @TabHelper.DisplayPage("qualification", "Qualification",
+                    () => Html.PartialFor(model => model.CorporateNominee.Qualification, "Qualification"),
+                    previousPage: "address",
+                    nextPage: "partners")
+
+            @TabHelper.DisplayPage("partners", "Partners",
+                    () => Html.PartialFor(model => model, "Partners"),
+                        previousPage: "qualification",
+                        nextPage: "banker")
+
+             @TabHelper.DisplayPage("banker", "Agency Banker",
+                    () => Html.PartialFor(model => model.AgencyBanker, "AgencyBanker"),
+                        previousPage: "partners",
+                        nextPage: "guarantor")
+
+           
+             @TabHelper.DisplayPage("guarantor", "Guarantor",
+                        () => Html.PartialFor(model => model.Guarantor, "GuarantorType"),
+                        previousPage: "banker",
+                    nextPage: "submit")
+            
+            @Html.HiddenFor(model => model.Agency.IsGeneral)
+            @Html.HiddenFor(model => model.TypeID)
+            @Html.HiddenFor(model => model.CompanyID)
+    
+        }
+    </div>
+     @TabHelper.DisplayConfirmationDivision()
+</div>

@@ -1,0 +1,77 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.SpouseViewModel
+<div class="two-column">
+    <div class="column">
+        <fieldset>
+            <ul>
+                <li>
+                    <label class="desc" for="Name">
+                        @Html.LabelFor(model => model.Name)</label>
+                    <div>
+                        @Html.TextBoxFor(model => model.Name, new { @class = "k-textbox large" })
+                        @Html.ValMsgFor(model => model.Name)
+                    </div>
+                </li>
+                <li>
+                    <label class="desc" for="new_ic_number">
+                        New NRIC Number</label>
+                    <div>
+                        @Html.TextBoxFor(model => model.NewICNumber, new { @class = "k-textbox large" })
+                        @Html.ValMsgFor(model => model.NewICNumber)</div>
+                </li>
+                <li>
+                    <label class="desc" for="Religion">
+                        Religion</label>
+                    <div>
+                        @Html.DropDownListFor(model => model.ReligionID, Model.Religions, new { style = "width:75%" })
+                        @Html.ValMsgFor(model => model.ReligionID)</div>
+                </li>
+                <li>
+                    <label class="desc" for="Religion">
+                        Birth Date</label>
+                    <div for="date">
+                        @Html.TextBoxFor(model => model.BirthDate, new { style = "width:75%" })
+                        @Html.ValMsgFor(model => model.BirthDate)</div>
+                </li>
+            </ul>
+        </fieldset>
+    </div>
+    <div class="column column-right">
+        <fieldset>
+            <ul>
+                <li>
+                    <label class="desc" for="old_ic_number">
+                        Old NRIC Number</label>
+                    <div>
+                        @Html.TextBoxFor(model => model.OldICNumber, new { @class = "k-textbox large" })
+                        @Html.ValMsgFor(model => model.OldICNumber)</div>
+                </li>
+                <li>
+                    <label class="desc" for="race">
+                        Race</label>
+                    <div>
+                        @Html.DropDownListFor(model => model.RaceID, Model.Races, new { style = "width:75%" })
+                        @Html.ValMsgFor(model => model.RaceID)</div>
+                </li>
+                <li>
+                    <label class="desc" for="race">
+                        Gender</label>
+                    <div>
+                        @Html.RadioButtonListFor(model => model.GenderID, Model.Genders)
+                        @Html.ValMsgFor(model => model.GenderID)</div>
+                </li>
+                <li>
+                    <label class="desc" for="old_NRIC_Number">
+                        Select
+                    </label>
+                    <div>
+                        @Html.EditorFor(model => model.IsCitizen) Citizen
+                        @Html.EditorFor(model => model.IsBumiputera) Bumiputera
+                    </div>
+                </li>
+            </ul>
+        </fieldset>
+    </div>
+</div>
+<div class="clear">
+</div>

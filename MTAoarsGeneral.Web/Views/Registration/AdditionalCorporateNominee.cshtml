@@ -1,0 +1,113 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AdditionalCorporateNomineeViewModel
+
+<div id="acn-content">
+     <div id="acn-grid">
+    </div>
+    <br />
+    <div id="acn-details" style="display:none">
+        <table class="mta-panel" style="width:100%">
+        <caption>Details of Agent / Additional Corporate Nominee</caption>
+        <tr>
+            <th>@Html.LabelFor(model=>model.Name)</th>
+            <td>@Html.BindTextBoxFor(model=>model.Name, 75)</td>
+            <th>@Html.LabelFor(model=>model.ICType)</th>
+            <td>@Html.BindDropDownListFor(model => model.ICType, Url.Action("ICTypes", "Lookup"))</td>
+        </tr>
+        <tr>
+             <th>@Html.LabelFor(model=>model.ICNumber)</th>
+            <td>@Html.BindTextBoxFor(model=>model.ICNumber, 25)</td>
+            <th>@Html.LabelFor(model=>model.OldICNumber)</th>
+            <td>@Html.BindTextBoxFor(model=>model.OldICNumber, 25)</td>
+        </tr>
+        <tr>
+            <th>@Html.LabelFor(model=>model.MaritalStatus)</th>
+            <td>@Html.BindDropDownListFor(model => model.MaritalStatus, Url.Action("MaritalStatuses", "Lookup"))</td>
+            <th>@Html.LabelFor(model=>model.Religion)</th>
+            <td>@Html.BindDropDownListFor(model => model.Religion, Url.Action("Religions", "Lookup"))</td>
+        </tr>
+        <tr>
+            <th>@Html.LabelFor(model=>model.Race)</th>
+            <td>@Html.BindDropDownListFor(model=>model.Race, Url.Action("Races", "Lookup"))</td>
+            <th>Gender</th>
+            <td>
+                    @Html.BindDropDownListFor(model => model.Gender, Url.Action("Genders", "Lookup"))
+            </td>
+        </tr>
+        
+        <tr>
+            <th>@Html.LabelFor(model=>model.Phone)</th>
+            <td>@Html.BindTextBoxFor(model=>model.Phone, 20)</td>
+            <th>@Html.LabelFor(model=>model.Mobile)</th>
+            <td>@Html.BindTextBoxFor(model => model.Mobile, 20)</td>
+        </tr>
+        <tr>
+            <th>@Html.LabelFor(model => model.Email)</th>
+            <td>@Html.BindTextBoxFor(model => model.Email, 30)</td>
+            <th>@Html.LabelFor(model => model.Fax)</th>
+            <td>@Html.BindTextBoxFor(model => model.Fax, 20)</td>
+        </tr>
+        <tr>
+            <th></th>
+            <td> 
+        
+                 @Html.BindEditorFor(model => model.IsCitizen) Citizen
+                 @Html.BindEditorFor(model => model.IsBumiputera) Bumiputera
+            </td>
+
+        </tr>
+    </table>     
+
+    </div>
+</div>    
+  
+
+<script type="text/javascript">
+    var modelItem = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+    var acnGrid;
+    $(function () {
+        var acns = mainViewModel.AdditionalCorporateNominees;
+        acnGrid = $("#acn-grid").kendoGrid({
+            dataSource: { data: acns},
+            selectable: true,
+            navigatable: true,
+            sortable: true,
+            columns: [
+                { field: "Name", title: "Name" },
+                { field: "ICType", title: "IC Type", template: "#if(ICType != null) {##=ICType.Description##} #" },
+                { field: "ICNumber", title: "IC Number" },
+                { field: "OldICNumber", title: "Old IC Number" },
+                { template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+                { template:"<button class='k-button' onclick='onDeleteClick()'><span class='k-icon k-i-close'></span>Delete</button>", filterable:false, title:" "}
+            ],
+            toolbar:[{template:"<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button>"}]
+        }).data("kendoGrid");
+
+    });
+
+    function onAddClick() {
+        var item = kendo.observable({AdditionalCorporateNominee:$.extend(true, {}, modelItem)});
+        mainViewModel.AdditionalCorporateNominees.push(item.AdditionalCorporateNominee);
+        kendo.bind($("#acn-details"), item);
+        $("#acn-details").show();
+    }
+
+    function onEditClick() {
+         var selectedrow = $("#acn-grid").find("tbody tr.k-state-selected");
+         var item = kendo.observable({AdditionalCorporateNominee:acnGrid.dataItem(selectedrow)});
+         kendo.bind($("#acn-details"), item);
+         $("#acn-details").show();
+    }
+
+    function onDeleteClick() {
+         var selectedrow = $("#acn-grid").find("tbody tr.k-state-selected");
+         var item = acnGrid.dataItem(selectedrow);
+         var index = -1;
+         for(var i = 0; i < mainViewModel.AdditionalCorporateNominees.length; i++) {
+            if(mainViewModel.AdditionalCorporateNominees[i] == item) index = i;
+         }
+         if(index > -1) mainViewModel.AdditionalCorporateNominees.splice(index, 1);
+         $("#acn-details").hide();
+    }
+</script>
+

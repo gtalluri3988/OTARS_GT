@@ -1,0 +1,222 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.ReferredMemberViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}
+<div id="referred-members-content">
+    <div id="referred-members-grid"></div>
+    <br />
+    <div id="referred-members-details" style="display:none;text-align:center">
+        <table class="mta-panel" style="width:90%">
+            <caption>Referred Member</caption>
+            <tr>
+                <th>New IC Number</th>
+                <td><span data-bind="text:NewICNumber"></span></td>
+                <th>Old IC Number</th>
+                <td><span data-bind="text:OldICNumber"></span></td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td><span data-bind="text:Name"></span></td>
+                @if (Html.IsISM() || Html.IsMTA())
+                {
+                    <th>Takaful Operator</th>
+                    <td><span data-bind="text:TOName"></span></td>
+                }
+                else
+                {
+                    <th></th>
+                    <td></td>
+                }
+            </tr>
+            <tr>
+                <th>Category</th>
+                <td><span data-bind="text:CategoryDescription"></span></td>
+                <th>Reason</th>
+                <td><span data-bind="text:ReasonDescription"></span></td>
+            </tr>
+            <tr>
+                <th>AgencyNumber</th>
+                <td><span data-bind="text:AgencyNumber"></span></td>
+                <th></th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.IsGeneral)</th>
+                <td colspan="3">@Html.BindEditorFor(model => model.IsGeneral)</td>
+            </tr>
+            <tr>
+                <th>Date of Offence</th>
+                <td><span data-bind="text:DateOfOffenceString"></span></td>
+                <th>Date of Investigation or Internal Inquiry Initiated</th>
+                <td><span data-bind="text:DateOfInvestigationInitiatedString"></span></td>
+            </tr>
+            <tr>
+                <th>Date of Investigation or Internal Inquiry Completed </th>
+                <td><span data-bind="text:DateOfInvestigationCompletedString"></span></td>
+                <th>Action Taken by Licensed Insurer Against Agent</th>
+                <td><span data-bind="text:ActionTaken"></span></td>
+            </tr>
+            <tr>
+                <th>Date Action Taken </th>
+                <td><span data-bind="text:DateActionTakenString"></span></td>
+                <th>Whether Police Report Lodged / Charge Made Against the Agent (if applicable) </th>
+                <td><span data-bind="text:PoliceReportLogged"></span></td>
+            </tr>
+
+            <tr>
+                <th colspan="4">
+                    @Html.BindEditorFor(model => model.AllowForRegistration) Allow For Registration
+                    @Html.BindEditorFor(model => model.IsActive) Active
+                </th>
+            </tr>
+            <tr>
+                <th colspan="4" style="text-align:right">
+                    @if (Html.IsISM() || Html.IsMTA())
+                    {
+                        <button class="k-button" id="approve-button" data-bind="invisible:IsApproved"><span class="k-icon k-i-tick"></span>Approve</button>
+                    }
+                    <button class="k-button" id="save-button"><span class="k-icon k-i-tick"></span>Save</button>
+                    <button class="k-button" id="cancel-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model));
+    var referredReasons, referredCategories, referredPoliceReportLodged, referredActionTaken;
+    var master;
+    $(function () {
+
+        addBreadCrumb("Approved Referred Members", "#", 1);
+        var getReasonsAsync = getAsyncFunction("@Url.Action("ReferredReasons", "Lookup")");
+        var getCategoriesAsync = getAsyncFunction("@Url.Action("ReferredCategories", "Lookup")");
+        var getActionTakenAsync = getAsyncFunction("@Url.Action("ReferredActionTaken", "Lookup")");
+        var getPoliceReportLoggedAsync = getAsyncFunction("@Url.Action("ReferredPoliceReportLodged", "Lookup")");
+
+
+
+        var referredMemberModel = {
+            id: "ID",
+            fields: {
+                IsApproved:{type:"boolean"},
+                CategoryID:{type:"number"},
+                ReasonID: { type: "number" },
+                IsGeneral: { type: "boolean" },
+            }
+
+        };
+
+        $.when(getActionTakenAsync()).done(function (actionTaken) {
+            $.when(getPoliceReportLoggedAsync()).done(function (policeReportLogged) {
+        $.when(getReasonsAsync()).done(function(reasons) {
+            $.when(getCategoriesAsync()).done(function(categories) {
+                referredReasons = reasons;
+                referredCategories = categories;
+                referredPoliceReportLodged = policeReportLogged;
+                referredActionTaken = actionTaken;
+                $("#referred-members-grid").kendoGrid({
+                    dataSource: getMasterGridDataSource(masterDataServiceUrl + "/ReferredMembers", referredMemberModel),
+                    pageable:true,
+                    sortable:true,
+                    filterable:true,
+                    selectable:true,
+                    editable:"inline",
+                    columns: [
+                        { field: "Name" },
+                        { field: "NewICNumber" },
+                        { field: "OldICNumber" },
+                        { field: "AgencyNumber" },
+                        { field: "CategoryID", values:categories, title:"Category"},
+                        { field: "ReasonID", values: reasons, title: "Reason" },
+                        { field: "IsGeneral", title: "Is General" },
+                        @if(Html.IsMTA() || Html.IsISM()) {
+                            @: { field: "IsApproved", title:"Approved"},
+                        }
+                        { field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+                        { command: ["destroy"]}
+                    ],
+                    toolbar:[{template:"<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button>"}]
+                });
+            });
+        });
+            });
+        });
+        master = new Master({
+            url: masterDataServiceUrl + "/ReferredMembers",
+            gridSelector: "#referred-members-grid", detailsSelector: "#referred-members-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateReferredMember")",
+            beforeDetailsBind:function(item) {
+                item.ReasonDescription = getReason(item.ReasonID);
+                item.CategoryDescription = getCategory(item.CategoryID);
+                item.PoliceReportLogged = getPoliceReportLogged(item.PoliceReportLodgedId);
+                item.ActionTaken = getActionTaken(item.ActionId);
+
+                item.DateOfOffenceString = getDateString(item.DateOfOffence);
+                item.DateOfInvestigationInitiatedString = getDateString(item.DateOfInvestigationInitiated);
+                item.DateOfInvestigationCompletedString = getDateString(item.DateOfInvestigationCompleted);
+                item.DateActionTakenString = getDateString(item.DateActionTaken);
+            }
+        });
+
+
+        $("#approve-button").click(function() {
+            master.getCurrent().IsApproved = true;
+            master.save();
+        });
+
+    });
+
+    function onEditClick() {
+        master.editClick();
+    }
+
+    function onAddClick() {
+        master.addClick();
+    }
+
+    function getReason(id) {
+        for(var i = 0; i < referredReasons.length; i++) {
+            if(referredReasons[i].value == id) return referredReasons[i].text;
+        }
+        return "";
+    }
+    function getCategory(id) {
+        for(var i = 0; i < referredCategories.length; i++) {
+            if(referredCategories[i].value == id) return referredCategories[i].text;
+        }
+        return "";
+    }
+
+    function getPoliceReportLogged(id) {
+        for (var i = 0; i < referredPoliceReportLodged.length; i++) {
+            if (referredPoliceReportLodged[i].value == id) return referredPoliceReportLodged[i].text;
+        }
+        return "";
+    }
+    function getActionTaken(id) {
+        for (var i = 0; i < referredActionTaken.length; i++) {
+            if (referredActionTaken[i].value == id) return referredActionTaken[i].text;
+        }
+        return "";
+    }
+
+    function getDateString(dateString) {
+        if (dateString == null) return "";
+
+        var timestamp = parseInt(dateString.replace(/\/Date\((\d+)\)\//, '$1')); // Extract the timestamp
+        var date = new Date(timestamp); // Create a Date object from the timestamp
+
+
+        // Format date to dd/mm/yyyy
+        var day = String(date.getDate()).padStart(2, '0'); // Ensure 2-digit day
+        var month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure 2-digit month (0-based)
+        var year = date.getFullYear(); // Get year
+
+        return day + '/' + month + '/' + year;
+
+    }
+
+</script>

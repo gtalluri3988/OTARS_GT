@@ -1,0 +1,57 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model List<MTAoarsGeneral.ViewModels.Operations.DirectorViewModel>
+ @Html.ValidationMessageFor(model => model.Count)        
+<div id="directors-grid">
+</div>
+
+<script type="text/javascript">
+
+
+    $(function () {
+        
+        var schema = {
+            model: {
+                fields:{
+                    Name:{type:"string"},
+                    OldICNumber: {type:"string"},
+                    ICNumber: {type:"string"},
+                    ICType: {defaultValue:{ID:"", Code:"", Description:""}}
+                }
+            }
+        };
+
+        $("#directors-grid").kendoGrid({
+            dataSource: {data: mainViewModel.Directors, schema:schema},
+            editable:true,
+            selectable:true,
+            sortable:true,
+            navigatable:true,
+            columns:[
+                {field:"Name", title:"Name"}, 
+                {field:"ICType", title:"IC Type", template:"#=ICType.Description#", editor:icTypeEditor}, 
+                {field:"ICNumber", title:"IC Number"}, 
+                {field:"OldICNumber", title:"Old IC Number"},
+                {command:["destroy"]}
+            ],
+            toolbar:["create"]
+        });
+
+    });
+
+    function icTypeEditor(container, options) {
+        $('<input data-value-field="ID" data-text-field="Description"  data-bind="value:' + options.field + '"/>')
+        .appendTo(container)
+        .kendoDropDownList({
+            autoBind: true,
+            dataTextField: "Description",
+            dataValueField: "ID",
+            dataSource: {
+                transport: {
+                    read:"@Url.Action("ICTypes", "Lookup")"
+                }
+            }
+        });
+    }
+   
+</script>

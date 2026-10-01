@@ -1,0 +1,35 @@
+@using MTAoarsGeneral.Utilities.Extensions
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Notifications.NewMailViewModel
+
+
+<div class="column-content-box">
+    <div class="content-box
+    content-box-header ui-corner-all">
+        <div class="ui-state-default ui-corner-top ui-box-header">
+            <span class="ui-icon float-left ui-icon-notice"></span>New
+        </div>
+        <div class="content-box-wrapper">
+            @using (Html.BeginForm()) {
+                <fieldset>
+                    <ul class="form">
+                        <li>
+                             <label class="desc" for="companies">
+                                To
+                             </label>
+                             @Html.ListBoxFor(model=>model.CompanyIdentifiers, Model.Companies)
+                        </li>
+                        @Html.ListItemTextBox(model => model.Subject)
+
+                        <li>
+                             <label class="desc" for="companies">
+                                To
+                             </label>
+                            @Html.TextAreaFor(model => model.Body, new { cols = 130, rows = 15 })
+                        </li>
+                    </ul>
+                </fieldset>
+            }
+           
+    </div>
+</div>

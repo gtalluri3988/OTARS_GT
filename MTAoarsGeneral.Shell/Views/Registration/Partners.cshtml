@@ -1,0 +1,107 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Operations.PartnershipRegistrationViewModel
+
+<div class="hastable" id="partnerContent" class="k-content">
+   
+    
+    <button data-bind="event:{click:addPartner}" type="button" class="k-button" style="width:200px">
+        Add new</button>
+         @Html.ValMsgFor(model=>model.Partners.Count)
+    <br />
+    <br />
+    <table id="kendoGrid">
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                 <th>
+                    IC Type
+                </th>
+                <th>
+                    New IC @@ Passport Num
+                </th>
+                <th>
+                    Old IC / Passport
+                </th>
+                <th>
+                    Delete
+                </th>
+            </tr>
+           
+        </thead>
+         <tr>
+                <td><span data-bind="text:nominee.Name"></span></td>
+                <td><span data-bind="text:nominee.ICType"></span></td>
+                <td><span data-bind="text:nominee.ICNumber"></span></td>
+                 <td><span data-bind="text:nominee.OldICNumber"></span></td>
+                <td>&nbsp;</td>
+         </tr>
+        <tbody data-bind="template:{name:'partner-template', foreach:partners}">
+        </tbody>
+    </table>
+    <script type="text/html" id="partner-template">
+		<tr>
+			<td>
+				<input data-bind="value:Name" class="k-textbox"/>
+			</td>
+            <td>
+				<select data-bind="options:$parent.icTypes, value:ICTypeID,
+					optionsText:'Description',
+					optionsValue:'ID'" >
+				</select>
+			</td>
+			<td><input data-bind="value:ICNumber" class="k-textbox"/></td>
+			<td><input data-bind="value:OldICNumber" class="k-textbox"/></td>
+            <td> <a class="k-button" data-bind="event:{click:$parent.deletePartner}"><span class="k-icon k-i-close"></span></a></td>
+		</tr>
+    </script>
+  <input type="hidden" name="@ViewData.TemplateInfo.HtmlFieldPrefix.GetModelProperty("Partners")" data-bind="jsonHidden:partners" />
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        function PartnerModel() {
+            var self = this;
+
+            self.partners = ko.observableArray([]);
+
+            self.icTypes =  ko.observableArray(@Html.Raw(@Json.Encode(Model.ICTypes)));
+
+            self.nominee = {
+                Name:ko.observable(""),
+                OldICNumber:ko.observable(""),
+                ICNumber:ko.observable("@GlobalHelper.Coalesce(Model.CorporateNominee.NewICNumber, Model.CorporateNominee.PassportNumber)"),
+                ICType:ko.observable("@Model.ICTypes.Where(p=>p.ID == Model.CorporateNominee.ICTypeID).First().Description")
+            };
+
+            self.load = function () {
+                 self.partners = ko.mapping.fromJS(@Html.Raw(@Json.Encode(Model.Partners)));
+            }
+
+            self.addPartner = function () {
+                self.partners.push(ko.mapping.fromJS({
+                    Name: "", ICNumber: "", OldICNumber: "", ICTypeID : ""
+                }));
+            }
+
+            self.deletePartner = function () {
+                self.partners.remove(this);
+            }
+        }
+
+        var partnerViewModel = new PartnerModel();
+        partnerViewModel.load();
+        ko.applyBindings(partnerViewModel, document.getElementById("partnerContent"));
+
+        $("#CorporateNominee_Name").blur(function() {
+            partnerViewModel.nominee.Name($(this).val());
+        });
+
+        $("#CorporateNominee_OldICNumber").blur(function() {
+            partnerViewModel.nominee.OldICNumber($(this).val());
+        });
+    });
+    
+</script>

@@ -1,0 +1,50 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+   @using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+           
+    <div id="tabs">
+        <ul>
+          @{ViewData["NextPage"]="Address";}
+         
+          @Html.Partial("Header",Model,ViewData)
+           <li id="Address">Address</li> 
+              
+        </ul>
+   
+            @Html.ValSummary()
+           @Html.Partial("Details", Model, ViewData)        
+         
+               
+                @TabHelper.DisplayPage("Address",
+                () => Html.PartialFor(model=>model.Address , "../Shared/Address",true),
+                Model is IExistableAgency?2: 1,true
+                   )
+            
+           
+           
+ 
+        
+    </div>
+    <script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=COA", 1);
+        addBreadCrumb("Change Address", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        $("#submit-button", "#main-content").click(function() {
+            jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", mainViewModel.Address, function(response) {
+               if(response.Result)
+               {    
+                alert("Address saved successfully");
+                window.location.href="Search?maintenanceType=COA";
+               }
+                });
+           
+        });
+
+    });
+</script>

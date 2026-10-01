@@ -1,0 +1,53 @@
+@model MTAoarsGeneral.ViewModels.Notifications.MailViewModel
+<div id="detail-content">
+    <table class="mta-panel" style="width:80%">
+        <tr>
+            <th>
+                From
+            </th>
+            <td>@Model.FromCompanyName
+            </td>
+            
+                <th>
+                    To
+                </th>
+                <td>@Model.ToCompanyName
+                </td>
+         </tr>
+         <tr>
+            <th>Subject</th>
+            <td colspan="3">@Model.Subject</td>
+         </tr>
+         <tr>
+            <th>
+                Date
+            </th>
+            <td colspan="3">@Model.CreatedOnDisplay
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                @Html.Raw(Model.Body)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align:right">
+                <button id="reply-button" class="k-button"><span class="k-icon k-i-custom"></span>Reply</button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        addBreadCrumb("Detail", "javascript:showDiv('#index-detail')", 2);
+
+        $("#reply-button", "#detail-content").click(function () {
+            viewPost("#detail-content", "@Url.Action("Reply")?" + getGuidQueryString(), {id:"@Model.ID"}, function(response) {
+                //alert(response);
+                postPage("#index-reply", response);
+            });
+        });
+
+    });
+</script>

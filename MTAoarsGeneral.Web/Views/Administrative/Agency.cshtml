@@ -1,0 +1,129 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions;
+@model MTAoarsGeneral.ViewModels.Operations.AdministrativeSearchAgentViewModel
+@section  PageTitle{
+    Search
+}
+
+<div id="main-content">
+    <table class="mta-panel" id="search-content" style="align:center">
+        <caption>Search Agency</caption>
+        <tr>
+            <th>Agency Number</th>
+            <td>@Html.BindTextBoxFor(model => model.AgencySearch.AgencyNumber)</td>
+            <td class="for-button">
+                <button id="search-button" class="k-button"><span class="k-icon k-i-search"></span>Search</button>
+            </td>
+        </tr>
+    </table>
+    <br />
+    @Html.ValSummary()
+    <div id="divProcess">
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var viewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        $('#complete-content').hide();
+        addBreadCrumb("Agency", "@Url.Action("SearchAgency", "Administrative")", 1);
+        kendo.bind($("#main-content"), viewModel);
+
+        var schema = {
+            //id: "AgencyIDEncrypted",
+            model: {
+                id: "AgencyPrincipalIDEncrypted",
+                fields: {
+                    AgencyNumber: { editable: false },
+                    AgencyTypeDescription: { editable: false },
+                    IntermediaryTypeDescription: { editable: false },
+                    NomineeName: { editable: false },
+                    NomineeNewICNumber: { editable: false },
+                    BusinessRegistrationNumber: { editable: false },
+                    NewBusinessRegistrationNumber: { editable: false },
+                    TBECategory: { editable: false },
+                    ValidFromLabel: { editable: false },
+                    ValidToLabel: { editable: false }
+                }
+            }
+        }
+
+        function bindGrid() {
+            $("#divProcess").kendoGrid({
+                dataSource:{
+                    data: viewModel.Agents,
+                    schema: schema
+                },
+
+                columns: [
+                    { field: "AgencyNumber", title: "Agency Number", editable: false, width: "100px" },
+                    { field: "AgencyTypeDescription", title: "Registration Type", width: "100px" },
+                    { field: "IntermediaryTypeDescription", title: "Corporate Status", width: "100px" },
+                    { field: "NomineeName", title: "Nominee Name", width: "350px" },
+                    { field: "NomineeNewICNumber", title: "New IC", width: "100px" },
+                    { field: "BusinessRegistrationNumber", title: "Bus. Reg. Number", width: "100px" },
+                    { field: "NewBusinessRegistrationNumber", title: "New Bus. Reg. Number", width: "100px" },
+                    { field: "TBECategory", title: "TBE Category", width: "100px" },
+                    { field: "ValidFromLabel", title: "Valid From", width: "100px" },
+                    { field: "ValidToLabel", title: "Valid To", width: "100px" },
+                    { command: { text: "Edit", click: edit }, width: "100px" }
+                ]
+            });
+        }
+
+        $("#search-button").click(function() {
+            jsonPost(
+                "#main-content",
+                '@Url.Action("SearchAgency")',
+                viewModel.AgencySearch,
+                function (response) {
+                    viewModel.Agents = response.Data;
+                    bindGrid();
+                }
+            );
+        });
+
+        return false;
+    });
+
+    function edit(e)
+    {
+        var url = "@Url.Action("EditAgency")" + "?key={0}&key2={1}";
+        var row = this.dataItem($(e.currentTarget).closest("tr"));
+
+        url = url.replace("{0}", encodeURIComponent(row.AgencyPrincipalIDEncrypted));
+        url = url.replace("{1}", encodeURIComponent(row.IsHistorical));
+        window.location.href = url;
+
+        @*jsonPost(
+            "#main-content",
+            "@Url.Action("EditAgent")",
+            {
+                AgencyPrincipalID: this.dataItem($(e.currentTarget).closest("tr")).AgencyPrincipalID,
+                AgencyNumber: this.dataItem($(e.currentTarget).closest("tr")).AgencyNumber
+            },
+            function (response) {
+                if(response.Status=="Ok")
+                    window.location.href=response.Url;
+            }
+        );*@
+    }
+
+    @*function terminate() {
+        jsonPost(
+            "#main-content",
+            "@Url.Action("Process")",
+            viewModel,
+            function (response) {
+                addBreadCrumb("Complete", "#", 2);
+                $('#main-content').hide();
+                $('#complete-content').show();
+            }
+        );
+    }*@
+</script>

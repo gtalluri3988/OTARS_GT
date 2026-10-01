@@ -1,0 +1,180 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.TrainingListViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}           
+<div id="training-content">
+    <div id="training-grid"></div>
+    <br />
+    <div id="training-agency-search" style="display:none">
+        @Html.Partial("Add", Model.TrainingModel)
+    </div>
+    <br />
+    <div id="training-details" style="display:none;text-align:center">
+        @Html.Partial("Edit", Model.TrainingModel)
+    </div>
+</div>
+
+<script type="text/x-kendo-template" id="toolbar-template">
+    <table width="100%">
+        <tr>
+            <td>Year <input type="search" id="Year" required></input></td>
+            <td style="text-align:right"><button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button></td>
+        </tr>
+    </table>     
+</script>
+
+<div id="confirm-window">
+    Details Save, Press Next to continue with same agent or Cancel to key in New Agent
+    <div style="float:right;padding-top:15px">
+        <button class="k-button" id="confirm-ok-button"><span class="k-icon k-i-tick"></span>Next</button>
+        <button class="k-button" id="confirm-cancel-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model.TrainingModel));
+    var confirmWindow;
+    var master;
+    $(function () {
+       addBreadCrumb("CPD", "@Url.Action("List")", 2);
+       confirmWindow = $("#confirm-window").kendoWindow({
+            modal: true,
+            visible:false,
+            title: "Confirm"
+       }).data("kendoWindow");
+      
+      
+       var gridDataSource = new kendo.data.DataSource({
+            type: "odata",
+            serverPaging: true,
+            serverFiltering: true,
+            pageSize: 5,
+            serverSorting: true,
+            transport: {
+                read: {
+                    url: masterDataServiceUrl + "/TrainingViewDetails",
+                    headers: {
+                        DataServiceVersion: "2.0",
+                        MaxDataServiceVersion: "2.0"
+                    }
+                },
+                destroy: {
+                    url: function (data) {
+                        return masterDataServiceUrl + "/TrainingDetails(" + data.ID + "L)";
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    headers: { CurrentOperation: "Delete"}
+                }
+            },
+            schema:{
+                model: {
+                    id:"ID",
+                    fields: {
+                        StartDate:{type:"date"},
+                        EndDate:{type:"date"}
+                    }
+                }
+            },
+            filter:{"filters":[{"field":"StartDate","operator":"gt","value": '1/1/1900'},{"field":"StartDate","operator":"lt","value": '1/1/1900'}],"logic":"and"},
+            sort:[{field:"CreatedDate",dir:"desc"}]
+        });
+        
+        var grid = $("#training-grid").kendoGrid({
+            dataSource: gridDataSource,
+            pageable:true,
+            sortable:true,
+            filterable:true,
+            selectable:true,
+            editable:"inline",
+            columns: [
+                { field: "Name"},
+                { field: "CompanyName", title:"Company" },
+                { field: "CourseDescription", title:"Course" },
+                { field: "IntermediaryTypeDescription", title:"Intermediary" },
+                { field: "CreditHours", title:"Credit Hours" },
+                { field: "StartDate", title:"Start", format:"{0:dd/MM/yyyy}" },
+                { field: "EndDate", title:"End", format:"{0:dd/MM/yyyy}" },
+                { field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+                { command: ["destroy"]}
+            ],
+            toolbar:kendo.template($("#toolbar-template").html())
+        });
+           
+        var dropdown = grid.find("#Year").kendoDropDownList({
+            dataValueField:'ID', dataTextField:'Description',
+            optionLabel: {
+                ID:null, Description:''
+            },
+            dataSource: {
+                type:'jsonp',
+                transport:{read:'@Url.Action("CPDYears", "Lookup")'}
+            },
+            change:function() {
+                var value = this.value();
+                if(value) {
+                    var startDate = new Date(parseInt(value) - 1, 11, 31);
+                    var endDate = new Date(value,11 ,31);
+                   
+                    var filter = {"filters":[{"field":"CompanyID","operator":"eq","value":@Html.GetIdentity().CompanyID},{"field":"StartDate","operator":"gt","value": startDate},{"field":"StartDate","operator":"lt","value": endDate}],"logic":"and"};
+                    grid.data("kendoGrid").dataSource.filter(filter);
+                }else {
+                    grid.data("kendoGrid").dataSource.filter({});
+                }
+            }
+        });
+
+        master = new Master({
+            url: masterDataServiceUrl + "/TrainingDetails",
+            gridSelector: "#training-grid", detailsSelector: "#training-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateTrainingDetail")",
+            beforeValidate: function(item) {
+                if(item.CourseID != null && typeof(item.CourseID) === "object") item.CourseID = item.CourseID.ID;
+                if(item.TrainingTypeID != null && typeof(item.TrainingTypeID) === "object") item.TrainingTypeID = item.TrainingTypeID.ID;
+                item.Year = grid.find("#Year").val();
+            },
+            beforeDetailsBind: function(item) {
+                
+            },
+            afterSave: function(action, currentItem) {
+                $("#training-grid").data("kendoGrid").dataSource.read();
+                currentItem.set("TrainingTypeID", null);
+                currentItem.set("CreditHours", 0);
+                currentItem.set("IsStructured", false);
+                currentItem.set("IntermediaryTypeID", null);
+                currentItem.set("IsStructured", false);
+                currentItem.set("StartDate", getCurrentDate());
+                currentItem.set("EndDate", getCurrentDate());
+                currentItem.set("OrganizedBy", null);
+                currentItem.set("ReferenceNumber", null);
+                currentItem.set("BankName", null);
+                confirmWindow.center().open();
+            }
+        });
+
+        $("#confirm-ok-button").click(function() {
+            master.refresh();
+            $("#training-details").show();
+            confirmWindow.close();
+        });
+
+        $("#confirm-cancel-button").click(function() {
+            $("#training-agency-search").hide();
+            confirmWindow.close();
+        });
+    });
+
+    function onEditClick() {
+        master.editClick();
+    }
+    
+    function onAddClick() {
+        var validator = getValidator("#training-grid");
+        if(validator.validate() == false) return;
+        $("#training-agency-search").show();
+        master.addClick();
+        $("#training-details").hide();
+    }
+</script>

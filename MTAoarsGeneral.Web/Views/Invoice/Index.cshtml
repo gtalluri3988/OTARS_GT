@@ -1,0 +1,144 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@section  PageTitle{
+    Invoice
+}
+
+@section CssScript{
+    <style>
+        ul.button-group {
+            padding-inline-start: 0;
+        }
+
+        ul.button-group li {
+            display: inline;            
+        }
+    </style>
+}
+
+<div id="index-content">
+    <input type="hidden" id="invoiceDetailId" value="" />
+
+    <div id="invoiceGrid" style="clear: both"></div>
+    <br />
+    <div id="detailGrid"></div>
+
+    <div id="action-button-group" style="display:none;">
+        <ul class="button-group">
+            <li>
+                <button id="paid-button" style="display:none" class="k-button"><span class="k-icon k-i-tick"></span>Paid</button>
+            </li>
+            <li>
+                <button id="export-button" style="display:none" class="k-button"><span class="k-icon k-i-tick"></span>Export To Excel</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+<script type="text/kendo-tmpl" id="invoice-detail-template">
+    <b>${CompanyName}</b>
+    <br />
+    For ${Month}/${Year}
+    <br />
+    Date - ${DisplayDate}
+    <br />
+    <b>${Amount}</b>
+    <br />
+</script>
+
+
+<script type="text/javascript">
+
+    var currentInvoiceId;
+
+    $(document).ready(function () {
+
+        addBreadCrumb("Index", "javascript:showDiv('#index-content')", 2);
+
+        var gridColumns = [
+            { field: "Number", title: "Invoice Number", sortField: "Number" },
+            { field: "CompanyName", title: "Company Name", sortField: "Company.Name" },
+            { field: "Month", title: "Month", sortField: "Month" },
+            { field: "Year", title:"Year", sortField: "Year" },
+            { field: "Amount", title: "Amount", sortField: "Amount", template:"<div style='text-align:right'>#=Amount * -1#</div>" },
+            { field: "DisplayDate", title: "Date", sortField: "Date" }
+        ];
+
+        var dataSource =  {
+            type: "jsonp",
+            serverPaging: true,
+            serverSorting: true,
+            pageSize: 10,
+            transport: {
+                read: {
+                    url:"@Url.Action("PagedList", "Invoice")",
+                    type: "POST",
+                    contentType: 'application/json'
+                },
+                parameterMap: function (options, type) {
+                    var input = JSON.stringify(options);
+                    for(var i = 0; i < gridColumns.length; i++) {
+                        input = input.replace(gridColumns[i].field, gridColumns[i].sortField);
+                    }
+                    return input;
+                }
+            },
+            schema: {
+                data:"Data", total:"TotalInvoice"
+            }
+        };
+
+        $("#invoiceGrid").kendoGrid({
+            dataSource:dataSource,
+            height: 180,
+            pageable:true,
+            sortable: true,
+            filterable:true,
+            selectable:true,
+            columns: gridColumns,
+            //rowTemplate: kendo.template($("#invoice-detail-template").html()),
+            change: function(e) {
+                var item = this.dataItem(this.select());
+                populateDetail(item.ID);
+                if(item.IsPaid == false) {
+                    $("#paid-button").show();
+                } else {
+                    $("#paid-button").hide();
+                }
+                $('#invoiceDetailId').val(item.ID);
+                $('#action-button-group').show();
+                $('#export-button').show();
+            }
+        });
+
+        $('#export-button').click(function () {
+            window.open('@(Url.Action("ExportDetail"))?id=' + $('#invoiceDetailId').val(), '_blank');
+        });
+
+    /* $("#pager").kendoPager({
+                dataSource: dataSource
+            });
+
+    $("#invoice-list").kendoListView({
+                dataSource: dataSource,
+                template: kendo.template($("#invoice-detail-template").html()),
+                selectable:true
+            });*/
+
+        function showDetails(e) {
+            e.preventDefault();
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            currentInvoiceId = dataItem.ID;
+            //alert(currentInvoiceId);
+        }
+
+        function populateDetail(id) {
+            currentInvoiceId = id;
+            $("#detailGrid").load("@Url.Action("Detail")/" + id);
+        }
+
+        function exportFile() {
+
+        }
+});
+</script>

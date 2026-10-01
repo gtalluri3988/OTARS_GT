@@ -1,0 +1,144 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.RoleMasterViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}           
+<div id="roles-content">
+    <div id="roles-grid"></div>
+    <br />
+    <div id="roles-details" style="display:none;text-align:center">
+        <table class="mta-panel" style="width:90%">
+            <caption>Role</caption>
+           
+           <tbody>
+                <tr>
+                    <th>Code</th>
+                    <td>@Html.BindTextBoxFor(model => model.Code)</td>
+                    <th>Description</th>
+                    <td>@Html.BindTextBoxFor(model => model.Description)
+
+                    </td>
+                </tr>
+               @foreach (var menu in Model.Menus) {
+                   <tr>
+                        <th colspan="4"><input type="checkbox" value="@menu.ID" data-bind="checked:RoleMenus" /> @menu.Description</th>
+                   </tr>
+                   <tr>
+                        <th>&nbsp;</th>
+                        <th colspan="3">
+                            @foreach (var subMenu in menu.Menus) {
+                                <input type="checkbox" value="@subMenu.ID" data-bind="checked:RoleMenus" /> @subMenu.Description
+                            }
+                        </th>
+                   </tr>
+               }
+            </tbody>
+            
+            <tr>
+                <th colspan="4" style="text-align:right">
+                    <button class="k-button" id="save-button"><span class="k-icon k-i-tick"></span>Save</button>
+                    <button class="k-button" id="cancel-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+    
+</div>
+
+
+<script type="text/kendo-tmpl" id="menu-template">
+    <tr>
+        <th colspan="4">${Description}</th>
+    </tr>
+    <tr>
+        <th>&nbsp;</th>
+        <th colspan="3">
+            #for(var i = 0; i < Menus.length; i++) {#
+               <input type="checkbox" value="#=Menus[i].ID#" data-bind="checked:$parent.RoleMenus"> #:Menus[i].Description#
+            #}#
+        </th>
+    </tr>
+</script>
+
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model));
+    delete modelItem.Menus;
+    var menus;
+    var master;
+    
+    $(function () {
+
+        $.get("@Url.Action("Menus")", function(response) {
+            menus = new kendo.data.ObservableArray(response);
+        });
+
+        var roleModel = {
+            id: "ID",
+            fields: {
+                Code: {type:"string"},
+                Description: {
+                    type:"string",  
+                    validation: {
+                        required:true
+                    }
+                }
+            }
+        };
+
+        $("#roles-grid").kendoGrid({
+            dataSource: getMasterGridDataSource(masterDataServiceUrl + "/LookupRoles", roleModel),
+            pageable:true,
+            sortable:true,
+            filterable:true,
+            selectable:true,
+            editable:"inline",
+            columns: [
+                { field: "Code"},
+                { field: "Description" },
+                { field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+                { command: ["destroy"]}
+            ],
+            toolbar:[{template:"<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button>"}]
+        });
+        
+
+        master = new Master({
+            url: masterDataServiceUrl + "/LookupRoles",
+            gridSelector: "#roles-grid", detailsSelector: "#roles-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateRole")",
+            beforeDetailsBind: function(item, action) {
+                item.RoleMenus = new kendo.data.ObservableArray([]);
+                if(item.ID > 0) {
+                     $.get("@Url.Action("RoleMenus")?" + getGuidQueryString(), {roleId:item.ID}, function(response) {
+                        for(var i = 0; i < response.length;i++) {
+                            item.RoleMenus.push(response[i] + "");
+                            $("input[value='" + response[i] + "']").prop("checked", true);
+                        }
+                    });
+                }
+               
+            },
+            afterSave: function(action, currentItem) {
+                jsonPost("#roles-details", "@Url.Action("SaveRoleMenus")", {roleCode:currentItem.Code, roleMenus: currentItem.RoleMenus},
+                    function(response) {
+                        $("#roles-grid").data("kendoGrid").dataSource.read();
+                    });
+               
+            },
+            beforeAdd: function(data) {
+                delete data.ID;
+                data.IsActive = true;
+            }
+        });
+
+    });
+
+    function onEditClick() {
+        master.editClick();
+    }
+    
+    function onAddClick() {
+        master.addClick();
+    }
+
+</script>

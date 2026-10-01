@@ -1,0 +1,24 @@
+﻿
+<table class="mta-panel">
+    <caption>Attachments</caption>
+    <tr>
+        <th>Please upload Termination Letter and Agent Movement Form</th>
+    </tr>
+    <tr>
+        <td>
+            <input type="file" id="conflictDocuments"  name="conflictDocuments" />
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    $(function () {
+
+        $("#conflictDocuments").kendoUpload({
+            async: {
+                saveUrl:"UploadConflictDocuments",
+                removeUrl:"RemoveConflictDocuments"
+            }
+        });
+
+    });
+</script>

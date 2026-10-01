@@ -1,0 +1,12 @@
+ @using MTAoarsGeneral.Utilities.Mvc
+  @using MTAoarsGeneral.ViewModels.Interfaces
+ @model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+            @{
+                var activeClass = "k-state-active";
+            }
+            @if(Model is IExistableAgency)
+            {
+                <li class="k-state-active" id="agency">Agency</li> 
+                activeClass = string.Empty;
+            }
+            <li class="@activeClass"  id="nominee" >Nominee</li> 

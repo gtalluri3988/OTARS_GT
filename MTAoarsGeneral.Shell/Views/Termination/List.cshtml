@@ -1,0 +1,37 @@
+@model IEnumerable<MTAoarsGeneral.ViewModels.Operations.AgencySearchResponseViewModel>
+<div class="hastable">
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    Agency Number
+                </th>
+                <th>
+                    Company
+                </th>
+                <th>
+                    Nominee Name
+                </th>
+                 <th>
+                    New IC Number
+                </th>
+                 <th>
+                    Terminate
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                    <td>@item.AgencyNumber</td>
+                    <td>@item.CompanyName</td>
+                    <td>@item.NomineeName</td>
+                    <td>@item.NomineeNewICNumber</td>
+                    <td>
+                        <a href="@Url.Action("Details", "Termination", new { ID= item.AgencyPrincipalID})" id="search" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-closethick"></span>Terminate</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

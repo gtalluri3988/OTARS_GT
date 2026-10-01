@@ -1,0 +1,91 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using Microsoft.Practices.Unity
+@using MTAoarsGeneral.ViewModels.Shared
+@using MTAoarsGeneral.Utilities.IoC
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MTAoarsGeneral</title>
+    @Html.Script("~/Scripts/jquery-3.6.0.min.js")
+    @Html.Script("~/Scripts/jquery-migrate-3.0.0.js")
+    @Html.Script("~/Scripts/ui/jquery-ui.min.js")
+    @Html.Script("~/Scripts/ui/ui.core.js")
+    @Html.Script("~/Scripts/ui/ui.widget.js")
+    @Html.Script("~/Scripts/ui/ui.mouse.js")
+    @Html.Script("~/Scripts/superfish.js")
+    @Html.Script("~/Scripts/live_search.js")
+    @Html.Script("~/Scripts/tooltip.js")
+    @Html.Script("~/Scripts/cookie.js")
+    @Html.Script("~/Scripts/ui/ui.sortable.js")
+    @Html.Script("~/Scripts/ui/ui.draggable.js")
+    @Html.Script("~/Scripts/ui/ui.resizable.js")
+    @Html.Script("~/Scripts/ui/ui.position.js")
+    @Html.Script("~/Scripts/ui/ui.button.js")
+    @Html.Script("~/Scripts/ui/ui.dialog.js")
+    @Html.Script("~/Scripts/custom.js")
+    @Html.Script("~/Scripts/knockout.js")
+    @Html.Script("~/Scripts/knockout.bindings.js")
+    @Html.Script("~/Scripts/knockout.mapping.js")
+    @Html.Script("~/Scripts/validation.response.js")
+    @Html.Script("~/Scripts/site.js")
+    @Html.Script("~/Scripts/kendo/kendo.web.min.js")
+    @Html.StyleSheet("~/Content/css/ui/ui.base.css")
+    @Html.StyleSheet("~/Content/css/ui/ui.login.css")
+    @Html.StyleSheet("~/Content/css/themes/black_rose/ui.css")
+    @Html.StyleSheet("~/Content/css/Site.css")
+    @Html.StyleSheet("~/Content/css/kendo/kendo.common.min.css")
+    @Html.StyleSheet("~/Content/css/kendo/kendo.default.min.css")
+    @RenderSection("CssScript", false)
+    <!--[if IE 6]>
+     @Html.StyleSheet("~/Content/css/ie6.css")
+     @Html.Script("~/Scripts/pngfix.js")
+
+    /* Fix IE6 Transparent PNG */
+       DD_belatedPNG.fix('.logo, ul#dashboard-buttons li a, .response-msg, #search-bar input');
+     </script>
+     <![endif]-->
+</head>
+<body>
+    
+    <div id="exceptionDialog"></div>
+    <div id="page_wrapper">
+		<div id="page-header">
+			<div id="page-header-wrapper">
+				<div id="top">
+                    <div class="site-name">
+                        Malaysian Takaful Association</div>
+                    
+                    <div>
+                        &nbsp;</div>
+                    <div class="clearfix">
+                    </div>
+                </div>
+			</div>
+		</div>
+
+		<div id="sub-nav">
+			<div class="page-title">
+				<h1>@RenderSection("PageTitle", true)</h1>
+                <br />
+			</div>
+		
+		</div>
+		<div class="clear"></div>
+		<div id="page-layout">
+			<div id="page-content">
+				<div id="page-content-wrapper">
+
+				 @RenderBody()
+
+
+
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div>
+     <div id="progress-bar" style="height:20px;vertical-align:middle">
+        <div style="width:100%; height:100%;background-image:url('@Url.Content("~/content/images/pbar-ani.gif")');background-repeat:repeat-x;" />
+    </div>
+</body>
+</html>

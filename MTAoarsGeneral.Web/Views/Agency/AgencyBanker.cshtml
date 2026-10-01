@@ -1,0 +1,19 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AgencyBankerDisplayViewModel
+           
+<table class="mta-panel four-columns-grid">
+    <caption>Agency Banker</caption>
+    <tr>
+        <th>Bank</th>
+        <td>@Html.DisplayFor(model=>model.Bank)</td>
+        <th>Account Type</th>
+        <td>@Html.DisplayFor(model=>model.AccountType)</td>
+    </tr>
+    <tr>
+        <th>Account Number</th>
+        <td>@Model.AccountNumber</td>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+@Html.PartialFor(model => model.Address, "~/Views/Agency/Address.cshtml")

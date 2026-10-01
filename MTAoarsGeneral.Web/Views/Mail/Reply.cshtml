@@ -1,0 +1,55 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Notifications.MailReplyViewModel
+
+<div id="reply-content">
+    <table class="mta-panel">
+        <caption>Reply</caption>
+        <tr>
+            <th>From</th>
+            <td>@Model.FromCompanyName</td>
+             <th>To</th>
+            <td>@Model.ToCompanyName</td>
+        </tr>
+        <tr>
+            <th>Subject</th>
+            <td colspan="3">@Html.BindTextBoxFor(model => model.Subject)</td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <textarea id="Body" data-bind="value:Body" style="width: 1000px; height: 150px;"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <button id="cancel-button" class="k-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                <button id="submit-button" class="k-button"><span class="k-icon k-i-tick"></span>Submit</button>
+            </td>
+        </tr>
+    </table>
+</div>           
+
+<script type="text/javascript">
+    $(function () {
+
+        addBreadCrumb("Reply", "javascript:showDiv('#index-reply')", 3);
+        
+        var replyViewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+        );
+
+        kendo.bind($("#reply-content"), replyViewModel);
+
+        $("#Body").kendoEditor();
+
+        $("#submit-button", "#reply-content").click(function() {
+            jsonPost("#reply-content", "@Url.Action("ReplySubmit")?" + getGuidQueryString(), replyViewModel, function(response) {
+                /*viewPost("#reply-content", response.RedirectUrl +"?" + getGuidQueryString(), replyViewModel, function (result) {
+                    postPage("#index-inbox", result);
+                });*/
+                loadPage("#index-inbox", response.RedirectUrl +"?" + getGuidQueryString());
+            });
+        });
+
+
+    });
+</script>

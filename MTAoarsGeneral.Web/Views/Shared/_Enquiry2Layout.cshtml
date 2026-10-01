@@ -1,0 +1,164 @@
+@using MTAoarsGeneral.Utilities.Mvc
+<!doctype html>
+<html>
+<head>
+    <title>Untitled Document</title>
+    @Html.StyleSheet("~/Content/Css/kendo.common.enquiry.min.css")
+    @Html.StyleSheet("~/Content/Css/kendo.uniform.min.css")
+    @Html.StyleSheet("~/Content/Css/Enquiry.css")
+
+    @Html.Script("~/Scripts/jquery-3.6.0.min.js")
+    @Html.Script("~/Scripts/jquery-migrate-3.0.0.js")
+    @Html.Script("~/Scripts/kendo.web.min.js")
+    @Html.Script("~/Scripts/site.js")
+
+    @RenderSection("CssScript", false)
+
+    <style type="text/css">
+        .mta-panel th {
+            border: 0px;
+            background-color: #e1e1e1 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="headerShadow">
+        </div>
+        <div class="headerWrap">
+            <div class="logo">
+                <a href="/Home.aspx">
+                    <img src="http://web.optima.net.my/mta/img/logo.png">
+                </a>
+            </div>
+            <div class="home-btn">
+                <a href="http://www.malaysiantakaful.com.my/Home.aspx" style="color: #0199cb; font-weight: bold;">
+                    HOME
+                </a>
+            </div>
+            <!-- #BeginLibraryItem "/Library/top-asite.lbi" -->
+            <div class="hgroup">
+            </div>
+            <!-- #EndLibraryItem -->
+            <div class="clockWrap">
+                <!--clock-->
+                <div class="clock">
+                    <div class="clear">
+                    </div>
+                </div>
+                <!--search-->
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+    </div>
+    <div class="nav">
+        <div class="navWrap">
+            <ul class="sf-menu sf-js-enabled sf-shadow">
+                <li class="">
+                    <a href="/Home.aspx">Home</a>
+                    <ul class="secLv" style="display: none; visibility: hidden;"></ul>
+                </li>
+                <li>
+                    <a href="/About-MTA/History-of-MTA.aspx">About MTA</a>
+                    <ul class="secLv" style="display: none; visibility: hidden;">
+                        <li>
+                            <a href="/About-MTA/History-of-MTA.aspx">History of MTA</a>
+                            <ul style="display: none; visibility: hidden;"></ul>
+                        </li>
+                        <li>
+                            <a href="/About-MTA/MTA-Mission-Vision.aspx">MTA Mission &amp; Vision</a>
+                            <ul style="display: none; visibility: hidden;"></ul>
+                        </li>
+                        <li>
+                            <a href="/About-MTA/Management-Committee/2011-2013.aspx">Management Committee</a>
+                            <ul style="display: none; visibility: hidden;">
+                                <li><a href="/About-MTA/Management-Committee/2011-2013.aspx">2011-2013</a></li>
+                                <li><a href="/About-MTA/Management-Committee/2013-2015.aspx">2013-2015</a></li>
+                                <li><a href="/About-MTA/Management-Committee/2015-2017.aspx">2015-2017</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/About-MTA/Takaful-Definitions.aspx">Takaful Definitions</a> </li>
+                        <li class="">
+                            <a href="/Library/Statistic/List.aspx">Library</a>
+                            <ul class="secLv" style="display: none; visibility: hidden;">
+                                <li>
+                                    <a href="/Library/Statistic/List.aspx">Statistics</a>
+                                    <ul style="display: none; visibility: hidden;"></ul>
+                                </li>
+                                <li>
+                                    <a href="/Library/Consumer-Education-Series/List.aspx">Consumer Education Series</a>
+                                    <ul style="display: none; visibility: hidden;"></ul>
+                                </li>
+                                <li>
+                                    <a href="/Library/MTA-Subcommittees.aspx">MTA Subcommittees</a>
+                                    <ul style="display: none; visibility: hidden;"></ul>
+                                </li>
+                                <li>
+                                    <a href="/Library/Guidelines/CPD-Programme.aspx">Guidelines</a>
+                                    <ul style="display: none; visibility: hidden;">
+                                        <li><a href="/Library/Guidelines/CPD-Programme.aspx">CPD Programme</a></li>
+                                        <li><a href="/Library/Guidelines/ROC.aspx">ROC</a></li>
+                                        <li>
+                                            <a href="/Library/Guidelines/Code-of-Ethics-Conducts.aspx">
+                                                Code of Ethics &amp;
+                                                Conducts
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="">
+                            <a href="/Career/Overview.aspx">Career</a>
+                            <ul class="secLv" style="display: none; visibility: hidden;">
+                                <li>
+                                    <a href="/Career/Overview.aspx">Overview</a>
+                                    <ul style="display: none; visibility: hidden;"></ul>
+                                </li>
+                                <li>
+                                    <a href="/Career/MTA-Members.aspx">Career in MTA Members</a>
+                                    <ul style="display: none; visibility: hidden;"></ul>
+                                </li>
+                                <li>
+                                    <a href="/Career/Submit-Resume.aspx">Submit Resume</a>
+                                    <ul style="display: none; visibility: hidden;"></ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="">
+                            <a href="/Contact-Info.aspx">Contact Info</a>
+                            <ul class="secLv" style="display: none; visibility: hidden;"></ul>
+                        </li>
+                    </ul>
+                    <div class="clear">
+                    </div>
+        </div>
+    </div>
+    @RenderBody()
+
+    <div class="footerSection">
+        <div class="footerContainer">
+            <div class="footer-wrap">
+                <address>
+                    <div>
+                        <img src="http://web.optima.net.my/mta/img/logo-footer.jpg">
+                    </div>
+                    <p>
+                        Copyrights ©
+                        @DateTime.Now.Year Malaysian Takaful Association. All Rights Reserved.
+                    </p>
+                </address>
+                <div class="design">
+                    <p>
+                        Best viewed using IE version 8.0 and above with 1024 x 768 resolution
+                    </p>
+                </div>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

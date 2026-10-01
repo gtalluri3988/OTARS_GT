@@ -1,0 +1,55 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.ViewModels.Interfaces
+@using MTAoarsGeneral.ViewModels.Operations
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+<div id="tabs">
+    <ul>
+      
+        @Html.Partial("Header", Model, ViewData)
+        <li id="directors">Directors</li>
+        <li id="shareholders">Shareholders</li>
+        <li id="additionalCorporateNominees">ACN</li>
+    </ul>
+
+            
+        @Html.ValSummary()
+        @Html.Partial("Details", Model, ViewData)  
+               
+        @TabHelper.DisplayPage("directors", 
+() => Html.PartialFor(model => ((IExistableBoardMembers)model).Directors, "../Registration/Directors"),
+Model is IExistableAgency ? 2:1,false)
+
+        @TabHelper.DisplayPage("shareholders",
+                  () => Html.PartialFor(model => ((IExistableBoardMembers)model).Shareholders, "../Registration/Shareholders"),
+                           Model is IExistableAgency ? 3 : 2, true)
+
+      @TabHelper.DisplayPage("additionalCorporateNominees",
+                  () => Html.PartialFor(model => model.AdditionalCorporateNominee, "../Registration/AdditionalCorporateNominee"),
+                           Model is IExistableAgency ? 4 : 3, true)   
+           
+           
+  
+</div>
+<script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=CBM", 1);
+        addBreadCrumb("Change Board Members", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        $("#submit-button", "#main-content").click(function() {
+            jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", {"directors":mainViewModel.Directors,"shareHolders":mainViewModel.Shareholders}, function(response) {
+                if(response.Result)
+               {    
+                alert("Directors and Share holders saved successfully");
+                window.location.href="Search?maintenanceType=CBM";
+               }
+                });
+           
+        });
+
+    });
+</script>

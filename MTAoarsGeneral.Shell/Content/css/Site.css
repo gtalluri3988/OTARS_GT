@@ -1,0 +1,14 @@
+﻿.k-large
+{
+    width:400px;
+}
+
+div.largeControl select 
+{
+    width:500px;
+}
+
+.mandatory 
+{
+    color:Red;
+}

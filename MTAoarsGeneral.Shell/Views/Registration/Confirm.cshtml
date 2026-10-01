@@ -1,0 +1,38 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.ViewModels.Operations
+@using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.AgencyDisplayViewModel
+<div id="mainContent">
+    <div class="column-content-box">
+        <div class="content-box
+content-box-header ui-corner-all">
+            <div class="ui-state-default ui-corner-top ui-box-header">
+                <span class="ui-icon float-left ui-icon-notice"></span>Confirmation
+            </div>
+            <div class="content-box-wrapper">
+                <h2>
+                    Registration Confirmation</h2>
+                <div id="agencyAccordion">
+                    @Html.PartialFor(model => model, "~/Views/Agency/Index.cshtml")
+                    <br />
+                    @Html.PartialFor(model => model.Nominee, "~/Views/Agency/Nominee.cshtml")
+                    <br />
+                    @Html.PartialFor(model => model.Address, "~/Views/Agency/Address.cshtml")
+                    <br />
+                    @if (Model.Spouse != null) {
+                        @Html.PartialFor(model => model.Spouse, "~/Views/Agency/Spouse.cshtml")
+                        <br />
+                    }
+                    @Html.PartialFor(model => model.Partners, "~/Views/Agency/Partner.cshtml")
+                    <br />
+                    @Html.PartialFor(model => model.Directors, "~/Views/Agency/Director.cshtml")
+                    <br />
+                    @Html.PartialFor(model => model.Shareholders, "~/Views/Agency/Shareholder.cshtml")
+                    <br />
+                    @Html.PartialFor(model => model.Guarantor, "~/Views/Agency/Guarantor.cshtml")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

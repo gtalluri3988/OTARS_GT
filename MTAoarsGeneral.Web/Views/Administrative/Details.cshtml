@@ -1,0 +1,72 @@
+@model MTAoarsGeneral.ViewModels.Operations.TBEEnquirySearchViewModel
+@using MTAoarsGeneral.Utilities.Mvc
+<div id="main-content" data-page-div="true">
+    @Html.ValidationSummary()
+    @*@using (Html.BeginForm("Edit", "Administrative", FormMethod.Post, new { id = "formSubmit" }))
+    {*@
+        <table class="mta-panel">
+            <caption>Details</caption>
+            @Html.HiddenFor(x => x.Result.ID)
+            @Html.HiddenFor(x => x.Result.Exam)
+            <tr>
+                <th>IC Number</th>
+                <th>Name</th>
+                <th>Grade</th>
+                @if (Model.Result.Exam == MTAoarsGeneral.Utilities.Constants.LookupConstants.TbeCategory.IBFIM)
+                {
+                    <th>Result</th>
+                }
+                <th>Exam Date</th>
+                <th></th>
+            </tr>
+            <tr>
+                <td>@Html.BindTextBoxFor(x => x.Result.ICNumber)</td>
+                <td>@Html.BindTextBoxFor(x => x.Result.Name)</td>
+                <td>@Html.BindDropDownListFor(x => x.Result.Grade,Url.Action("Grade", "Lookup"))</td>
+                @if (Model.Result.Exam == MTAoarsGeneral.Utilities.Constants.LookupConstants.TbeCategory.IBFIM)
+                {
+                    <td>@Html.BindDropDownListFor(x => x.Result.Result,Url.Action("Result","Lookup"))</td>
+                }
+                <td>@Html.EditorFor(x => x.Result.ExamDate,"DateEditor")</td>
+                
+                <td class="for-button"><button id="SubmitBtn" type="submit" class="k-button"><span></span>SAVE</button></td>
+            </tr>
+        </table>
+    @*}*@
+</div>
+
+<div style="float:right">
+
+</div>
+<div style="clear:both"></div>
+
+<script type="text/javascript">
+    
+    var detailViewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+        );
+
+    kendo.bind($("#main-content"), detailViewModel)
+
+    $('#SubmitBtn', '#main-content').click(function () {
+        
+        jsonPost("#main-content", "@Url.Action("Edit")", detailViewModel , function (response) {
+
+            alert(response.Message);
+
+            viewPost("#main-content", "@Url.Action("Details")", { id: response.Data.Result.ID, ResultType: response.Data.Result.Exam }, function(response) {
+                addBreadCrumb("TBE Result", "javascript:showDiv('#enquiry-search')", 1);
+                addBreadCrumb("EditResult", "#", 2);
+                //showDiv("#main-content");
+                $("#main-content").html(response);
+        });
+
+        });
+    });
+    
+    function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+
+</script>

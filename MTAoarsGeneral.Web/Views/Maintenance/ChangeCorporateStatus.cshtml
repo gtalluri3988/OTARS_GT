@@ -1,0 +1,45 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.ViewModels.Interfaces
+@using MTAoarsGeneral.ViewModels.Operations
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+@Html.PartialFor(model => model.Agency, "Agency")
+<br />
+<div style="text-align: center">
+    @if (Model.AgencyType.Code == LookupConstants.AgencyType.PrivateLimitedCompany) {
+        <button class="k-button" id="button-to-public-limited">
+            <span class="k-icon k-i-tick"></span>Change to Public Limited Company</button>
+    }
+    @if (Model.AgencyType.Code == LookupConstants.AgencyType.PublicLimitedCompany) {
+        <button class="k-button" id="button-to-private-limited">
+            <span class="k-icon k-i-tick"></span>Change to Private Limited Company</button>
+    }
+</div>
+<script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=CCS", 1);
+        addBreadCrumb("Change Corporate Status", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        $("#button-to-public-limited").click(function() {
+            changeAgencyType("@LookupConstants.AgencyType.PublicLimitedCompany");
+        });
+         $("#button-to-private-limited").click(function() {
+            changeAgencyType("@LookupConstants.AgencyType.PrivateLimitedCompany");
+        });
+
+    });
+    function changeAgencyType(typeCode) {
+        jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", { typeCode:typeCode}, function(response) {
+            if(response.Result){    
+            alert("Corporate status changed successfully");
+            window.location.href="Search?maintenanceType=CCS";
+            }
+        });
+           
+    }
+</script>

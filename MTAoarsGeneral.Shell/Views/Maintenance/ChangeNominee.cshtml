@@ -1,0 +1,23 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+    <div id="maintenanceTabs">
+        <ul>
+            <li><a href="#nominee">Nominee</a></li>          
+      
+              
+        </ul>
+ @using (Html.BeginForm("SaveAddress", "Maintenance", new { id = "mainForm" }))
+ {
+            
+            @Html.ValSummary()
+            @TabHelper.DisplayPage("nominee", "Details for corporate nominee",
+                              () => Html.PartialFor(model => model.CorporateNominee, "../Registration/CorporateNominee",false),
+                         nextPage: "submit")           
+         
+              
+            
+           
+           
+ }
+        
+    </div>

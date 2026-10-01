@@ -1,0 +1,112 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Interfaces.IExistableBoardMembers
+
+<div class="hastable" id="shareholderContent" class="k-content">
+
+    <button data-bind="event:{click:addShareholder}" type="button" class="k-button" style="width:200px">
+        Add new</button>
+    <button data-bind="event:{click:copyDirectors}" type="button" class="k-button" style="width:200px">
+        Copy From Directors</button>
+        @Html.ValMsgFor(model=>model.Shareholders.Count)
+    <br />
+    <br />
+    <table id="kendoGrid">
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    IC Type ID
+                </th>
+                <th>
+                    New IC @@ Passport Num
+                </th>
+                <th>
+                    Old IC / Passport
+                </th>
+                <th>
+                    Share Amount
+                </th>
+                <th>
+                    Share Percentage
+                </th>
+                <th>
+                    Delete
+                </th>
+            </tr>
+        </thead>
+        <tbody data-bind="template:{name:'shareholder-template', foreach:shareholders}">
+        </tbody>
+    </table>
+    <script type="text/html" id="shareholder-template">
+		<tr>
+			<td>
+				<input data-bind="value:Name" class="k-textbox"/>
+			</td>
+            <td>
+				<select data-bind="options:$parent.icTypes, value:ICTypeID,
+					optionsText:'Description',
+					optionsValue:'ID'" >
+				</select>
+			</td>
+			<td><input data-bind="value:ICNumber" class="k-textbox"/></td>
+			<td><input data-bind="value:OldICNumber" class="k-textbox"/></td>
+            <td><input data-bind="value:ShareAmount" class="k-textbox"/></td>
+            <td><input data-bind="value:SharePercentage" class="k-textbox"/></td>
+            <td> <a class="k-button" data-bind="event:{click:$parent.deleteShareholder}"><span class="k-icon k-i-close"></span></a></td>
+		</tr>
+    </script>
+  <input type="hidden" name="@ViewData.TemplateInfo.HtmlFieldPrefix.GetModelProperty("shareholders")" data-bind="jsonHidden:shareholders" />
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        function ShareholderModel() {
+            var self = this;
+
+            self.shareholders = ko.observableArray([]);
+
+            self.icTypes =  ko.observableArray(@Html.Raw(@Json.Encode(Model.ICTypes)));
+
+            self.load = function () {
+                ko.mapping.fromJS(@Html.Raw(@Json.Encode(Model.Shareholders)), self.shareholders);
+            }
+
+            self.addShareholder = function () {
+                self.shareholders.push(ko.mapping.fromJS({
+                    Name: "", ICNumber: "", OldICNumber: "", ShareAmount : "", SharePercentage : "", ICTypeID : ""
+                }));
+            }
+
+            self.deleteShareholder = function () {
+                self.shareholders.remove(this);
+            }
+
+            self.copyDirectors = function () {
+                ko.utils.arrayForEach(directorViewModel.directors(), function (item) {
+                    if(self.isExists(item.ICNumber())) return;
+                    self.shareholders.push(ko.mapping.fromJS({
+                        Name: item.Name(), ICNumber: item.ICNumber(), OldICNumber: item.OldICNumber(), ShareAmount : "", SharePercentage : "", ICTypeID : item.ICTypeID()
+                    }));
+                });
+            }
+
+            self.isExists = function(icNumber) {
+                var result = false;
+                ko.utils.arrayForEach(self.shareholders(), function (item) {
+                    if(item.ICNumber() == icNumber) result = true;
+                });
+                return result;
+            }
+        }
+
+        var shareholderViewModel = new ShareholderModel();
+        shareholderViewModel.load();
+        ko.applyBindings(shareholderViewModel, document.getElementById("shareholderContent"));
+
+
+    });
+    
+</script>

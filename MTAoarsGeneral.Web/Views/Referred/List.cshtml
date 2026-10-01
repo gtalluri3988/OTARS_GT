@@ -1,0 +1,112 @@
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Maintenance.ReferredHeaderViewModel
+<div id="list-content">
+    <div id="list-grid"></div>
+    <br />
+        @if (Model.Status.Code == LookupConstants.ReferredHeaderStatus.Saved) {
+            <button id="submit-button" class="k-button"><span class="k-icon k-i-tick"></span>Submit</button>
+        }
+</div>
+
+<script type="text/javascript">
+    var listViewModel;
+    $(function () {
+
+       addBreadCrumb("List", "javascript:showDiv('#create-list')", 2);
+
+        listViewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+
+        var referredSchema = {
+            model: {
+                id: "ID",
+                fields: {
+                    IsApproved: {type:"boolean"},
+                    ReasonID: {type:"number"},
+                    StatusID: {type:"number"},
+                    CategoryID: { type: "number" },
+                    IsGeneral: { type: "boolean" },
+                }
+            }
+        }
+        var getCategoriesAsync = getAsyncFunction("@Url.Action("ReferredCategories", "Lookup")");
+        var getReasonsAsync = getAsyncFunction("@Url.Action("ReferredReasons", "Lookup")");
+        var getStatusAsync = getAsyncFunction("@Url.Action("ReferredDetailStatuses", "Lookup")");
+        var gridDataSource = new kendo.data.DataSource({
+            type: "odata", serverPaging: true, serverFiltering: true, pageSize: 5, serverSorting: true, 
+            transport: {
+                read: { 
+                    url: masterDataServiceUrl + "/ReferredDetails",
+                    headers: {  DataServiceVersion: "2.0", MaxDataServiceVersion: "2.0" }
+                },
+                destroy: {
+                    url: function (data) {
+                        return masterDataServiceUrl + "/ReferredDetails(" + data.ID + "L)";
+                    },
+                    type: "POST", dataType: "json",
+                    headers: { CurrentOperation: "Delete"}
+                }
+            },
+            filter: {"filters":[{"field":"HeaderID","operator":"eq","value":startViewModel.ID}]},
+            schema: referredSchema
+        });
+
+        $.when(getCategoriesAsync()).done(function(categories) {
+           $.when(getReasonsAsync()).done(function(reasons) {
+               $.when(getStatusAsync()).done(function(statuses) {
+                   $("#list-grid").kendoGrid({
+                        dataSource: gridDataSource,
+                        pageable:true,
+                        sortable:true,
+                        filterable:true,
+                        selectable:true,
+                        editable:"inline",
+                        columns: [
+                            { field: "Name" },
+                            { field: "ICNumber" },
+                            { field: "OldICNumber" },
+                            { field: "CategoryID", values:categories, title:"Category"},
+                            { field: "ReasonID", values:reasons, title:"Reason"},
+                            { field: "StatusID", values:statuses, title:"Status"},
+                            { field: "ID", template:"<button class='k-button' onclick='onViewClick(#=ID#)'><span class='k-icon k-i-pencil'></span>View</button>", filterable:false, title:" "}
+                            @if(Model.Status.Code == LookupConstants.ReferredHeaderStatus.Saved) {
+                                @:,{ command: ["destroy"]}
+                            }
+                        ]
+                        ,toolbar:[{template:"#if(listViewModel.Status.Code == '@LookupConstants.ReferredHeaderStatus.Saved'){#<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button>#}#"}]
+                        ,dataBound:function(e) {
+                            if($("#list-grid").data("kendoGrid").dataSource._data.length == 0) {
+                                $("#submit-button", "#list-content").hide();
+                            }else {
+                                $("#submit-button", "#list-content").show();
+                            }
+                        }
+                    });
+                });
+            });
+        });
+
+
+        $("#submit-button", "#list-content").click(function() {
+            jsonPost("#list-content", "@Url.Action("Submit")", {headerId: startViewModel.ID}, function(response) {
+                loadPage("#create-complete", "@Url.Action("Complete")");
+                refreshHeaderGrid();
+            });
+        });
+
+    });
+
+    function onAddClick() {
+        loadPage("#create-detail", "@Url.Action("NewDetail")");
+    }
+
+    function onViewClick(id) {
+        viewPost("#list-content", "@Url.Action("Display")", {detailId: id}, function(response) {
+            postPage("#create-detail", response);
+        });
+    }
+
+    function refreshListGrid() {
+        $("#list-grid").data("kendoGrid").dataSource.read();
+    }
+
+</script>

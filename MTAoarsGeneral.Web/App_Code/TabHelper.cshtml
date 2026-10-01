@@ -1,0 +1,46 @@
+@using System.Web.Mvc
+@using MTAoarsGeneral.Utilities.Mvc
+
+@helper DisplayPage(string currentPage, Func<MvcHtmlString> method, int index, bool isLastPage) {
+    
+    <div id="@currentPage">
+        <div class="mta-tab-content">
+             @method()
+        </div>
+         <br />
+        <div class="mta-tab-buttons">
+            @if(index > 0) {
+               <button  class="k-button" data-linkto="@(index - 1)"><span class="k-icon k-i-arrow-w"></span>Previous</button>
+            }
+            @if (isLastPage == false) {
+                <button  class="k-button" data-linkto="@(index + 1)"><span class="k-icon k-i-arrow-e"></span>Next</button>
+            }else {
+                <button  class="k-button" id="submit-button"><span class="k-icon k-i-arrow-e"></span>Next</button>
+            }
+        </div>
+    </div>
+  
+}
+
+@helper RegisterTabScript() {
+    <script type="text/javascript">
+
+        $(function () {
+
+          //  $("input[type='text']").addClass("k-textbox");
+
+            var tabStrip = $("#tabs").kendoTabStrip({
+                animation: { open: { effects: "fadeIn"} }
+            }).data("kendoTabStrip");
+
+            $("button[data-linkto]").click(function () {
+                var strip = $("#tabs").data("kendoTabStrip");
+                var index = $(this).attr("data-linkto");
+                strip.select(strip.tabGroup.children("li").eq(index));
+            });
+
+        });
+
+    </script>
+}
+

@@ -1,0 +1,135 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.CBCHeaderViewModel
+<div id="list-content">
+    <div id="list-header" style="text-align: center">
+        <table class="mta-panel">
+            <caption>Header</caption>
+            <tr>
+                <th>Company</th>
+                <th>@Model.Company.Description</th>
+                <th>Status</th>
+                <th>@Model.Status.Description</th>
+            </tr>
+            <tr>
+                <th>Year</th>
+                <th>@Model.Year</th>
+                <th>Quarter</th>
+                <th>@Model.Quarter</th>
+            </tr>
+        </table>
+        <br />
+    </div>
+    @Html.ValSummary()
+    <div id="cbc-grid"></div>
+</div>
+
+<script type="text/x-kedno-template" id="toolbar-template">
+    <table class='mta-panel'>
+        <tr>
+            <th colspan="3">
+                @if(Html.IsMTA() || Html.IsISM()) {
+                    <button class="k-button" onclick="javascript:onApproveClick()"><span class="k-icon k-i-tick"></span>Approve</button>
+                    <button class="k-button" onclick="javascript:onRejectClick()"><span class="k-icon k-i-cancel"></span>Reject</button>
+                } else {
+                    <button class="k-button" onclick="javascript:onSubmitClick()"><span class="k-icon k-i-tick"></span>Submit</button>
+                }
+            </th>
+        </tr>
+        <tr>
+            <th>Agency Number</th>
+            <td><input id="agency-number" type="text" class="k-textbox"/></td>
+            <td><button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button></td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/javascript">
+    var grid;
+    $(function () {
+        addBreadCrumb("List", "javascript:showDiv('#create-list')", 2);
+
+        var cbcSchema = {
+            model: {
+                id: "ID",
+                fields: {
+                    CompanyID: {type:"number"}
+                }
+            }
+        }
+        
+        var gridDataSource = new kendo.data.DataSource({
+            type: "odata", serverPaging: true, serverFiltering: true, pageSize: 5, serverSorting: true, 
+            transport: {
+                read: { 
+                    url: masterDataServiceUrl + "/CBCViewDetails",
+                    headers: {  DataServiceVersion: "2.0", MaxDataServiceVersion: "2.0" }
+                },
+                destroy: {
+                    url: function (data) {
+                        return masterDataServiceUrl + "/CBCDetails(" + data.ID + "L)";
+                    },
+                    type: "POST", dataType: "json",
+                    headers: { CurrentOperation: "Delete"}
+                }
+            },
+            //filter: {field: "CompanyID", operator: "eq", value: @Model.Company.ID}
+            filter:{"filters":[{"field":"CompanyID","operator":"eq","value":@Model.Company.ID},
+                               {"field":"Year","operator":"eq","value":@Model.Year},
+                               {"field":"Quarter","operator":"eq","value":@Model.Quarter}],
+                    "logic":"and"},
+            schema: cbcSchema
+        });
+
+       grid =  $("#cbc-grid").kendoGrid({
+            dataSource: gridDataSource,  pageable:true, sortable:true,  filterable:true, selectable:true, editable:"inline",
+            columns: [
+                {field: "AgencyNumber", title: "Agency Number"}, {field: "IntermediaryTypeDescription", title: "Intermediary Type"}, 
+                {field: "NomineeName", title: "Nominee Name"}, {field: "NomineeICNumber", title: "Nominee IC Number"},
+                { command: ["destroy"]}
+            ],
+            toolbar:kendo.template($("#toolbar-template").html())
+        });
+    });
+
+    function onAddClick() {
+        var agencyNumber = grid.find("#agency-number").val();
+        var addModel = {headerId: @Model.ID, agencyNumber:agencyNumber, companyId: @Model.Company.ID};
+        jsonPost("#list-content", "@Url.Action("Search")" , addModel, function(response) {
+            if(response.Result) {
+                grid.data("kendoGrid").dataSource._data.splice(0, 0, response.Data);
+            }
+        });
+    }
+
+    function onSubmitClick() {
+        changeStatus("@Url.Action("Submit")", function(response) {
+             showCompletePage(response);
+        });
+    }
+
+
+    function onApproveClick() {
+        changeStatus("@Url.Action("Approve")", function(response) {
+             showCompletePage(response);
+        });
+    }
+
+    function onRejectClick() {
+        changeStatus("@Url.Action("Reject")", function(response) {
+             showCompletePage(response);
+        });
+    }
+
+    function changeStatus(url, callback) {
+        var model = {headerId:@Model.ID};
+        jsonPost("#cbc-grid", url , model, function(response) {
+           callback(response);
+        });
+    }
+
+    function showCompletePage(response) {
+        addBreadCrumb("Complete", "javascript:showDiv('#create-complete')", 2);
+        var html = "<div class='k-block k-success-colored'> " + response.Message + "</div>";
+        postPage("#create-complete", html);
+    }
+</script>

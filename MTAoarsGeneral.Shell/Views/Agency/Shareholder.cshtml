@@ -1,0 +1,42 @@
+@model List<MTAoarsGeneral.ViewModels.Operations.MemberDisplayViewModel>
+@if (Model.Count > 0) {
+    <h4>
+        <a href="#">Shareholders</a></h4>
+    <div class="hastable">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        New IC @@ Passport Num
+                    </th>
+                    <th>
+                        Old IC / Passport
+                    </th>
+                    <th>
+                       Share Amount
+                    </th>
+                    <th>
+                       Share Percentage
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var shareholder in Model) {
+                    <tr>
+                        <td>@shareholder.Name
+                        </td>
+                        <td>@GlobalHelper.Coalesce(shareholder.NewICNumber, shareholder.PassportNumber)
+                        </td>
+                        <td>@shareholder.OldICNumber
+                        </td>
+                        <td>@shareholder.ShareAmount</td>
+                        <td>@shareholder.SharePercentage</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

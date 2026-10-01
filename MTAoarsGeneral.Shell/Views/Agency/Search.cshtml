@@ -1,0 +1,20 @@
+@model MTAoarsGeneral.ViewModels.Operations.
+
+
+<div class="hastable">
+    <table>
+        <tr>
+            <td>Agency Number</td>
+            <td>@Html.TextBoxFor(model=>model.AgencyNumber)</td>
+            <td>Business Regn Number</td>
+            <td>@Html.TextBoxFor(model => model.BusinessRegistrationNumber)</td>
+            <td>Name</td>
+            <td>@Html.TextBoxFor(model=>model.MemberName)</td>
+            <td>IC / Passport Number</td>
+            <td>@Html.TextBoxFor(model=>model.ICNumber)</td>
+            <td>
+                <a href="#" id="search" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-search"></span>Search</a>
+            </td>
+        </tr>
+    </table>
+</div>

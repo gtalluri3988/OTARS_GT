@@ -1,0 +1,47 @@
+@using MTAoarsGeneral.Utilities.Constants
+@model List<MTAoarsGeneral.ViewModels.Operations.AgencyPrincipalDisplayViewModel>
+
+<div style="width:100%">
+<h4>Principals</h4>
+
+<div class="agency-principal-grid" >
+</div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        //alert(kendo.stringify(@Html.Raw(@Json.Encode(Model))));
+        $(".agency-principal-grid").kendoGrid({
+            dataSource: {
+                data: @Html.Raw(@Json.Encode(Model)),
+                schema: {
+                    model: {
+                        fields: {
+                            CompanyID:{type:"number"}, CompanyCode:{type:"string"}, ValidFrom:{type:"date", format:"dd/MM/yyyy"}, ValidTo:{type:"date"}
+                           
+                        }
+                    }
+                }
+            },
+            sortable:true,
+           columns:[
+                {field:"AgencyNumber", title:"AgencyNumber"}, 
+                {field:"AgencyTypeDescription", title:"Type"},
+                {field:"ItermediaryTypeDescription", title:"Intermediary Type"}, {field:"CompanyName", title:"Company"}, 
+                {field:"Statuses", title:"Status"},
+                {field:"IsBancaStaff",title:"Banca",width:50, template: showBancaTemplate},
+                {field:"Remarks",title:"Remarks"},
+                {field:"DateAppointed", title:"Date Appointed", template:"#=formatDate(DateAppointed)#"},
+                {field:"ValidFrom", title:"Valid From", template:"#=formatDate(ValidFrom)#"},
+                {field:"ValidTo", title:"Valid To",  template:"#=formatDate(ValidTo)#"}, 
+                {field:"TerminationDate", title:"Termination Date",  template:"#=formatDate(TerminationDate)#"},
+                {field:"Member",title:"Member",width:100}
+           ]
+        });
+        function showBancaTemplate(data)
+         {
+             if(data.IsBancaStaff) return 'Yes';
+              return 'No';
+         }
+    });
+</script>

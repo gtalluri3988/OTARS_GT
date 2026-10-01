@@ -1,0 +1,150 @@
+@model MTAoarsGeneral.ViewModels.Administrative.RenewalDetailsViewModel
+@using MTAoarsGeneral.Utilities.Mvc
+
+<div id="MainContent" data-page-dive="true">
+    <table class="mta-panel">
+        <caption>Search Renewal</caption>
+        <tr>
+            <th>Company Name</th>
+            <th>@Html.BindTextBoxFor(x => x.CompanyName)</th>
+            @*<th class="for-button"><button id="SearchBtn" class="k-button"><span class="k-icon k-i-search"></span>Search</button></th>*@
+        </tr>
+    </table>
+
+    &nbsp;
+
+    <div id="AgencyGrid"></div>
+    &nbsp;
+    <div id="CompanyFields" hidden>
+        <table class="mta-panel">
+            <tr>
+                <th>
+                    Takaful Operator
+                </th>
+                <td>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    &nbsp;
+    <div id="Grid"></div>
+</div>
+
+
+<script type="text/javascript">
+
+    var viewModel = kendo.observable(@Html.Raw(Json.Encode(Model)));
+
+    kendo.bind($('#MainContent'), viewModel);
+
+    addBreadCrumb("Renewal", "Renewal", 1);
+
+    $('#CompanyName').keyup(function () {
+        $('#Grid').hide();
+        $("#CompanyFields").hide();
+        $("#CompanyFields table tr td").html("");
+        LoadSearchCompany($('#CompanyName').val().toUpperCase());
+    });
+
+    function GridBind() {
+        $('#AgencyGrid').kendoGrid({
+            dataSource: {
+                data : viewModel.Companies
+            },
+            selectable: true,
+            columns: [
+                { field: "Name", title: "Company Name" },
+                { field: "Abbreviation", title: "Abbreviation" },
+                { field: "BusinessRegNo", title: "Business Registration Number" },
+                { field: "Detail", title: " ", template: showButton }
+            ]
+
+        })
+        $('#AgencyGrid').show();
+
+    }
+
+    function showButton(data) {
+        if (data.ID <= 0)
+            return '';
+        return "<button class='k-button' onclick='showDetails(" + data.ID + ")'><span class='k-icon k-i-pencil'></span>Details</button>";
+    }
+
+    function LoadSearchCompany(value) {
+
+        jsonPost("#MainContent", "@Url.Action("SearchCompany")", { CompanyName: value }, function (output) {
+
+            viewModel.Companies = [];
+
+            for (var i = 0; i < output.Data.length; i++) {
+                viewModel.Companies.push(output.Data[i]);
+            }
+            
+            GridBind()
+
+        });
+    }
+
+    function showDetails(companyID) {
+        jsonPost("#MainContent", "@Url.Action("RenewalHeader")", { companyID: companyID }, function (output) {
+            viewModel.RenewalHeader = [];
+            
+            for (var i = 0; i < output.RenewalHeader.length; i++) {
+
+                viewModel.RenewalHeader.push(output.RenewalHeader[i]);
+
+            }
+
+            RenewalHeaderGridBind();
+
+            $("#CompanyFields").show();
+            $("#CompanyFields table tr td").prepend(""+ output.CompanyName +"");
+        })
+    }
+
+    $('#SearchBtn').click(function () {
+        alert("hi")
+    });
+
+
+    function RenewalHeaderGridBind() {
+        $('#AgencyGrid').hide();
+        $('#Grid').kendoGrid({
+            dataSource: {
+                data: viewModel.RenewalHeader
+            },
+            selectable: true,
+            columns: [
+                { field: "Year", title: "Year" },
+                { field: "Quarter", title: "Quarter" },
+                { field: "Status", title: "Status" },
+                { field: "Detail", title: " ", template: ShowRenewalDetailsBtn }
+            ]
+
+        })
+
+        $('#Grid').show();
+    }
+
+    function ShowRenewalDetailsBtn(data) {
+        if (data.ID <= 0)
+            return '';
+        return "<button class='k-button' onclick='ShowRenewalDetails(" + data.ID + ")'><span class='k-icon k-i-pencil'></span>Details</button>";
+    }
+
+    function ShowRenewalDetails(HeaderID) {
+
+        viewPost("#MainContent", "@Url.Action("RenewalDetails")", { headerID: HeaderID }, function (output) {
+            showDiv("#MainContent");
+            $("#MainContent").html(output);
+        });
+    }
+
+    function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+
+</script>

@@ -1,0 +1,52 @@
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.AgencyDisplayViewModel
+<h4>
+    <a href="#">Agency</a></h4>
+<div class="hasdetailtable">
+    <table>
+        <tr>
+            <td>
+                <b>Name</b>
+            </td>
+            <td>@Model.Name
+            </td>
+            <td>
+                <b>Type</b>
+            </td>
+            <td>@Model.TypeDescription
+            </td>
+        </tr>
+        <tr>
+            <td><b>Corporate Status</b></td>
+            <td>
+                @if(Model.TypeCode == LookupConstants.AgencyType.Individual) {
+                    <span>IND</span>
+                }else {
+                    <span>CORP</span>
+                }
+            </td>
+            @if (Model.TypeCode != LookupConstants.AgencyType.Individual) {
+            <td><b>Businesss Registration Number</b></td>
+            <td>@Model.BusinessRegistrationNumber</td>
+            }
+        </tr>
+        @if (Model.TypeCode == LookupConstants.AgencyType.PrivateLimitedCompany
+            || Model.TypeCode == LookupConstants.AgencyType.PublicLimitedCompany
+            || Model.TypeCode == LookupConstants.AgencyType.Cooperative
+            || Model.TypeCode == LookupConstants.AgencyType.GovernmentAgency) {
+        <tr>
+            <td>
+                <b>Authorized Captial</b>
+            </td>
+            <td>@Html.DisplayFor(model => model.AuthorizedCapital, "Decimal")
+            </td>
+            <td>
+                <b>Paidup Capital</b>
+            </td>
+            <td>@Html.DisplayFor(model => model.PaidupCapital, "Decimal")
+            </td>
+        </tr>
+        }
+    </table>
+</div>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E5552861-4E30-4D12-8077-97EBADBE4EAA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MTAoarsGeneral.Repositories</RootNamespace>
+    <AssemblyName>MTAoarsGeneral.Repositories</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.Interception.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.6\lib\net40-client\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Torrent.Caching, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Torrent.Caching.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Accounts\MenuRepository.cs" />
+    <Compile Include="Accounts\UserRepository.cs" />
+    <Compile Include="Administrative\ReferredMemberRepository.cs" />
+    <Compile Include="Interfaces\IAdministrativeUnitOfWork.cs" />
+    <Compile Include="Interfaces\IPhotoRepository.cs" />
+    <Compile Include="Interfaces\IALCRepository.cs" />
+    <Compile Include="Interfaces\IReferredMemberRepository.cs" />
+    <Compile Include="Interfaces\IUploadRepository.cs" />
+    <Compile Include="Interfaces\IConflictRepository.cs" />
+    <Compile Include="Interfaces\IReferredRepository.cs" />
+    <Compile Include="Interfaces\ICBCRepository.cs" />
+    <Compile Include="Interfaces\ICPDRepository.cs" />
+    <Compile Include="Interfaces\IReportRepository.cs" />
+    <Compile Include="Interfaces\IMenuRepository.cs" />
+    <Compile Include="Interfaces\ITbeExemptionRepository.cs" />
+    <Compile Include="Interfaces\IMiiResultRepository.cs" />
+    <Compile Include="Interfaces\IIbfimResultRepository.cs" />
+    <Compile Include="Interfaces\IInvoiceRepository.cs" />
+    <Compile Include="Interfaces\IMailRepository.cs" />
+    <Compile Include="Interfaces\IRenewalRepository.cs" />
+    <Compile Include="Interfaces\INotificationRepository.cs" />
+    <Compile Include="Interfaces\IActivityRepository.cs" />
+    <Compile Include="Interfaces\ICompanyRepository.cs" />
+    <Compile Include="Interfaces\IAgencyUnitOfWork.cs" />
+    <Compile Include="Interfaces\IAgencyRepository.cs" />
+    <Compile Include="Interfaces\IRunnerRepository.cs" />
+    <Compile Include="Interfaces\ILookupRepository.cs" />
+    <Compile Include="Interfaces\IRegistrationUnitOfWork.cs" />
+    <Compile Include="Interfaces\IUnitOfWork.cs" />
+    <Compile Include="Interfaces\IMemberRepository.cs" />
+    <Compile Include="Interfaces\IUserRepository.cs" />
+    <Compile Include="Maintenance\ReferredRepository.cs" />
+    <Compile Include="Notifications\MailRepository.cs" />
+    <Compile Include="Notifications\NotificationRepository.cs" />
+    <Compile Include="Operations\AdministrativeUnitOfWork.cs" />
+    <Compile Include="Operations\AgencyRepository.cs" />
+    <Compile Include="Operations\CBCRepository.cs" />
+    <Compile Include="Operations\ConflictRepository.cs" />
+    <Compile Include="Operations\ALCRepository.cs" />
+    <Compile Include="Operations\UploadRepository.cs" />
+    <Compile Include="Operations\CPDRepository.cs" />
+    <Compile Include="Operations\TbeExemptionRepository.cs" />
+    <Compile Include="Operations\MiiResultRepository.cs" />
+    <Compile Include="Operations\IbfimResultRepository.cs" />
+    <Compile Include="Operations\InvoiceRepository.cs" />
+    <Compile Include="Operations\RenewalRepository.cs" />
+    <Compile Include="Operations\AgencyUnitOfWork.cs" />
+    <Compile Include="Operations\MemberRepository.cs" />
+    <Compile Include="Reports\AdministrativeAuditTrailReportRepository.cs" />
+    <Compile Include="Reports\AsciiReportRepository.cs" />
+    <Compile Include="Reports\ActiveAgentsStatisticsReportRepository.cs" />
+    <Compile Include="Reports\BulkRegistrationReportRepository.cs" />
+    <Compile Include="Reports\AgentsReportRepository.cs" />
+    <Compile Include="Reports\ALCReportRepository.cs" />
+    <Compile Include="Reports\PhotoUploadSummaryReportRepository.cs" />
+    <Compile Include="Reports\ResignedActiveAgentReportRepository.cs" />
+    <Compile Include="Reports\TBEExaminationReportRepository.cs" />
+    <Compile Include="Reports\TbeExemptionReportRepository.cs" />
+    <Compile Include="Reports\TBESpecialAgentsReportResultRepository.cs" />
+    <Compile Include="Reports\ReferredListingReportRepository.cs" />
+    <Compile Include="Reports\TrainingDetailReportRepository.cs" />
+    <Compile Include="Reports\TerminatedAgentsStatisticsReportRepository.cs" />
+    <Compile Include="Reports\RenewalAsciiReportRepository.cs" />
+    <Compile Include="Reports\SummaryReportRepository.cs" />
+    <Compile Include="Reports\CPDReportRepository.cs" />
+    <Compile Include="Reports\RenewalStatisticsReportRepository.cs" />
+    <Compile Include="Reports\NewRegistrationStatisticsReportRepository.cs" />
+    <Compile Include="Reports\TBEReportResultRepository.cs" />
+    <Compile Include="Reports\UserLoginReportRepository.cs" />
+    <Compile Include="Reports\InvoiceReportRepository.cs" />
+    <Compile Include="Shared\CompanyRepository.cs" />
+    <Compile Include="Shared\ActivityRepository.cs" />
+    <Compile Include="Shared\PhotoRepository.cs" />
+    <Compile Include="Shared\RunnerRepository.cs" />
+    <Compile Include="Operations\RegistrationUnitOfWork.cs" />
+    <Compile Include="Shared\GenericRepository.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shared\LookupRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MTAoarsGeneral.DomainModels\MTAoarsGeneral.DomainModels.csproj">
+      <Project>{118E7748-25C1-4C61-9976-872869877EC3}</Project>
+      <Name>MTAoarsGeneral.DomainModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MTAoarsGeneral.Utilities\MTAoarsGeneral.Utilities.csproj">
+      <Project>{341D5B26-2F90-4B0C-84FA-07CDCA80E4F1}</Project>
+      <Name>MTAoarsGeneral.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MTAoarsGeneral.ViewModels\MTAoarsGeneral.ViewModels.csproj">
+      <Project>{6415FDAA-9A50-472F-8D6E-67117040C40E}</Project>
+      <Name>MTAoarsGeneral.ViewModels</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ThirdPartyDLLs\Torrent.Caching.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

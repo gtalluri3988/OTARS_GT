@@ -1,0 +1,96 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.ConsolidateReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    @if (Model.IsMTA) {
+    <tr>
+        <th>
+                Takaful Operator
+        </th>
+        <td colspan="4">
+             @Html.BindDropDownListFor(model => model.CompanyID, Url.Action("Companies", "Lookup"))
+        </td>
+    </tr>
+    }
+  <tr>
+        <th>Year</th>
+         <td>
+                @Html.BindDropDownListFor(model => model.Year, Url.Action("RecentYears", "Lookup"), required:true)
+         </td>
+         <th>
+            Quarter
+         </th>
+         <td>
+             @Html.BindDropDownListFor(model => model.Quarter, Url.Action("AllQuarters", "Lookup"), required:true)
+         </td>
+    </tr>
+    <tr>
+        <th>Banca Staff</th>
+        <td>        
+          <select id="is-banca-staff" data-bind="value:IsBancaStaff">
+                <option value='All'>All</option>
+                <option value='true'>Yes</option>
+                <option value='false'>No</option>
+            </select>
+          
+        </td>
+   
+        <th>Intermediary Types</th>
+        <td>
+           @Html.BindDropDownListFor(model => model.IntermediaryTypeID, Url.Action("IntermediaryTypes", "Lookup"))
+        </td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>
+       
+          <select id="status" data-bind="value:Status">
+                @foreach(var code in Model.StatusCodes)
+                    {
+                  
+                        <option value='@code.Code'>@code.Description</option>
+                     
+                    }
+            </select>
+           
+        </td>
+        <th>
+            Type
+        </th>
+        <td>
+            <input type="radio" checked="checked" name="Report" id="rptList" /> List
+            <input type="radio" name="Report" id="rptSummary" /> Summary
+        </td>
+       
+    </tr>
+    <tr>
+     <th colspan="4">
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Consolidate Report", "#", 2);
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        viewModel.IsBancaStaff = "All";
+        viewModel.IntermediaryTypeID = 1;
+        viewModel.Status="TER";
+
+        kendo.bind($("#parameters-table"), viewModel);
+         $("#is-banca-staff").kendoDropDownList({});
+           $("#status").kendoDropDownList({});
+        $("#fetch-button").click(function () {  
+        if(viewModel.CompanyID==0)delete viewModel.CompanyID;
+        viewModel.ReportFor=$("#rptList").is(":checked")?"Consolidate":"ConsolidateSummary";
+        viewModel.StatusCode=viewModel.Status;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=")"+viewModel.ReportFor, viewModel, "#report");
+        });
+
+    });
+</script>

@@ -1,0 +1,76 @@
+@using MTAoarsGeneral.Utilities.Constants
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+<div id="tabs">
+    <ul>
+        @{
+            var activeClass = "k-state-active";
+        }
+        @if (Model is IExistableAgency)
+        {
+            <li class="k-state-active" id="agency">Agency</li>
+
+            activeClass = string.Empty;
+        }
+        <li class="@activeClass" id="nominee">Nominee</li>
+        <li id="qualification">Qualification</li>
+        <li id="m2exam">M2 examinations</li>
+        @if (Model.AgencyType.Code == LookupConstants.AgencyType.Individual)
+        {
+            <li id="spouse">Spouse / Next of Kin</li>
+        }
+    </ul>
+    @Html.ValSummary()
+    @if (Model is IExistableAgency)
+    {
+        @TabHelper.DisplayPage("agency",
+                              () => Html.PartialFor(model => model.Agency, "Agency"),
+                         0, false)
+    }
+    @TabHelper.DisplayPage("nominee",
+                              () => Html.PartialFor(model => model.CorporateNominee, "AgencyNominee"),
+                       Model is IExistableAgency ? 1 : 0,
+                        false)
+    @TabHelper.DisplayPage("qualification",
+                   () => Html.PartialFor(model => model.CorporateNominee.Qualification, "~/Views/Registration/Qualification.cshtml"),
+                            Model is IExistableAgency ? 2 : 1,
+                            false)
+
+    @TabHelper.DisplayPage("M2examinations", () => Html.PartialFor(model => model.Agency, "~/Views/Administrative/_M2Examinations.cshtml"), Model is IExistableAgency ? 3 : 2, Model.AgencyType.Code != LookupConstants.AgencyType.Individual)
+
+
+    @if (Model.AgencyType.Code == LookupConstants.AgencyType.Individual)
+    {
+        @TabHelper.DisplayPage("spouse",
+                      () => Html.PartialFor(model => model.CorporateNominee.Spouse, "~/Views/Registration/Spouse.cshtml"),
+                               Model is IExistableAgency ? 4 : 3,
+                               true)
+    }
+</div>
+<script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=CAG", 1);
+        addBreadCrumb("Agency Update", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        $("#submit-button", "#main-content").click(function () {
+            if (mainViewModel.hasOwnProperty("DateOfExam")) {
+                mainViewModel.Agency.DateOfExam = mainViewModel.DateOfExam;
+            }
+            jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", mainViewModel, function(response) {
+                if(response.Result)
+               {
+                alert("Agency saved successfully");
+                window.location.href="Search?maintenanceType=CAG";
+               }
+                });
+
+        });
+
+    });
+</script>

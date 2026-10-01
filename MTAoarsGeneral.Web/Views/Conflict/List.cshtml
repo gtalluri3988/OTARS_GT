@@ -1,0 +1,152 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+
+<div id="list-content">
+    <div id="list-grid"></div>
+</div>
+<br />
+<div id="detail-content" style="display:none">
+    <table class="mta-panel">
+        <caption>Details</caption>
+        <tr>
+            <th>Source Agency Number</th>
+            <td><span data-bind="text:SourceAgencyNumber"></span></td>
+            <th>Intermediary Type</th>
+            <td><span data-bind="text:IntermediaryTypeDescription"></span></td>
+        </tr>
+        <tr>
+            <th>Nominee Name</th>
+            <td><span data-bind="text:NomineeName"></span></td>
+            <th>Nominee IC Number</th>
+            <td><span data-bind="text:NomineeICNumber"></span></td>
+        </tr>
+         <tr>
+            <th>Source Company</th>
+            <td><span data-bind="text:SourceCompanyName"></span></td>
+            <th>Destination Company</th>
+            <td><span data-bind="text:DestinationCompanyName"></span></td>
+        </tr>
+        <tr>
+            <th>First Reminder Sent</th>
+            <td><span data-bind="text:IsFirstReminderSent"></span></td>
+            <th>Second Reminder Sent</th>
+            <td><span data-bind="text:IsSecondReminderSent"></span></td>
+        </tr>
+    </table>
+    <br />
+    <div id="download-detail"></div>
+    <br />
+    <div id="action-detail" style="display:none">
+        <table class="mta-panel">
+            <caption>Action</caption>
+            <tr>
+                <th colspan="3">
+                    So for no action is taken from <span data-bind="text:SourceCompanyName"></span>. You can terminate the agent from the source company and register. Clicking Terminate & Close will do the same. Otherwise click Reject to cancel the registration.
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    <button class="k-button" onclick="onCloseClick()"><span class="k-icon k-i-tick"></span>Terminate & Close</button>
+                    <button class="k-button" onclick="onRejectClick()"><span class="k-icon k-i-tick"></span>Reject</button>
+                </th>
+            </tr>
+        </table>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    var grid;
+    $(function () {
+        addBreadCrumb("Conflict", "#", 1);
+
+        var conflictSchema = {
+            model: {
+                id: "ID"
+            }
+        }
+        
+        var gridDataSource = new kendo.data.DataSource({
+            type: "odata", serverPaging: true, serverFiltering: true, pageSize: 5, serverSorting: true, 
+            transport: {
+                read: { 
+                    url: masterDataServiceUrl + "/ConflictViewDetails",
+                    headers: {  DataServiceVersion: "2.0", MaxDataServiceVersion: "2.0" }
+                }
+            },
+            /*filter:{"filters":[{"logic":"or","filters":[{"field":"SourceCompanyID","operator":"eq","value":@Html.GetIdentity().CompanyID},
+                                                        {"field":"DestinationCompanyID","operator":"eq","value":@Html.GetIdentity().CompanyID}
+                                                       ]
+                               },{"field":"StatusCode","operator":"eq","value":"@LookupConstants.ConflictStatus.Open"}
+                              ],"logic":"and"},
+            filter:{
+                filters:[
+                            {logic:"and", filters:[ {field:"SourceCompanyID", operator:"eq", value:@Html.GetIdentity().CompanyID},
+                                                    {field:"StatusCode", operator:"eq", value:"@LookupConstants.ConflictStatus.Open"}
+                                                   ]
+                            },
+                            {logic:"and", filters:[ {field:"DestinationCompanyID", operator:"eq", value:@Html.GetIdentity().CompanyID},
+                                                    {field:"StatusCode", operator:"eq", value:"@LookupConstants.ConflictStatus.Defaulted"}
+                                                   ]
+                            }
+                       ], logic:"or"
+            },*/
+            filter: {
+                logic:"and", 
+                filters:[ 
+                            @if(!Html.IsISMOrMTA()) {
+                                @:{field:"DestinationCompanyID", operator:"eq", value:@Html.GetIdentity().CompanyID},
+                            }
+                            {field:"StatusCode", operator:"eq", value:"@LookupConstants.ConflictStatus.Open"}
+                        ]
+            },
+            schema: conflictSchema
+        });
+
+       grid =  $("#list-grid").kendoGrid({
+            dataSource: gridDataSource,  pageable:true, sortable:true,  filterable:true, selectable:true, editable:"inline",
+            columns: [
+                {field: "SourceAgencyNumber", title: "Agency Number"}, {field: "IntermediaryTypeDescription", title: "Intermediary Type"}, 
+                {field: "NomineeName", title: "Nominee Name"}, {field: "NomineeICNumber", title: "Nominee IC Number"},
+                {field: "SourceCompanyName", title:"Source Company"}, {field: "DestinationCompanyName", title:"Destination Company"},
+                {field: "CreatedDate", title:"Created Date", template:"#=formatDate(CreatedDate)#"},
+                {field: "ID", title: "View", template: "<button onclick='onViewClick(#=ID#)' class='k-button'><span class='k-icon k-i-search'></span>View</button>"}
+            ]
+        });
+    });
+    var currentId;
+    function onViewClick(id) {
+        currentId = id;
+        var selectedrow = $("#list-grid").find("tbody tr.k-state-selected");
+         var item = grid.data("kendoGrid").dataItem(selectedrow);
+         var showAction = false;
+         /*if(item.IsSecondReminderSent) {
+            $("#action-detail").show();
+         }else {
+            $("#action-detail").hide();
+         }*/
+         $("#action-detail").show();
+         kendo.bind("#detail-content", item);
+         $("#download-detail").load("@Url.Action("Attachments")/" + id);
+         $("#detail-content").show();
+    }
+
+    function onCloseClick(id) {
+        jsonPost("#detail-content", "@Url.Action("Close")", {id:currentId}, function(response){
+            hideDetailSection();
+        });
+    }
+
+    function onRejectClick(id) {
+        jsonPost("#detail-content", "@Url.Action("Reject")", {id:currentId}, function(response){
+            hideDetailSection();
+        });
+    }
+
+    function hideDetailSection() {
+        $("#detail-content").hide();
+        $("#action-detail").hide();
+        grid.data("kendoGrid").dataSource.read();
+    }
+
+</script> 

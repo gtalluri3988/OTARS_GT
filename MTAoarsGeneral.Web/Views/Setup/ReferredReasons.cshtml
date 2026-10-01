@@ -1,0 +1,97 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.ReferredReasonViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}  
+
+<div id="referred-reason-content">
+     <div id="referred-reason-grid"></div>
+    <br />
+    <div id="referred-reason-details" style="display:none">
+      <table class="mta-panel" style="width:90%">
+            <caption>Referred Reason</caption>
+             <tr>
+                <th>Code</th>
+                <td id="code"><span data-bind="text:Code"></span></td>
+                <th>Description</th>
+                <td id="desc"><span data-bind="text:Description"></span></td>
+             </tr>
+             
+            <tr>
+                <th colspan="2">
+                    @Html.BindEditorFor(model => model.AllowForRegistration) Allow For Registration
+                </th>
+                <th>Referred Category</th>
+                <td>@Html.BindDropDownListFor(model => model.ReferredCategoryID, @Url.Action("ReferredCategories", "Lookup", new { IncludeDefault = true }))</td>
+            </tr>
+            <tr>
+                <th colspan="4" style="text-align:right">
+                    <button class="k-button" id="save-button"><span class="k-icon k-i-tick"></span>Save</button>
+                    <button class="k-button" id="cancel-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+    <div id="hidden-edit-code" style="display:none;"><span data-bind="text:Code"></span></div>
+    <div id="hidden-add-code" style="display:none;">@Html.BindTextBoxFor(model => model.Code)</div>
+    <div id="hidden-edit-desc" style="display:none;"><span data-bind="text:Description"></span></div>
+    <div id="hidden-add-desc" style="display:none;">@Html.BindTextBoxFor(model => model.Description)</div>
+</div>
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model));
+    
+    var master;
+    
+    $(function () {     
+        var getCategoriesAsync = getAsyncFunction("@Url.Action("ReferredCategories", "Lookup", new { IncludeDefault = true })");
+        var reasonModel = {
+            id: "ID",
+            fields: {
+                Code: {type:"string"},
+                Description: {type:"string"},
+                Active:{type:"boolean"},
+                AllowForRegistration:{type:"boolean"},
+                ReferredCategoryID:{type:"number"}
+            }
+        };
+        $.when(getCategoriesAsync()).done(function(categories) {
+            $("#referred-reason-grid").kendoGrid({
+                dataSource: getMasterGridDataSource(masterDataServiceUrl + "/LookupReferredReasons", reasonModel),
+                pageable:true,
+                sortable:true,
+                filterable:true,
+                selectable:true,
+                editable:"inline",
+                columns: [
+                    { field: "Code"},
+                    { field: "Description" },
+                    {field:"AllowForRegistration"},
+                    {field:"ReferredCategoryID", values:categories, title:"Referred Category"},
+                    { field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+               
+                ],
+                toolbar:[{template:"<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button>"}]
+           });
+        });
+
+        master = new Master({
+            url: masterDataServiceUrl + "/LookupReferredReasons",
+            gridSelector: "#referred-reason-grid", detailsSelector: "#referred-reason-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateReason")"       
+        });
+
+    });
+
+    function onEditClick() {
+        $('#code').html($('#hidden-edit-code').html());
+        $('#desc').html($('#hidden-edit-desc').html());
+        master.editClick();
+    }
+    
+    function onAddClick() {
+        $('#code').html($('#hidden-add-code').html());
+        $('#desc').html($('#hidden-add-desc').html());
+        master.addClick();
+    }
+
+</script>

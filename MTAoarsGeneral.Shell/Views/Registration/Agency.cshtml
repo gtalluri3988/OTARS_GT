@@ -1,0 +1,60 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AgencyViewModel
+<div class="two-column">
+    <div class="column">
+        <fieldset>
+            <ul class="form">
+                <li>
+                    <label class="desc" for="Name">
+                        @Html.LabelFor(model => model.Name)</label>
+                    <div>
+                        @Html.TextBoxFor(model => model.Name, new { @class = "k-textbox large" })
+                        @Html.ValMsgFor(model => model.Name)
+                    </div>
+                </li>
+               
+               @if (Model.ShouldDisplayAuthorizedCapital.Value) {
+                <li>
+                    <label class="desc" for="business_registration_number">
+                        @Html.LabelFor(model => model.AuthorizedCapital)</label>
+                    <div>
+                        @Html.TextBoxFor(model => model.AuthorizedCapital, new { @class = "k-textbox large" })
+                        @Html.ValMsgFor(model => model.AuthorizedCapital)
+                    </div>
+                </li>
+               }
+            </ul>
+        </fieldset>
+    </div>
+    <div class="column column-right">
+        <fieldset>
+            <ul class="form">
+                
+                <li>
+                    <label class="desc" for="business_registration_number">
+                        @Html.LabelFor(model => model.BusinessRegistrationNumber)</label>
+                    <div>
+                        @*
+                        @Html.TextBoxFor(model => model.BusinessRegistrationNumber, new { @class = "k-textbox large" })
+                        @Html.ValMsgFor(model => model.BusinessRegistrationNumber)
+                        *@
+                        @Model.BusinessRegistrationNumber
+                        @Html.HiddenFor(model=>model.BusinessRegistrationNumber)
+                    </div>
+                </li>
+               @if (Model.ShouldDisplayAuthorizedCapital.Value) {
+                <li>
+                    <label class="desc" for="business_registration_number">
+                        @Html.LabelFor(model => model.PaidupCapital)</label>
+                    <div>
+                        @Html.TextBoxFor(model => model.PaidupCapital, new { @class = "k-textbox large" })
+                        @Html.ValMsgFor(model => model.PaidupCapital)
+                    </div>
+                </li>
+               }
+            </ul>
+        </fieldset>
+    </div>
+</div>
+<div class="clear">
+</div>

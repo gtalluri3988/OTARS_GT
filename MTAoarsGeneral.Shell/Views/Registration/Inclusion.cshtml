@@ -1,0 +1,65 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationInclusionViewModel
+@section  PageTitle{
+Inclusion
+}
+@section Breadcrumb {
+    <a href="#" title="Layout Options">Layout Options</a> > <a href="#" title="Two column layout">
+        Two column layout</a> > This is a breadcrumb example
+}
+@section CssScript {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#submit").click(function () {
+                submitData(function (data) {
+                    onRegistrationSuccess(data, "individualRegistrationTabs");
+                });
+            });
+        });
+    </script>
+}
+
+<div id="mainContent">
+    <div id="exceptionDialog"></div>
+    <div class="column-content-box">
+        <div class="content-box
+content-box-header ui-corner-all">
+            <div class="ui-state-default ui-corner-top ui-box-header">
+                <span class="ui-icon float-left ui-icon-notice"></span>Inclusion details
+            </div>
+            <div class="content-box-wrapper">
+                <h2>
+                    The details already exist and eligible for inclusion</h2>
+                @{Html.RenderPartial("~/Views/Agency/Details.cshtml", Model.Agency);}
+            </div>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("Inclusion", "Registration")) {
+        <div id="guarantor">
+            <div class="column-content-box">
+                <div class="content-box content-box-header ui-corner-all">
+                    <div class="ui-state-default ui-corner-top ui-box-header">
+                        <span class="ui-icon float-left ui-icon-notice"></span>Guarantor
+                    </div>
+                    <div class="content-box-wrapper">
+                        @Html.PartialFor(model => model.Guarantor, "GuarantorType")
+                        <fieldset>
+                            <ul>
+                                <li>
+                                    <div class="tab-button">
+                                        <a href="#" id="submit" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-grip-dotted-horizontal">
+                                        </span>Submit </a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(model=>model.AgencyID)
+        @Html.HiddenFor(model => model.IsGeneral)
+        @Html.HiddenFor(model => model.CompanyID)
+    }
+</div>

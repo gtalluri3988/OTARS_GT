@@ -1,0 +1,43 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model List<MTAoarsGeneral.ViewModels.Operations.ALCMemberViewModel>
+ @Html.ValidationMessageFor(model => model.Count)        
+<div id="directors-grid">
+</div>
+
+<script type="text/javascript">
+
+
+    $(function () {
+
+        var schema = {
+            model: {
+                fields: {
+                    Name: { type: "string" },
+                    ICNumber: { type: "string" }
+                }
+            }
+        };
+
+        directorsGrid = $("#directors-grid").kendoGrid({
+            dataSource: { data: [], schema: schema },
+            editable: true,
+            selectable: true,
+            sortable: true,
+            navigatable: true,
+            columns: [
+                { field: "Name", title: "Name", 
+                    attributes: {
+                        "style": "  text-transform: uppercase"
+                    }
+                },
+                { field: "ICNumber", title: "IC Number" },
+                { command: ["destroy"] }
+            ],
+            toolbar: ["create"]
+        });
+
+    });
+
+   
+</script>

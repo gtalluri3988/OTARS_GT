@@ -1,0 +1,49 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+  @using MTAoarsGeneral.ViewModels.Operations 
+   @using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+    <div id="tabs">
+        <ul>
+             
+          @Html.Partial("Header",Model,ViewData) 
+            <li id="partners">Partners</li>  
+              
+        </ul>
+
+            
+            @Html.ValSummary()
+           @Html.Partial("Details", Model, ViewData)       
+         
+               
+                @TabHelper.DisplayPage("partners",
+() => Html.PartialFor(model => model, "../Registration/Partners"),
+Model is IExistableAgency?1:0,true)
+            
+           
+           
+ 
+        
+    </div>
+    <script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=CPA", 1);
+        addBreadCrumb("Change Partners", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        $("#submit-button", "#main-content").click(function() {
+            jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", mainViewModel.Partners, function(response) {
+                 if(response.Result)
+               {    
+                alert("Partners saved successfully");
+                window.location.href="Search?maintenanceType=CPA";
+               }
+                });
+           
+        });
+
+    });
+</script>

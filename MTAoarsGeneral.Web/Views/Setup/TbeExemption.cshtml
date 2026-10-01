@@ -1,0 +1,144 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.TbeExemptionViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}
+<div id="tbe-exemption-content">
+    <div id="tbe-exemption-grid"></div>
+    <br />
+    <div id="tbe-exemption-details" style="display:none;text-align:center">
+        <table class="mta-panel" style="width:90%">
+            <caption>TBE Exemption</caption>
+            <tr>
+                <th>@Html.LabelFor(model => model.Name)</th>
+                <td>@Html.BindTextBoxFor(model => model.Name, 75)</td>
+                <th>@Html.LabelFor(model => model.ICNumber)</th>
+                <td>@Html.BindTextBoxFor(model => model.ICNumber, 12)</td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.TakafulExemptedExamID)</th>
+                <td>@Html.BindDropDownListFor(model => model.TakafulExemptedExamID, Url.Action("TakafulExemptedExams", "Lookup"))</td>
+                <th>@Html.LabelFor(model => model.OldICNumber)</th>
+                <td>@Html.BindTextBoxFor(model => model.OldICNumber, 25)</td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.IsActive)</th>
+                <td>@Html.BindEditorFor(model => model.IsActive)</td>
+                <th>@Html.LabelFor(model => model.TakafulExemptionForID)</th>
+                <td>@Html.BindDropDownListFor(model => model.TakafulExemptionForID, Url.Action("TakafulExemptionFors", "Lookup"))</td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.DateDocumentReceived)</th>
+                <td>@Html.EditorFor(model => model.DateDocumentReceived, "DateEditor")</td>
+
+                <th>@Html.LabelFor(model => model.DateApproved)</th>
+                <td>@Html.EditorFor(model => model.DateApproved, "DateEditor")</td>
+                @* <td>@Html.BindEditorFor(model => model.DateDocumnetReceived)</td>*@
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.MTAInvoiceNumber)</th>
+                <td>@Html.BindTextBoxFor(model => model.MTAInvoiceNumber, 75)</td>
+
+            </tr>
+            @*<tr>
+                    <th>@Html.LabelFor(model => model.RaceID)</th>
+                    <td>@Html.BindDropDownListFor(model => model.RaceID, Url.Action("Races", "Lookup"))</td>
+                    <th>@Html.LabelFor(model=>model.OldICNumber)</th>
+                    <td>@Html.BindTextBoxFor(model=>model.OldICNumber, 25)</td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(model => model.MaritalStatusID)</th>
+                    <td>@Html.BindDropDownListFor(model => model.MaritalStatusID, Url.Action("MaritalStatuses", "Lookup"))</td>
+                    <th>@Html.LabelFor(model => model.ReligionID)</th>
+                    <td>@Html.BindDropDownListFor(model => model.ReligionID, Url.Action("Religions", "Lookup"))</td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(model=>model.Address1)</th>
+                    <td>@Html.BindTextBoxFor(model=>model.Address1, 152)</td>
+                    <th>@Html.LabelFor(model=>model.Address2)</th>
+                    <td>@Html.BindTextBoxFor(model=>model.Address2, 152)</td>
+                </tr>
+                    <tr>
+                    <th>@Html.LabelFor(model => model.StateID)</th>
+                    <td>@Html.BindDropDownListFor(model => model.StateID, Url.Action("States", "Lookup"))</td>
+                    <th>@Html.LabelFor(model=>model.PostCode)</th>
+                    <td>@Html.BindTextBoxFor(model=>model.PostCode, 6)</td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(model=>model.Phone)</th>
+                    <td>@Html.BindTextBoxFor(model=>model.Phone, 20)</td>
+                    <th>@Html.LabelFor(model=>model.Mobile)</th>
+                    <td>@Html.BindTextBoxFor(model => model.Mobile, 20)</td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(model => model.Email)</th>
+                    <td>@Html.BindTextBoxFor(model => model.Email, 30)</td>
+                    <th>@Html.LabelFor(model => model.Fax)</th>
+                    <td>@Html.BindTextBoxFor(model => model.Fax, 20)</td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(model => model.IsCitizen)</th>
+                    <td>@Html.BindEditorFor(model => model.IsCitizen)</td>
+                    <th>@Html.LabelFor(model => model.IsActive)</th>
+                    <td>@Html.BindEditorFor(model => model.IsActive)</td>
+                </tr>
+                <tr>
+                    <th>@Html.LabelFor(model => model.TakafulExemptedExamID)</th>
+                    <td>@Html.BindDropDownListFor(model => model.TakafulExemptedExamID, Url.Action("TakafulExemptedExams", "Lookup"))</td>
+                    <th>@Html.LabelFor(model => model.Remark)</th>
+                    <td>@Html.BindTextBoxFor(model => model.Remark, 200)</td>
+                </tr>*@
+            <tr>
+                <th colspan="4" style="text-align:right">
+                    <button class="k-button" id="save-button"><span class="k-icon k-i-tick"></span>Save</button>
+                    <button class="k-button" id="cancel-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model));
+
+    var master;
+    $(function () {
+        addBreadCrumb("Tbe Exemption", "@Url.Action("TbeExemption")", 1);
+        var tbeExmeptionModel = {
+            id: "ID"
+        };
+
+        $("#tbe-exemption-grid").kendoGrid({
+            dataSource: getMasterGridDataSource(masterDataServiceUrl + "/TbeExemptions", tbeExmeptionModel ),
+            pageable:true,
+            sortable:true,
+            filterable:true,
+            selectable:true,
+            editable:"inline",
+            columns: [
+                { field: "Name" },
+                { field: "ICNumber" },
+                { field: "OldICNumber" },
+                { field: "DateDocumentReceived", template: "#= kendo.toString(kendo.parseDate(DateDocumentReceived, 'yyyy-MM-dd HH:mm:ss'), 'dd/MM/yyyy') #" },
+                { field: "IsActive"},
+                { field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+                { command: ["destroy"]}
+            ],
+            toolbar:[{template:"<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button>"}]
+        });
+
+        master = new Master({
+            url: masterDataServiceUrl + "/TbeExemptions",
+            gridSelector: "#tbe-exemption-grid", detailsSelector: "#tbe-exemption-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateTbeExemption")"
+        });
+    });
+
+    function onEditClick() {
+        master.editClick();
+    }
+
+    function onAddClick() {
+        master.addClick();
+    }
+</script>

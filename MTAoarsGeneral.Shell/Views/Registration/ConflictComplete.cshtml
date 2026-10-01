@@ -1,0 +1,26 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AgencyDisplayViewModel
+           
+@section  PageTitle{
+Complete
+}
+@section Breadcrumb {
+    <a href="#" title="Layout Options">Operations</a> > <a href="#" title="Two column
+layout">Index</a>
+}
+<div id="mainContent">
+    <div class="column-content-box">
+        <div class="content-box
+content-box-header ui-corner-all">
+            <div class="ui-state-default ui-corner-top ui-box-header">
+                <span class="ui-icon float-left ui-icon-notice"></span>Registration complete under conflict
+            </div>
+             <div class="content-box-wrapper">
+                <h2> Regisration under @Model.TypeDescription category is completed under conflict. It will be processed under subject to temination. The details of the agency as follows</h2>
+
+                @{Html.RenderPartial("~/Views/Agency/Details.cshtml", Model);}
+                
+             </div>
+        </div>
+    </div>
+</div>

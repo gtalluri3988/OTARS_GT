@@ -1,0 +1,204 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.EnquiryViewModel
+
+<style type="text/css">
+    .mta-error-summary {
+        color: #ff0000;
+    }
+</style>
+<div id="enquiry-search" data-page-div="true">
+    @Html.ValSummary()
+    @Html.PartialFor(model => model.AgencySearch, "~/Views/Agency/Search.cshtml")
+    <br />
+
+    <div id="agency-grid">
+    </div>
+    <br />
+    <br />
+
+    @*<div id="archive-agency-grid">
+        </div>*@
+
+</div>
+<div id="enquiry-detail" data-page-div="true">
+</div>
+<script type="text/javascript">
+     var viewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+        );
+    $(function () {
+        addBreadCrumb("Enquiry", "javascript:showDiv('#enquiry-search')", 1);
+        kendo.bind($("#enquiry-search"), viewModel);
+
+        function bindGrid() {
+            $("#agency-grid").kendoGrid({
+                dataSource:{
+                    data:viewModel.Agencies
+                },
+                selectable:true,
+                columns: [
+                    { field: "AgencyNumber", title: "Agency Number", editable: false, width: "150px" },
+                    //{field:"AgencyTypeDescription", title:"Registration Type", width:"125px"},
+                    //{field:"IntermediaryTypeDescription", title:"Corporate Status", width:"125px"},
+                    { field: "NomineeName", title: "Name", width: "200px" },
+                    { field: "NomineeNewICNumber", title: "New IC", width: "120px" },
+                    { field: "IsBancaStaff", title: "Banca / Non Banca", width: "120px", template: showBancaTemplate },
+                    { field: "CompanyName", title: "Company Name", width: "200px" },
+                    { field: "AgencyTypeDescription", title: "Type", width: "120px" },
+                    { field: "Designation", title: "Role", width: "150px", template: showRoleTemplate },
+                    { field: "ValidFromLabel", title: "Valid From", width: "100px" },
+                    { field: "ValidToLabel", title: "Valid To", width: "100px" },
+                    { field: "TerminationDateLabel", title: "Termination Date", width: "120px" },
+                    { field: "IsNotToRelease", title: "Not to Release", width: "100px", template: showNotToReleaseTempaltes },
+                    { field: "IsResigned", title: "Resigned", width: "80px", template: showResignedTempaltes },
+                    { field: "M2Exam", title: "M2 Exam", width: "200px" },
+                    { field: "M2ExamDateToLabel", title: "Date of Exam", width: "100px" },
+                    { field: "Remarks", title: "Remarks", width: "200px" },
+                    { field: "AgencyID", title: " ", width: "100px", template: showTemplate }
+                ]
+            });
+
+            //$("#archive-agency-grid").kendoGrid({
+            //    dataSource: {
+            //        data: viewModel.ArchiveAgencies
+            //    },
+            //    selectable: true,
+            //    columns: [
+            //        { field: "AgencyNumber", title: "Agency Number", editable: false, width: "125px" },
+            //        //{field:"AgencyTypeDescription", title:"Registration Type", width:"125px"},
+            //        //{field:"IntermediaryTypeDescription", title:"Corporate Status", width:"125px"},
+            //        { field: "NomineeName", title: "Name" },
+            //        { field: "NomineeNewICNumber", title: "New IC", width: "100px" },
+            //        { field: "IsBancaStaff", title: "Banca / Non Banca", width: "100px", template: showBancaTemplate },
+            //        { field: "CompanyName", title: "Company Name" },
+            //        { field: "AgencyTypeDescription", title: "Type" },
+            //        { field: "Designation", title: "Role", template: showRoleTemplate },
+            //        { field: "ValidFromLabel", title: "Valid From" },
+            //        { field: "ValidToLabel", title: "Valid To" },
+            //        { field: "TerminationDateLabel", title: "Termination Date" },
+            //        { field: "IsNotToRelease", title: "Not to Release", template: showNotToReleaseTempaltes },
+            //        { field: "IsResigned", title: "Resigned", template: showResignedTempaltes },
+            //        { field: "Remarks", title: "Remarks" },
+            //        { field: "AgencyID", title: " ", template: showTemplate }
+            //    ]
+            //});
+
+        }
+        var firstTime = true;
+        var isReferredMember=false;
+        $("#search-button").click(function () {
+
+            var referredCategory = "";
+            var referredCreatedDate = "";
+
+            jsonPost("#enquiry-search", "@Url.Action("Search")", viewModel.AgencySearch, function(response) {
+                hideSummary("#enquiry-search");
+
+                viewModel.Agencies.splice(0, viewModel.Agencies.length);
+                isReferredMember = false;
+                for (var i = 0; i < response.Data.agentEnquiries.length; i++) {
+                    viewModel.Agencies.push(response.Data.agentEnquiries[i]);
+                    if (response.Data.agentEnquiries[i].IsReferredMember) {
+                        isReferredMember = true;
+                    }
+                }
+
+                if(firstTime &&  viewModel.Agencies.length > 0) {
+                    bindGrid();
+                    firstTime = false;
+                }
+
+                if (viewModel.Agencies.length > 0) {
+                    $("#agency-grid").show();
+                }
+
+                if (isReferredMember) {
+                    if ("@Html.IsISMOrMTA()" == "False") {
+                        $("#agency-grid").hide();
+                    }
+                    for (var i = 0; i < response.Data.referredMembers.length; i++) {
+                        if (!response.Data.agentEnquiries[i].IsReferredMember) continue;
+                        addErrorToSummary("#enquiry-search", "This agent appears in the referred listing under ({0}) on {1}"
+                            .replace("{0}", response.Data.referredMembers[i].CategoryDescription)
+                            .replace("{1}", response.Data.referredMembers[i].CreatedDateText));
+                    }
+                }
+
+                if (viewModel.Agencies.length == 0) {
+                    addErrorToSummary("#enquiry-search", "No Record Found");
+                }
+
+                //viewModel.ArchiveAgencies.splice(0, viewModel.ArchiveAgencies.length);
+                //for (var i = 0; i < response.Data.agentEnquiryArchives.length; i++) {
+                //    viewModel.ArchiveAgencies.push(response.Data.agentEnquiryArchives[i]);
+                //}
+            });
+        });
+
+     });
+     function showRoleTemplate(data)
+     {
+            if(data.AgencyTypeDescription == 'Individual')
+                return 'Agent';
+            return data.Designation;
+     }
+    function showTemplate(data)
+    {
+        if (data.AgencyID <= 0)
+            return '';
+        if (data.Designation != "Corporate Nominee")
+            return '';
+        return "<button class='k-button' onclick='showDetails(" + data.AgencyID + ",\"" + data.AgencyTypeDescription + "\"," + data.AgencyPrincipalID + "," + data.MemberID + ")'><span class='k-icon k-i-pencil'></span>Details</button>";
+    }
+     function showNotToReleaseTempaltes(data)
+     {
+         if(data.IsNotToRelease)
+            return 'Yes';
+
+            return 'No';
+     }
+
+      function showResignedTempaltes(data)
+     {
+         if(data.IsResigned)
+            return 'Yes';
+
+            return 'No';
+     }
+
+     @*function showDetails(id) {
+        viewPost("#enquiry-search", "@Url.Action("Details")", {id:id}, function(response) {
+            addBreadCrumb("Details", "#", 2);
+            showDiv("#enquiry-detail");
+            $("#enquiry-detail").html(response);
+
+        });
+     }*@
+
+    function showDetails(id, agentTypeDescription, agencyPrincipalID, memberID) {
+        viewPost("#enquiry-search", "@Url.Action("Details")", {
+            id: id,
+            agentTypeDescription: agentTypeDescription,
+            agencyPrincipalID: agencyPrincipalID,
+            memberID: memberID
+        },
+        function (response) {
+            addBreadCrumb("Details", "#", 2);
+            showDiv("#enquiry-detail");
+            $("#enquiry-detail").html(response);
+        });
+    }
+
+     function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+     }
+
+     function showBancaTemplate(data)
+     {
+         if(data.IsBancaStaff) return 'Banca';
+          return 'Non Banca';
+     }
+</script>
+
+

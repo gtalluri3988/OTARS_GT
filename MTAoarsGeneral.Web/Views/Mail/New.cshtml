@@ -1,0 +1,57 @@
+@using MTAoarsGeneral.Utilities.Extensions
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Notifications.NewMailViewModel
+
+<div id="new-content">
+    <table class="mta-panel">
+        <caption>New</caption>
+        <tr>
+            <th>To</th>
+            <td colspan='3'> @Html.BindListBoxFor(model=>model.CompanyIdentifiers, Model.Companies)</td>
+        </tr>
+        <tr>
+            <th>Subject</th>
+            <td colspan='3'> @Html.BindTextBoxFor(model => model.Subject)</td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <input type="hidden" name="Body" />
+                <textarea id="Body" data-bind="value:Body" style="width: 1000px; height: 150px;"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <button id="cancel-button" class="k-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                <button id="submit-button" class="k-button"><span class="k-icon k-i-tick"></span>Submit</button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+
+        addBreadCrumb("New", "javascript:showDiv('#index-new')", 2);
+        
+        var newViewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+        );
+
+        kendo.bind($("#new-content"), newViewModel);
+
+        $("#Body").kendoEditor();
+
+        $("#submit-button", "#new-content").click(function() {
+            jsonPost("#new-content", "@Url.Action("NewSubmit")", newViewModel, function(response) {
+                viewPost("#new-content", response.RedirectUrl, newViewModel, function (result) {
+                    postPage("#index-inbox", result);
+                });
+            });
+        });
+
+        $("#cancel-button", "#new-content").click(function() {
+            loadPage("#index-inbox", '@Url.Action("Inbox")');
+        });
+
+    });
+</script>

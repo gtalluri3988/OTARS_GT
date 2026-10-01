@@ -1,0 +1,35 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+    <div id="tabs1" >
+       
+            @Html.ValSummary()
+            @TabHelper.DisplayPage("agency",
+                              () => Html.PartialFor(model => model.Agency, "Company"),
+                        0,true)           
+         
+ 
+        
+    </div>
+    <script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=CCNA", 1);
+        addBreadCrumb("Change Company", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        $("#submit-button", "#main-content").click(function() {
+            jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", mainViewModel.Agency, function(response) {
+                if(response.Result)
+               {    
+                alert("Company name saved successfully");
+                window.location.href="Search?maintenanceType=CCNA";
+               }
+                });
+           
+        });
+
+    });
+</script>

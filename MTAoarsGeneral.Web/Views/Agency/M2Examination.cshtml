@@ -1,0 +1,27 @@
+@model MTAoarsGeneral.ViewModels.Operations.AgencyDisplayViewModel
+
+<table class="mta-panel four-columns-grid">
+    <caption>M2 Examination</caption>
+    <tr>
+        <th>M2 Exam</th>
+        <td>@Html.DisplayFor(model => model.M2Exam)</td>
+        <th>Exam Date</th>
+        <td>@Html.DisplayFor(model => model.DateOfExam, "{0:dd/MM/yyyy}")</td>
+    </tr>
+    <tr>
+        <th>Date 1st Join as Agent</th>
+        <td>@Html.DisplayFor(model => model.JoinMonth.Code) @Html.DisplayFor(model => model.JoinYear.Code)</td>
+        <th>MTA Awards</th>
+        <td>
+            @if (Model.MTAAwards != null && Model.MTAAwards.Any())
+            {
+                @string.Join(", ", Model.MTAAwards.Select(x => x.Description))}
+        </td>
+    </tr>
+    <tr>
+        <th>Social Media Address</th>
+        <td>@Model.SocialMediaAddress</td>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+    </tr>
+</table> 

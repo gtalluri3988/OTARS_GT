@@ -1,0 +1,121 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model List<MTAoarsGeneral.ViewModels.Enquiries.SearchResultViewModel>
+@{
+    Layout = "~/Views/Shared/_EnquiryLayout.cshtml";
+}
+
+@section CssScript{
+    
+}
+<div id="info-window"></div>
+
+<div id="logon-content" align="center" style="margin-top:15px">
+    @if (Model.Count > 1) {
+        <table class="mta-panel summary-panel">
+            <tr><td colspan="2" class="error"><strong style="color:#FF0000;">Please choose your agent type as the following</strong></td></tr>
+            @foreach (var item in Model) {
+            <tr>
+                <td colspan="2"><a href="javascript:showResult('@item.IntermediaryType')">@item.IntermediaryType</a></td>
+            </tr>
+            }
+            <tr>
+                <td colspan="2" style="text-align:center">
+                    <button id="back-button" type="button" class="k-button back-button"><span class="k-icon k-i-tick"></span>Back</button>
+                    <button id="quit-button" type="button" class="k-button"><span class="k-icon k-i-close"></span>Quit</button>
+                </td>
+            </tr>
+        </table>
+    }
+@foreach (var item in Model) {
+    <table class="mta-panel result-panel" data-intermediary-type="@item.IntermediaryType" style="display:none">
+        <caption>Result</caption>
+        @if (!item.ValidTo.HasValue) {
+            <tr><td colspan="2" class="error"><strong style="color:#FF0000;">NO RECORD FOUND FOR THE FOLLOWING DETAILS</strong></td></tr>
+        }
+        <tr style="display:@(item.RegistrationNumber == null ? "none" : "table-row")">
+            <th>@Html.LabelFor(model => item.RegistrationNumber)</th>
+            <td>
+                @item.RegistrationNumber
+            </td>
+        </tr>
+        
+        <tr style="display:@(item.ICNumber == null ? "none" : "table-row")">
+            <th>@Html.LabelFor(model => item.ICNumber)</th>
+            <td>
+                @item.ICNumber
+            </td>
+        </tr>
+        
+        <tr>
+            <th>@Html.LabelFor(model => item.Company)</th>
+           <td>@item.Company</td>
+        </tr>
+        @if (item.ValidTo.HasValue) {
+        <tr>
+            <th>@Html.LabelFor(model => item.AgentName)</th>
+           <td>@item.AgentName</td>
+        </tr>
+        <tr>
+            <th>@Html.LabelFor(model => item.IntermediaryType)</th>
+           <td>@item.IntermediaryType</td>
+        </tr>
+        <tr>
+            <th>@Html.LabelFor(model => item.ValidTo)</th>
+           <td>@item.ValidTo</td>
+        </tr>
+        }
+       <tr>
+            <td colspan="2" style="text-align:center">
+                <button type="button" class="k-button previous-button"><span class="k-icon k-i-tick"></span>Back</button>
+                <button id="quit-button" type="button" class="k-button"><span class="k-icon k-i-close"></span>Quit</button>
+            </td>
+        </tr>
+    </table>
+}
+</div>
+<div style="display:none" id="thank-you-content" align="center">
+    <table class="mta-panel">
+        <tr>
+            <th>Thank you for using the system.</th>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+
+        $(".back-button").click(function () {
+            location.href = "Search";
+        });
+
+        $("#quit-button").click(function () {
+            $("#thank-you-content").show();
+            $("#logon-content").hide();
+        });
+
+        @if(Model.Count == 1) {
+            <text>
+                $(".result-panel").show();
+            </text>
+        }
+
+         $(".previous-button").click(function () {
+          @if(Model.Count == 1) {
+            <text>
+                location.href = "Search";
+            </text>
+          }else {
+            <text>
+                $(".result-panel").hide();
+                $(".summary-panel").show();
+            </text>
+          }
+        });
+    });
+
+    function showResult(type) {
+        $(".summary-panel").hide();
+        $(".result-panel[data-intermediary-type='"+ type + "']").show();
+    }
+</script>
+

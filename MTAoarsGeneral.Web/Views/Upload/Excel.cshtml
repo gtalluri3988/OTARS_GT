@@ -1,0 +1,37 @@
+@model MTAoarsGeneral.ViewModels.Maintenance.UploadViewModel
+@using(Html.BeginForm(Model.PostAction, "Upload", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+    <table class="mta-panel" style="text-align:center;width:50%">
+        <caption>@Model.Caption</caption>
+        <tr>
+            <th colspan="2">
+                 <input type="file" name="@Model.FileControlID" id="@Model.FileControlID"/>
+            </th>
+           
+        </tr>
+         @if (Model.PostAction == "Registration") {
+             <tr>
+                <th>
+                    Is Old
+                </th>
+                <td>
+                    <input type="checkbox" name="is-Old" id="is-Old" />
+                </td>
+            </tr>
+            }
+        <tr>
+            <th colspan="2">
+                <button type="submit" class="k-button"><span class="k-icon k-i-tick"></span>Submit</button>
+            </th>
+        </tr>
+    </table>
+}
+
+<script type="text/javascript">
+
+    $(function () {
+        
+        $("#@Model.FileControlID").kendoUpload({
+            multiple:false
+        });
+    });
+</script>

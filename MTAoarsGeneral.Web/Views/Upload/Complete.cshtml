@@ -1,0 +1,13 @@
+﻿@model String
+<div class="k-block k-success-colored">
+    File has been uploaded successfully and submitted for the process. An email will be sent after the process. Status can be checked <a href="@Url.Content("History")">here</a> after receiving the email.
+
+</div> 
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("@Model", "@Url.Content(Model)", 1);
+        addBreadCrumb("Complete", "#", 2);
+    });
+</script>

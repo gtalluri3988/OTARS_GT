@@ -1,0 +1,42 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.PhotoUploadSummaryReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <tr>
+        <th>From Date</th>
+        <td>@Html.EditorFor(model => model.FromDate, "DateEditor")</td>
+        <th>To Date</th>
+        <td>@Html.EditorFor(model => model.ToDate, "DateEditor")</td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <th colspan="4">
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Photo Upload Summary", "#", 2);
+
+        var viewModel = kendo.observable(@Html.Raw(@Json.Encode(Model)));
+        viewModel.FromDate = getO3Date(viewModel.FromDate);
+        viewModel.ToDate = getO3Date(viewModel.ToDate);
+
+        kendo.bind($("#parameters-table"), viewModel);
+
+        $("#fetch-button").click(function () {
+            reportPost(
+                "#parameters-table",
+                "@Url.Content(string.Format("~/Rdls/Display.aspx?report={0}", MTAoarsGeneral.Utilities.Constants.LookupConstants.Reports.PhotoUploadSummary))",
+                viewModel,
+                "#report"
+            );
+        });
+
+    });
+</script>

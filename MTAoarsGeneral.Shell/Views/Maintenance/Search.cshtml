@@ -1,0 +1,143 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions;
+@model MTAoarsGeneral.ViewModels.Maintenance.SearchViewModel
+@section  PageTitle{
+Search
+}
+@section Breadcrumb {
+    <a href="@Url.Action("Index", "Home")" title="Home">Home</a> > Maintenance
+}
+<div id="searchForm">
+    <div class="column-content-box">
+        <div class="content-box
+content-box-header ui-corner-all">
+            <div class="ui-state-default ui-corner-top ui-box-header">
+                <span class="ui-icon float-left ui-icon-notice"></span>Search Agency
+            </div>
+            <div class="content-box-wrapper">
+                @using (Html.BeginForm("Search", "Maintenance")) {
+                    @Html.PartialFor(model => model.AgencySearch, "~/Views/Agency/Search.cshtml");
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+<div id="divProcess">
+@using (Html.BeginForm("Edit", "Maintenance")) {
+    <div id="searchResult" class="hastable">
+        <table id="kendoGrid">
+            <thead>
+                <tr>
+                    <th>
+                        Agency Number
+                    </th>
+                    <th>
+                        Nominee Name
+                    </th>
+                    <th>
+                        New IC
+                    </th>
+                    <th>
+                        CompanyName
+                    </th>
+                   
+                    <th>
+                        Scheduled On
+                    </th>
+                    <th>
+                        Remarks
+                    </th>
+                    <th>
+                        Edit
+                    </th>
+                </tr>
+            </thead>
+            <tbody data-bind="template:{name:'agent-template', foreach:agents}">
+            </tbody>
+        </table>
+        <script type="text/html" id="agent-template">
+		<tr>
+			<td>
+				<input data-bind="value:AgencyNumber" class="k-textbox"/>
+                <inpu data-bind="value:AgencyID" type="hidden"/>
+			</td>
+           
+			<td><input data-bind="value:NomineeName" class="k-textbox"/></td>
+			<td><input data-bind="value:NomineeNewICNumber" class="k-textbox"/></td>
+            <td><input data-bind="value:CompanyName" class="k-textbox"/></td>
+            
+            <td><input data-bind="datepicker:ScheduledOn"/></td>
+            <td><input data-bind="value:Remarks" class="k-textbox"/></td>
+            <td>
+             <a class="k-button" data-bind="event:{click:$parent.editAgent}"><span class="k-icon k-i-close"></span></a>
+            </td>
+		</tr>
+        </script>
+        <input type="hidden" name="@ViewData.TemplateInfo.HtmlFieldPrefix.GetModelProperty("TerminationAgents")" data-bind="jsonHidden:agents" />
+       
+    </div>
+}
+</div>
+<div id="exceptionDialog">
+</div>
+@section CssScript {
+    <script type="text/javascript">
+
+        $(function () {
+
+            function TerminationSearchModel() {
+                var self = this;
+                self.length = 0;
+
+                self.agents = ko.observableArray([]);
+
+                self.editAgent = function () {
+                    var agencyNumber = this.AgencyID();
+                    var model = {};
+                    model.AgencyID = agencyNumber;
+                    $.post('@Url.Action("Edit")', model,
+                    function (result) {
+                        if (result.Status == "Ok") {
+                            location.href = result.Url;
+                        }
+                    }
+                    ).error(function (data, textStatus, jqxhr) {
+                        $("#exceptionDialog").html(data.responseText).dialog();
+                    });
+                }
+
+                self.add = function (agent) {
+                    var result = false;
+                    ko.utils.arrayForEach(this.agents(), function (item) {
+                        if (item.AgencyPrincipalID() == agent.AgencyPrincipalID()) result = true;
+                    });
+
+                    if (result == false) self.agents.push(agent);
+                }
+            }
+
+            var terminationSearchViewModel = new TerminationSearchModel();
+            ko.applyBindings(terminationSearchViewModel, document.getElementById("searchResult"));
+
+            $("#search", "#searchForm").click(function () {
+                var data = $("form", "#searchForm").serialize();
+                $.post('@Url.Action("Search")',
+                    data,
+                    function (result) {
+                        for (var i = 0; i < result.length; i++) {
+                            terminationSearchViewModel.add(ko.mapping.fromJS(result[i]));
+                        }
+                    })
+                    .error(function (data, textStatus, jqxhr) {
+                        $("#exceptionDialog").html(data.responseText).dialog();
+                    });
+            });
+
+            $("#submitForProcess").click(function () {
+                $("form", "#divProcess").submit();
+            });
+        });
+    </script>
+}

@@ -1,0 +1,76 @@
+@model MTAoarsGeneral.ViewModels.Operations.AgencyDisplayViewModel
+@using MTAoarsGeneral.Utilities.Mvc
+
+
+<div id="agencyAccordion" class="agencyDisplay" style="width:100%;text-align:center">
+    <div style="width:80%;text-align:center;float:left">
+        @if (Model.IsReferred)
+        {
+            <div style="text-align:left" class="alert">
+                @*This is a Referred agent*@
+
+                @foreach (var referredMember in Model.ReferredMembers)
+                {
+                <div>
+                    @string.Format("This agent appears in the referred listing under Category ({0}) on {1}",
+                    (string.IsNullOrEmpty(referredMember.CategoryDescription)) ? "" : referredMember.CategoryDescription,
+                    (string.IsNullOrEmpty(referredMember.CreatedDate)) ? "" : referredMember.CreatedDate)
+                </div>
+                }
+            </div>
+        }
+        <div style="text-align:right">
+            <img id="print-button" src="@Url.Content("~/Content/Images/Print.png")" alt="print" />
+        </div>
+        @Html.PartialFor(model => model, "~/Views/Agency/Index.cshtml")
+        <br />
+        @Html.PartialFor(model => model.AgencyPrincipals, "~/Views/Agency/Principal.cshtml")
+        <br />
+        @Html.PartialFor(model => model.Nominee, "~/Views/Agency/Nominee.cshtml")
+        <br />
+        @Html.PartialFor(model => model.AdditionalCorporateNominees, "~/Views/Agency/AdditionalCorporateNominee.cshtml")
+        <br />
+        @Html.PartialFor(model => model, "~/Views/Agency/M2Examination.cshtml")
+        <br />
+        @Html.PartialFor(model => model.Address, "~/Views/Agency/Address.cshtml")
+        <br />
+        @Html.PartialFor(model => model.Nominee.Qualification, "~/Views/Agency/Qualification.cshtml")
+        <br />
+        @if (Model.AgencyBanker != null)
+        {
+            @Html.PartialFor(model => model.AgencyBanker, "~/Views/Agency/AgencyBanker.cshtml")
+            <br />
+        }
+        @if (Model.Spouse != null)
+        {
+            @Html.PartialFor(model => model.Spouse, "~/Views/Agency/Spouse.cshtml")
+            <br />
+        }
+        @Html.PartialFor(model => model.Partners, "~/Views/Agency/Partner.cshtml")
+
+        @Html.PartialFor(model => model.Directors, "~/Views/Agency/Director.cshtml")
+
+        @Html.PartialFor(model => model.Shareholders, "~/Views/Agency/Shareholder.cshtml")
+
+        @if (Model.Guarantor != null)
+        {
+            @Html.PartialFor(model => model.Guarantor, "~/Views/Agency/Guarantor.cshtml")
+        }
+        @Html.PartialFor(model => model.AgencyPrincipals, "~/Views/Agency/Photo.cshtml")
+
+    </div>
+    <div style="float:right">
+
+    </div>
+    <div style="clear:both"></div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#print-button").click(function () {
+            print("#agencyAccordion");
+        });
+
+    });
+</script>

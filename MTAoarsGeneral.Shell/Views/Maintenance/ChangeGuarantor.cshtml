@@ -1,0 +1,29 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+            @{
+                ViewData["NextPage"] = "guarantor";
+            }
+    <div id="maintenanceTabs">
+        <ul>
+                       
+          @Html.Partial("Header",Model,ViewData)      
+            <li><a href="#guarantor">Guarantor</a></li>  
+              
+        </ul>
+ @using (Html.BeginForm("SaveGuarantor", "Maintenance", new { id = "mainForm" }))
+ {
+            
+            @Html.ValSummary()
+            @Html.Partial("Details", Model, ViewData)           
+         
+               
+                @TabHelper.DisplayPage("guarantor", "Guarantor",
+    () => Html.PartialFor(model => model.Guarantor, "../Registration/GuarantorType",false),
+                    previousPage: "nominee",
+                    nextPage: "submit")
+            
+           
+           
+ }
+        
+    </div>

@@ -1,0 +1,16 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AgencyViewModel
+               @{
+               var readOnly=(bool)( ViewData["ReadOnly"]?? false);
+           }
+
+<table class="mta-panel" style="width:100%">
+    <caption>Agency Details</caption>
+    <tr>
+        <th>@Html.LabelFor(model => model.Name)</th>
+        <td>@Html.BindTextBoxFor(model => model.Name)</td>
+        <th>@Html.LabelFor(model => model.BusinessRegistrationNumber)</th>
+        <td> @Html.BindTextBoxFor(model=>model.BusinessRegistrationNumber)</td>
+    </tr>
+              
+</table>

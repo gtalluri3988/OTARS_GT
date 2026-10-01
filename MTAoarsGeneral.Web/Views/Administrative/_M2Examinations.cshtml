@@ -1,0 +1,134 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants;
+@model MTAoarsGeneral.ViewModels.Operations.AgencyViewModel
+
+<style type="text/css">
+    .k-loading-mask {
+        display: none !important;
+    }
+
+    k-loading {
+        display: none !important;
+    }
+
+    .k-multiselect-wrap {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 5px;
+    }
+
+        .k-multiselect-wrap .k-input {
+            width: 300px !important; /* Adjust the width as needed */
+        }
+
+    span.k-icon.k-loading.k-loading-hidden {
+        display: none !important;
+    }
+
+    .custom-multi-select .k-input {
+        width: 300px; /* Adjust the width as needed */
+    }
+</style>
+
+<table class="mta-panel" style="width:100%">
+
+
+
+    <caption>M2 examinations</caption>
+    <tr>
+        <th> @Html.LabelFor(model => model.M2Exam)</th>
+
+        <td>
+            @Html.BindDropDownListFor(model => model.M2Exam, Url.Action("GetM2Exams", "Lookup"))
+        </td>
+
+    </tr>
+
+    <tr>
+        <th> @Html.LabelFor(model => model.DateOfExam)</th>
+        <td>
+            <div for="date">
+                @Html.HiddenFor(model => model.DateOfExam)
+                <input id="txtdateofExam" data-role="datepicker" data-bind="value:DateOfExam" data-format="dd/MM/yyyy" />
+
+            </div>
+        </td>
+
+    </tr>
+
+
+    <tr>
+    <tr>
+        <th>Date 1st Join as Agent</th>
+        <td>
+            <div style="float:left">
+                @Html.BindDropDownListFor(model => model.JoinMonth, Url.Action("AllMonths", "Lookup"))
+            </div>
+            <div style="float:left">
+                @Html.BindDropDownListFor(model => model.JoinYear, Url.Action("RecentYears", "Lookup"))
+            </div>
+        </td>
+    </tr>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.MTAAwards)</th>
+
+        <td>
+            @Html.BindMultiDropDownListFor(model => model.MTAAwards, Url.Action("MTAAwards", "Lookup"))
+        </td>
+
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model => model.SocialMediaAddress)</th>
+        <td>@Html.BindTextBoxFor(model => model.SocialMediaAddress, 100)</td>
+    </tr>
+
+</table>
+
+
+<script type="text/javascript">
+ 
+
+    $(function () {
+        var dateofExam = $("#Agency_DateOfExam").val();
+
+        $("#txtdateofExam").kendoDatePicker({
+            format: "dd/MM/yyyy"
+        });
+
+        // Get the Kendo DatePicker instance
+        var datePicker = $("#txtdateofExam").data("kendoDatePicker");
+        // Set the date (use JavaScript Date object)
+        var date = new Date(2024, 6, 26); // Note: Months are 0-indexed
+        datePicker.value(parseDateTime(dateofExam));
+        datePicker.trigger("change");
+
+     //  datePicker.value("24/04/2024");
+
+
+    });
+
+    function parseDateTime(dateTimeStr) {
+        // Define the date-time format
+        const format = 'DD-MM-YYYY hh:mm:ss A';
+
+        // Split the date and time parts
+        const [datePart, timePart] = dateTimeStr.split(' ');
+        const [day, month, year] = datePart.split('-').map(Number);
+        const [time, ampm] = timePart.split(' ');
+
+        // Split the time part into hours, minutes, and seconds
+        const [hours, minutes, seconds] = time.split(':').map(Number);
+
+        // Convert 12-hour time to 24-hour time
+        let hour24 = hours;
+        if (ampm === 'PM' && hours < 12) {
+            hour24 = hours + 12;
+        } else if (ampm === 'AM' && hours === 12) {
+            hour24 = 0;
+        }
+
+        // Create and return the Date object
+        return new Date(year, month - 1, day, hour24, minutes, seconds);
+    }
+</script>

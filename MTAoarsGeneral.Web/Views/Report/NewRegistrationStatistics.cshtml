@@ -1,0 +1,46 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.NewRegistrationStatisticsReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>New Registration Statistics Report Parameters - @Model.Caption</caption>
+    <tr>
+        <th>Year</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Year, Url.Action("LastFiveYears", "Lookup"), required:true)
+        </td>
+   
+        <th>Month</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Month, Url.Action("AllMonths", "Lookup"), required:true)
+        </td>
+    </tr>
+    <tr>
+        <th>Corporate Status</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.RegistrationCategory, Url.Action("RegistrationCategories", "Lookup"), required:true)
+        </td>
+        <th>&nbsp;</th>
+        <th>
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("New Registration Statistical Report", "#", 2);
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+            var clone = $.extend(true, {}, viewModel);
+            clone.RegistrationCategory = clone.RegistrationCategory.Code;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=NewRegistrationStatistics")", clone, "#report");
+        });
+
+    });
+</script>

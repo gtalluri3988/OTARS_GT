@@ -1,0 +1,75 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.PhotoUploadEnquirySearchViewModel
+           
+<div id="enquiry-search" data-page-div="true">
+    @Html.ValSummary()
+    <div id="search-content">
+        <table class="mta-panel">
+           <caption>Search Agency</caption> 
+            <tr>
+                <th>Agency Number</th>
+                <td>@Html.BindTextBoxFor(model=>model.AgencyNumber, 20)</td>
+                 <td style="text-align:right" >
+                    <button class="k-button" id="search-button"><span class="k-icon k-i-search"></span>Search</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div id="agency-grid">
+    </div>
+</div>
+
+<script type="text/javascript">
+    var viewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+    addBreadCrumb("Enquiry", "javascript:showDiv('#enquiry-search')", 1);
+    $(function () {     
+        kendo.bind($("#enquiry-search"), viewModel);
+
+        function bindGrid() {
+             $("#agency-grid").kendoGrid({
+                dataSource:{
+                    data:viewModel.Results,
+                    
+                },
+                selectable:true,
+                columns:[
+                    //{field:"AgencyNumber", title:"Agency Number", editable:false},
+                    {field:"CompanyName", title:"Company"},
+                    {field:"UserName", title:"User Name"},                    
+                    {field:"Code", title:"Code"},
+                    {field: "CreatedOn", title:"Created On", template:"#=formatDate(CreatedOn)#"}
+                ]
+               
+            });
+        }
+      
+        $("#search-button").click(function() {
+            jsonPost("#enquiry-search", "@Url.Action("SearchUploadPhoto")", { agencyNumber: viewModel.AgencyNumber }, 
+                function(response) {
+                    hideSummary("#enquiry-search");       
+                    viewModel.Results=[];   
+                    viewModel.Message=response.Message;    
+                    for(var i = 0; i < response.Data.length; i++) {
+                        viewModel.Results.push(response.Data[i]);                
+                    }                        
+                    bindGrid();                 
+                    if (viewModel.Results.length > 0) {                    
+                        $("#agency-grid").show();
+                    } else {
+                        $("#agency-grid").hide();
+                        addErrorToSummary("#enquiry-search", viewModel.Message);                  
+                    }
+                }
+            );
+        });
+
+    });
+
+        function showDiv(selector) {
+            $("div[data-page-div='true']").hide();
+            $(selector).show();
+        }
+</script>

@@ -1,0 +1,92 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions;
+@model MTAoarsGeneral.ViewModels.Operations.MaintenanceSearchViewModel
+@section  PageTitle{
+Search
+}
+
+<div id="main-content" >
+    
+    <table class="mta-panel" id="search-content" style="align:center">
+        <caption>Search Agency</caption>
+        <tr>
+            <th>Agency Number</th>
+            <td>@Html.BindTextBoxFor(model=>model.AgencySearch.AgencyNumber)</td>
+            <td class="for-button"><button id="search-button" class="k-button"><span class="k-icon k-i-search"></span>Search</button></td>
+        </tr>
+    </table>
+    <br />
+        @Html.ValSummary()
+    <div id="divProcess">
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+     var viewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+        );
+    $(function () {
+        $('#complete-content').hide();
+        addBreadCrumb("Maintenance", "@Url.Action("Search", "Maintenance")", 1);
+        kendo.bind($("#main-content"), viewModel);
+
+        var schema = {
+            id:"AgencyID",
+            model: {
+                fields: {
+                    AgencyNumber:{editable:false}, AgencyTypeDescription: {editable:false}, IntermediaryTypeDescription:{editable:false},
+                    NomineeName:{editable:false}, NomineeNewICNumber: {editable:false}
+                }
+            }
+        }
+
+        function bindGrid() {
+            $("#divProcess").kendoGrid({
+                dataSource:{
+                    data:viewModel.Agents,
+                    schema:schema                 
+                },
+                
+                columns:[
+                    {field:"AgencyNumber", title:"Agency Number", editable:false, width:"125px"},  
+                    {field:"AgencyTypeDescription", title:"Registration Type", width:"125px"},
+                    {field:"IntermediaryTypeDescription", title:"Corporate Status", width:"125px"}, 
+                    {field:"NomineeName", title:"Nominee Name"},
+                    {field:"NomineeNewICNumber", title:"New IC", width:"100px"},                                 
+                    {command:{ text: "Edit", click: edit }, width:"100px"}
+                ]
+                
+            });
+        }
+
+      
+
+        $("#search-button").click(function() {
+            jsonPost("#main-content", '@Url.Action("SearchAgent")', viewModel.AgencySearch, function(response) {
+                viewModel.Agents=response.Data;
+                    bindGrid();
+            });
+        }
+        );
+        return false;
+
+    });
+    function edit(e)
+    {
+        jsonPost("#main-content", "@Url.Action("Edit")",{AgencyPrincipalID: this.dataItem($(e.currentTarget).closest("tr")).AgencyPrincipalID, AgencyNumber: this.dataItem($(e.currentTarget).closest("tr")).AgencyNumber}, function(response) {
+            if(response.Status=="Ok")
+            {
+                window.location.href=response.Url;
+            }
+         });
+    }
+    function terminate() {
+         jsonPost("#main-content", "@Url.Action("Process")", viewModel, function(response) {
+             addBreadCrumb("Complete", "#", 2);
+             $('#main-content').hide();
+             $('#complete-content').show();
+         });
+    }
+</script>

@@ -1,0 +1,59 @@
+@using MTAoarsGeneral.Utilities.Mvc
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MTAoarsGeneral</title>
+    @Html.StyleSheet("~/Content/Css/kendo.common.min.css")
+    @Html.StyleSheet("~/Content/Css/kendo.uniform.min.css")
+    @Html.StyleSheet("~/Content/Css/Site.css")
+    @*@Html.Script("~/Scripts/jquery-1.7.2.js")*@
+    @Html.Script("~/Scripts/jquery-3.6.0.min.js")
+    @Html.Script("~/Scripts/jquery-migrate-3.0.0.js")
+    @Html.Script("~/Scripts/kendo.web.min.js")
+    @Html.Script("~/Scripts/site.js")
+    <script type="text/javascript">
+        $(function () {
+            $("#page-menu").kendoMenu();
+        });
+    </script>
+
+    @RenderSection("CssScript", false)
+</head>
+<body>
+    <div id="page-wrapper" style="width: 100%; height: 100%">
+        <div id="page-header-warapper" style="background-color:#0F1923;height:10%">
+            <div style="height:80%">
+                <div style="float: left; width: 350px;color:#FFFFFF;font-weight:bold;font-size:17px">
+                    Malaysian Takaful Association
+                </div>
+                <div style="margin-left: 110px">
+
+                </div>
+            </div>
+            <div style="width: 100%;height:20%">
+
+            </div>
+        </div>
+
+        <div id="content-wrapper" style="clear:both;height:82.6%">
+            <div style="margin-top:30px;margin-left:10px;min-height:100%">
+                <div id="page-title" style="font-size:14;font-weight:bold;color:#0F1923;padding-bottom:5px">
+                    @RenderSection("PageTitle", false)
+                </div>
+
+
+                @RenderBody()
+            </div>
+
+            <div id="footer" style="height:3%;text-align:center;background-color:#0F1923;color:White">
+                Powered by <a href="http://www.torrenttech.com.my" title="Powered by Torrent" class="k-link">Torrent Technologies</a>
+            </div>
+        </div>
+
+
+    </div>
+
+</body>
+
+<div id="info-window"></div>
+</html>

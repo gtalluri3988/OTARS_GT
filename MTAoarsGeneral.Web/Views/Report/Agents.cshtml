@@ -1,0 +1,74 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.AgentsReportViewModel
+@{ 
+    var identity = Html.GetIdentity();
+}
+
+<table class="mta-panel" id="parameters-table">
+    <caption>Agencies Report</caption>
+    <tr>
+        <th>Report For</th>
+        <td>
+            <select id="report-for" data-bind="value:ReportFor">
+                <option value='ActiveAgents'>Active Agents</option>
+                <option value='TerminatedAgents'>Terminated Agents</option>
+            </select>
+        </td>
+   
+        <th>Banca Staff</th>
+        <td>
+            <select id="is-banca-staff" data-bind="value:IsBancaStaff">
+                <option value='All'>All</option>
+                <option value='true'>Yes</option>
+                <option value='false'>No</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th>From Date</th>
+        <td>
+            @Html.EditorFor(model => model.FromDate, "DateEditor")
+        </td>
+        <th>To Date</th>
+        <td>
+            @Html.EditorFor(model => model.ToDate, "DateEditor")
+        </td>
+    </tr>
+    <tr>
+@if (identity.IsISMOrMTA)
+{
+        <th>Intermediary Type</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.IntermediaryTypeID, Url.Action("IntermediaryTypes", "Lookup"))
+        </td>
+}
+        <th colspan="2">
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Agents Report", "#", 2);
+
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        viewModel.ReportFor = "ActiveAgents";
+        viewModel.IsBancaStaff = "All";
+        viewModel.IntermediaryTypeID = 1;
+        kendo.bind($("#parameters-table"), viewModel);
+
+        $("#is-banca-staff").kendoDropDownList({});
+        $("#report-for").kendoDropDownList({});
+        
+        $("#fetch-button").click(function () {
+            if(viewModel.FromDate == null) delete viewModel.FromDate;
+            if(viewModel.ToDate == null) delete viewModel.ToDate;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=Agents")", viewModel, "#report");
+        });
+
+    });
+</script>

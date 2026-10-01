@@ -1,0 +1,27 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Operations.QualificationViewModel
+<div class="two-column">
+    <div class="column">
+        <fieldset>
+            <ul>
+                @Html.ListItemDropDown(model=>model.EducationalQualificationID, Model.EducationalQualifications)
+                @Html.ListItemTextBox(model=>model.Year)
+              
+            </ul>
+        </fieldset>
+    </div>
+    <div class="column column-right">
+        <fieldset>
+            <ul>
+                
+                @Html.ListItemTextBox(model=>model.SchoolName)
+                
+               @* @if (Model.IsTBEExempted) {
+                   @Html.ListItemDropDown(model => model.InsuranceQualificationID, Model.InsuranceQualifications)
+                }*@
+            </ul>
+        </fieldset>
+    </div>
+</div>
+<div class="clear"></div>

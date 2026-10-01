@@ -1,0 +1,28 @@
+@model List<MTAoarsGeneral.ViewModels.Operations.MemberDisplayViewModel>
+@if (Model.Count > 0) {
+    <div style="width: 100%">
+        <h4>
+            Additional Corporate Nominees</h4>
+        <div class="confirm-acn-grid">
+        </div>
+    </div>
+    <script type="text/javascript">
+
+    $(function () {
+        $(".confirm-acn-grid").kendoGrid({
+            dataSource: {
+                data: @Html.Raw(@Json.Encode(Model))
+            },
+            columns:[
+                {field:"Name", title:"Name"}, {field:"NewICNumber", title:"New IC @@ Passport Number", template:"#=coalesce(NewICNumber, PassportNumber)#"},
+                {field:"OldICNumber", title:"Old IC"}
+            ]
+        });
+
+    });
+
+    
+    </script>
+    
+    <br />
+}

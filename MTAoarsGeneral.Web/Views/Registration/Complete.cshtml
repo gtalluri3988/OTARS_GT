@@ -1,0 +1,25 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.AgencyDisplayViewModel
+           
+<div id="complete-content">
+    @{Html.RenderPartial("~/Views/Agency/Details.cshtml", Model);}
+
+    <div style="text-align:right">
+        <button id="submit-button" class="k-button"><span class="k-icon k-i-arrow-e"></span>Next</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function() {
+
+    addBreadCrumb("Complete", "javascript:showDiv('#create-confirm')", 5);
+
+    $("#submit-button", "#complete-content").click(function () {
+        location.href = "@Url.Action("Create")"
+    });
+});    
+
+function showDiv() {
+    infoWindow.content("This operation is not allowed").center().open();
+} 
+</script>           

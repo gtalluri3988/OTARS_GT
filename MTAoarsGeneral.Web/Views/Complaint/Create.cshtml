@@ -1,0 +1,82 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.ComplaintViewModel
+<div id="create-wrapper">
+    <div id="create-search">
+        @Html.ValSummary()
+        <table class="mta-panel" style="width: 90%">
+            <caption>
+                Search</caption>
+            <tr>
+                <th>
+                    Agency No
+                </th>
+                <td>
+                    <input type="text" class="k-textbox" id="agency-number" required />
+                </td>
+                <td>
+                    <button id="search-agency-button" class="k-button">
+                        <span class="k-icon k-i-search"></span>Search</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="create-search-result">
+        <table class="mta-panel" style="width:90%">
+            <tr>
+                <th>Name</th>
+                <td><span data-bind="text:NomineeName"></span></td>
+                <th>IC Number</th>
+                <td><span data-bind="text:NomineeNewICNumber"></span></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="create-content" style="display:none">
+        <textarea id="Description" data-bind="value:Description" style="width: 900px; height: 150px;"></textarea>
+    
+         <button id="cancel-button" class="k-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+          <button id="save-button" class="k-button"><span class="k-icon k-i-tick"></span>Submit</button>
+    </div>
+</div>
+<script type="text/javascript">
+$(function() {
+    addBreadCrumb("New", "javascirpt:showDiv('#complaint-details')", 2);
+
+    var createViewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+        );
+
+    $("#Description").kendoEditor();
+
+    //kendo.bind($("#create-content"), createViewModel);
+
+    $("#search-agency-button").click(function () {
+        jsonPost("#create-search", "@Url.Action("Search")", {agencyNumber:$("#agency-number").val()}, 
+        function(response) {
+            if(!response.Result) return;
+                //kendo.bind("#create-search-result", response.Data);
+                var current = master.getCurrent();
+                current.AgencyID = response.Data.AgencyID;
+                current.NomineeName = response.Data.NomineeName;
+                current.NomineeNewICNumber = response.Data.NomineeNewICNumber;
+                current.CompanyID = response.Data.CompanyID;
+                current.IntermediaryTypeID = response.Data.IntermediaryTypeID;
+                master.refresh();
+                $("#create-content").show();
+            });
+        });
+
+    
+    $("#save-button").click(function() {
+        master.save();
+        master.refresh();
+        showDiv("#complaint-grid");
+    });
+
+    $("#cancel-button").click(function() {
+        showDiv("#complaint-grid");
+    });
+
+});
+</script>

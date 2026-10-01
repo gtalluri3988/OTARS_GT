@@ -1,0 +1,66 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Constants
+@model MTAoarsGeneral.ViewModels.Reports.ReferredListingReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>Download to Referred Listing Report Parameters</caption>
+    <tr>
+        <th>Approved From Date</th>
+        <td>
+            @Html.EditorFor(model => model.ApprovedFromDate, "DateEditor")
+        </td>
+   
+        <th>Approved To Date</th>
+        <td>
+            @Html.EditorFor(model => model.ApprovedToDate, "DateEditor")
+        </td>
+    </tr>
+    <tr>
+        <th>Category</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.CategoryID, Url.Action("ReferredCategoriesOptional", "Lookup"))
+        </td>
+        <th>Agent</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.AgentType, Url.Action("ReferredReportAgentType", "Lookup"))
+        </td>
+    </tr>
+    <tr>
+        <th id="newICNumberLabel">New IC Number</th>
+        <td id="newICNumber">
+            @Html.BindTextBoxFor(model => model.NewICNumber)
+        </td>
+        <th colspan="2">
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </th>
+    </tr>
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Referred Listing", "#", 2);
+        $('#newICNumber, #newICNumberLabel').hide();
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)));
+        //viewModel.ApprovedFromDate = getO3Date(viewModel.ApprovedFromDate);
+        //viewModel.ApprovedToDate = getO3Date(viewModel.ApprovedToDate);
+        
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+            
+           reportPost("#parameters-table", 
+                            "@Url.Content("~/Rdls/Display.aspx?report=ReferredListing")", 
+                            viewModel, 
+                            "#report");
+        });
+
+        $('#AgentType').change(function(){
+            if ($(this).val() == 0) $('#newICNumber, #newICNumberLabel').show();
+            else $('#newICNumber, #newICNumberLabel').hide();
+            $('#NewICNumber').val('');
+        });
+    });
+</script>

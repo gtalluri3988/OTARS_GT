@@ -1,0 +1,95 @@
+  @using MTAoarsGeneral.Utilities.Mvc
+   @using MTAoarsGeneral.ViewModels.Interfaces
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationViewModel
+           
+    <div id="tabs">
+        <ul>
+          @Html.Partial("Header",Model,ViewData)
+              
+        </ul>
+   
+            @Html.ValSummary()
+           @Html.Partial("Details", Model, ViewData)        
+         <table class="mta-panel">
+            <caption>Upload Photograph</caption>
+            <!--<tr>
+                <th>Please upload Termination Letter and Agent Movement Form</th>
+            </tr>-->
+            <tr>
+                <td>
+                    <input type="file" id="photo"  name="photo" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <script type="text/javascript">
+
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+    $(function () {
+        addBreadCrumb("Maintenance", "Search?maintenanceType=UP", 1);
+        addBreadCrumb("Upload Photograph", "#", 2);
+        kendo.bind($("#main-content"), mainViewModel);
+        $('.mta-tab-buttons').hide();
+        $("#submit-button", "#main-content").click(function() {
+            jsonPost("#main-content", "@Url.Action((string)ViewData["ActionName"])", mainViewModel.Address, function(response) {
+               if(response.Result)
+               {    
+                alert("Photo uploaded successfully");
+                window.location.href="Search?maintenanceType=UP";
+               }
+                });
+           
+        });
+        $("#photo").kendoUpload({
+                    async: {
+                        saveUrl: "SavePhoto"
+                    },
+                    upload: function(e){
+                        if(e.files && e.files[0]){
+                            var f = e.files[0];
+                            //debugger;
+                            if(f.name.replace(f.extension,'').toUpperCase() != $('label[for="CorporateNominee_NewICNumber"]:last').text())//#CorporateNominee_AgencyNumber label[for="CorporateNominee_NewICNumber"]
+                            {
+                                alert("File name must be IC no of the agent.");
+                                e.preventDefault();
+                            }
+                            else if([".jpg",".png",".jpeg"].indexOf(f.extension.toLowerCase()) < 0){
+                                alert("File type "+ f.extension.toLowerCase() +" is not supported.");
+                                e.preventDefault();
+                            }else if (f.size > 300000){
+                                alert("File size exceeded 300 KB.");
+                                e.preventDefault();
+                            }
+                        }else{
+                            e.preventDefault();
+                        }
+                    },
+                    error: function (e) {
+                        var supportPattern = "\\w*Your support ID is: \\w*";
+                        var message = "";
+                        if (e.XMLHttpRequest) {
+                            var matches = e.XMLHttpRequest.responseText.match(supportPattern);
+                            if (matches != null) {
+                                var supportID = e.XMLHttpRequest.responseText.match(/[0-9]+/g)[0];
+                                message = "\nThe requested URL was rejected. Please consult with your administrator.\nYour support ID is: " + supportID;
+                            }
+                        }
+                        alert("Failed to upload photo. " + message);
+                    },
+                    success: function (e) {
+                        // An array with information about the uploaded files
+                        var files = e.files;
+
+                        if (e.operation == "upload" && e.XMLHttpRequest.status == 200) {
+                            alert("Successfully uploaded photo");
+                        }else{
+                            alert("Failed to upload photo");
+                        }
+                    },
+                    multiple: false
+                });
+    });
+</script>

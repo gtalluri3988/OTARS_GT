@@ -1,0 +1,41 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}       
+
+<div id="modify-wrapper">
+    
+    <div id="create-start" data-page-div="true"></div>
+
+    <div id="create-list" data-page-div="true"></div>
+
+    <div id="create-detail" data-page-div="true"></div>
+
+    <div id="create-complete" data-page-div="true"></div>
+
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        loadPage("#create-start", '@Url.Action("HeaderList")');
+    });
+
+    function loadPage(selector, action) {
+        $("div[data-page-div='true']").hide();
+        $(selector).load(action + "?time=" + (new Date()).getTime());
+
+        $(selector).show();
+    }
+
+    function postPage(selector, content) {
+        $("div[data-page-div='true']").hide();
+        $(selector).html(content);
+        $(selector).show();
+    }
+
+    function showDiv(selector) {
+        $("div[data-page-div='true']").hide();
+        $(selector).show();
+    }
+</script>

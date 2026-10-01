@@ -1,0 +1,26 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions
+@model MTAoarsGeneral.ViewModels.Operations.ALCAddressViewModel
+           
+<table class="mta-panel" style="width:100%">
+    <tr>
+        <th>@Html.LabelFor(model=>model.Address1)</th>
+        <td>@Html.BindTextBoxFor(model=>model.Address1, 152)</td>
+        <th>@Html.LabelFor(model=>model.Address2)</th>
+        <td>@Html.BindTextBoxFor(model=>model.Address2, 152)</td>
+    </tr>
+     <tr>
+        <th>@Html.LabelFor(model=>model.City)</th>
+        <td>@Html.BindTextBoxFor(model=>model.City, 50)</td>
+        <th>@Html.LabelFor(model => model.State)</th>
+        <td>@Html.BindDropDownListFor(model => model.State, Url.Action("States", "Lookup"))</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.PostalCode)</th>
+        <td>@Html.BindTextBoxFor(model=>model.PostalCode, 6)</td>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+

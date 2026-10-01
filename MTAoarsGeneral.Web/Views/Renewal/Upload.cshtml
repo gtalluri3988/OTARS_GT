@@ -1,0 +1,185 @@
+   @using MTAoarsGeneral.Utilities.Mvc
+@using MTAoarsGeneral.Utilities.Extensions;
+@model  MTAoarsGeneral.ViewModels.Operations.RenewalUploadViewModel
+  
+  <div id="main-content" >
+    @Html.ValidationSummary()
+   @using (Html.BeginForm("Upload", "Renewal", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+  <table  class="mta-panel" >
+  
+       <tr>
+          <th>Year</th>
+         <td>
+                @Html.BindDropDownListFor(model => model.Header.Year, Url.Action("RecentYears", "Lookup"), required: true)
+         </td>
+         <th>
+            Quarter
+         </th>
+         <td>
+             @Html.BindDropDownListFor(model => model.Header.Quarter, Url.Action("AllQuarters", "Lookup"), required: true)
+         </td>
+       </tr>
+   <tr>
+          
+        <th>
+        Excel Upload
+        </th>
+        <td>
+        <input type="file" id="fileTermination" name="fileTermination" />
+        </td>
+        <td colspan="2">
+        <button id="upload-button" class="k-button"><span class="k-icon k-i-search"></span>Upload</button>
+        </td>
+           
+        </tr>
+       
+   
+    </table>
+   }
+           @Html.ValSummary()
+    <br />
+    <div id="details-grid">
+    </div>
+               
+</div>
+
+
+    <script type="text/javascript">   
+      var detailsGrid ;
+    var currentItems = [];
+    var isCancel=false;
+    var isPageChange=false;
+    var currentPage=1;
+    var viewModel = kendo.observable(
+            @Html.Raw(@Json.Encode(Model))
+        );
+    $(function () {
+        
+        /*var gridColumns =  [
+                            {field:"AgencyName", title:"Agency Name", sortField:"AgencyName"}, 
+                            {field:"AgencyNumber", title:"Agency Number", sortField:"Agency.AgencyPrincipals.Any(AgencyNumber{condition})"},  
+                            {field: "AgencyTypeDescription", title:"Corporate Status", sortField:"Agency.LookupAgencyType.Description"},
+                            {field: "IntermediaryTypeDescription", title:"Intermediary Type", sortField:"LookupIntermediaryType.Description"},
+                            {field: "IsBancaStaff", title: "Banca", template:"#if(IsBancaStaff){#Yes#}else{#No#}#", sortField:"Agency.AgencyMembers.Where(DesignationID == 1).First().Member.IsBancaStaff"},
+                            { field: "RenewalStatus", editor:statusEditor, template:"#=RenewalStatus.Description#" , title:"Renewal Status", sortField:"LookupRenewalDetailStatus.Description"}
+                     ];*/
+        var gridColumns =  [
+                            {field:"AgencyName", title:"Agency Name"}, 
+                            {field:"AgencyNumber", title:"Agency Number"},  
+                            {field: "AgencyTypeDescription", title:"Corporate Status"},
+                            {field: "IntermediaryTypeDescription", title:"Intermediary Type"},
+                            {field: "IsBancaStaff", title: "Banca", template:"#if(IsBancaStaff){#Yes#}else{#No#}#"},
+                            { field: "RenewalStatus",editor:statusEditor, template:"#=RenewalStatus.Description#" , title:"Renewal Status"},
+                              {field:"Remarks",title:"Remarks"}
+                           
+                     ];
+                      
+            
+            var schema= {               
+                    id: "ID",
+                    fields: {
+                        ID: { editable: false, nullable: false },
+                        AgencyName: { editable: false, type: "string" },
+                        AgencyNumber: { editable:false, type: "string" },
+                        StatusDescription: {editable:false, type: "string" },
+                        Description: { type: "string" },
+                        AgencyTypeDescription:{editable:false},
+                        IntermediaryTypeDescription:{editable:false},
+                        IsBancaStaff: { type:"boolean", editable: false },
+                        RenewalStatus: {defaultValue:{ID:"1", Description:"Generated"},editable:false}
+                      
+                    }         
+                }
+        if(viewModel.Header.Details.length>0)
+        {
+                detailsGrid = $("#details-grid").kendoGrid({
+                    dataSource:{
+                    data:viewModel.Header.Details,
+                    schema:schema
+                    },                                        
+                    toolbar: [
+                              {text:"Submit", template:"<button class='k-button' onclick='javascript:submitDetails()'><span class='k-icon k-i-tick'></span>Submit</button>"},
+                             ],
+                    columns:gridColumns,
+                    editable: true
+            
+                }).data("kendoGrid");
+        }
+
+    });
+
+    function statusEditor(container, options) {
+        $('<input data-text-field="Description" data-value-field="ID" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: true,
+                            dataTextField:"Description",
+                            dataValueField:"ID",
+                            dataSource: {
+                                data: @Html.Raw(Json.Encode(Model.Header.RenewalDetailStatuses))
+                            }
+                        });
+    }
+
+   
+        function submitDetails() {
+             saveChanges("Submit", detailsGrid.dataSource, '@Url.Action("SubmitDetails")', function(response) {
+                infoWindow.content(response.Status).center().open()
+            }, true);
+        }
+
+    function saveChanges(action, dataSource, url, method, force,onFail) {
+        var model = {items:viewModel.Header.Details, action:action, id:@Model.Header.ID};
+               
+        if(model.items.length == 0) return;
+        if(!validate(model)) 
+        {
+            if(onFail)
+            {           
+                onFail();
+            }
+            return;
+        }
+        showProgressBar();
+        $.ajax({
+            type:"POST",
+            contentType:"application/json",
+            url:url,
+            data: kendo.stringify(model),
+            success:function(response) {
+                hideProgressBar();
+                currentItems = [];
+                if(method != null) method(response);
+            }
+        });
+    }
+    function validate(model)
+    {        
+        addErrorToSummary("#main-content","");
+        hideSummary("#main-content");
+        for(i=0;i<model.items.length;i++)
+        {
+            var status=model.items[i].RenewalStatus.Code;
+            var remarks=model.items[i].Remarks;
+            if ((status == "NR" || status == "TER") && (remarks==null || remarks==""))
+            {
+                addErrorToSummary("#main-content", "Please enter remarks");
+                return false;
+            }
+            
+        }
+        return true;
+    }
+    function cancelChanges()
+    {    
+        addErrorToSummary("#main-content","");
+        hideSummary("#main-content");
+        isCancel=true;
+        detailsGrid.cancelChanges();
+    }
+    function exportToCsv() {
+       $("#export-form").submit();
+    }
+
+   
+    </script>

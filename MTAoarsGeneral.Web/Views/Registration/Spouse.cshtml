@@ -1,0 +1,45 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.SpouseViewModel
+           
+<table class="mta-panel" style="width:100%">
+    <caption>Spouse / Next of Kin</caption>
+    <tr>
+        <th>@Html.LabelFor(model=>model.Name)</th>
+        <td>@Html.BindTextBoxFor(model=>model.Name, 75)</td>
+        <th>@Html.LabelFor(model=>model.NewICNumber)</th>
+        <td>@Html.BindTextBoxFor(model=>model.NewICNumber, 25)</td>
+    </tr>
+     <tr>
+        <th>@Html.LabelFor(model => model.Race)</th>
+        <td>@Html.BindDropDownListFor(model => model.Race, Url.Action("Races", "Lookup"))</td>
+        <th>@Html.LabelFor(model => model.OldICNumber)</th>
+        <td>@Html.BindTextBoxFor(model => model.OldICNumber, 25)</td>
+    </tr>
+    <tr>
+        <th>@Html.LabelFor(model=>model.MaritalStatus)</th>
+        <td>@Html.BindDropDownListFor(model => model.MaritalStatus, Url.Action("MaritalStatuses", "Lookup"))</td>
+        <th>@Html.LabelFor(model=>model.Religion)</th>
+        <td>@Html.BindDropDownListFor(model => model.Religion, Url.Action("Religions", "Lookup"))</td>
+    </tr>
+     <tr>
+        <th> @Html.LabelFor(model => model.BirthDate)</th>
+        <td>
+            @Html.EditorFor(model => model.BirthDate, "DateEditor")
+             
+        </td>
+        <th>Gender</th>
+        <td>
+            @Html.BindDropDownListFor(model => model.Gender, Url.Action("Genders", "Lookup"))
+        </td>
+    </tr>
+    <tr>
+        <th></th>
+        <td> 
+             @Html.BindEditorFor(model => model.IsCitizen) Citizen
+             @Html.BindEditorFor(model => model.IsBumiputera) Bumiputera
+        </td>
+       <th></th>
+       <td></td>
+    </tr>
+</table>
+

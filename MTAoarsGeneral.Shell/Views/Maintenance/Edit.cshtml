@@ -1,0 +1,23 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Maintenance.MaintenanceViewModel
+@section CssScript {
+    @Html.StyleSheet("~/Content/css/ui/ui.datepicker.css")
+    @Html.Script("~/Scripts/ui/ui.tabs.js")
+    @Html.Script("~/Scripts/ui/ui.datepicker.js")
+    @Html.Script("~/Scripts/tablesorter.js")
+    @TabHelper.RegisterJavaScript("maintenanceTabs", Url.Action(Model.ActionName), Url.Action(Model.ActionName), Url.Action(Model.ActionName))
+}
+@section  PageTitle{
+Maintenance
+}
+@section Breadcrumb {
+    <a href="@Url.Action("Index", "Home")" title="Home">Home</a> > Maintenance
+}
+<div id="mainContent">
+    <div id="exceptionDialog">
+    </div>
+  
+    @Html.Partial(Model.ViewName, Model.Registration)
+   
+    @TabHelper.DisplayConfirmationDivision()
+</div>

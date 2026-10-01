@@ -1,0 +1,36 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Reports.TrainingDetailReportViewModel
+
+<table class="mta-panel" id="parameters-table">
+    <caption>Training Detail Report Parameters</caption>
+    
+    <tr>
+        <th>Agency Number</th>
+        <td>
+            @Html.BindTextBoxFor(model => model.AgencyNumber)
+        </td>
+   
+        <td>
+            <button class="k-button" id="fetch-button"><span class="k-icon k-i-search"></span>Fetch</button>
+        </td>
+   </tr>
+   
+</table>
+<div id="report-div"></div>
+<iframe id="report" class="mta-report-frame"></iframe>
+
+<script type="text/javascript">
+
+    $(function () {
+        addBreadCrumb("Training Detail", "#", 2);
+        
+        var viewModel =  kendo.observable(@Html.Raw(@Json.Encode(Model)))
+        kendo.bind($("#parameters-table"), viewModel);
+        
+        $("#fetch-button").click(function () {
+          //if(viewModel.CompanyID && viewModel.CompanyID.ID) viewModel.CompanyID = viewModel.CompanyID.ID;
+           reportPost("#parameters-table", "@Url.Content("~/Rdls/Display.aspx?report=TrainingDetail")", viewModel, "#report");
+        });
+
+    });
+</script>

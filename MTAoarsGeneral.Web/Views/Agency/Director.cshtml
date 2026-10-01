@@ -1,0 +1,30 @@
+@model List<MTAoarsGeneral.ViewModels.Operations.MemberDisplayViewModel>
+    @if (Model.Count > 0)
+    {
+        <div style="width: 100%">
+            <h4>
+                Directors
+            </h4>
+            <div class="confirm-directors-grid">
+            </div>
+        </div>
+        <script type="text/javascript">
+
+    $(function () {
+        $(".confirm-directors-grid").kendoGrid({
+            dataSource: {
+                data: @Html.Raw(@Json.Encode(Model))
+            },
+            columns:[
+                {field:"Name", title:"Name"}, {field:"NewICNumber", title:"New IC @@ Passport Number", template:"#=coalesce(NewICNumber, PassportNumber) ||''#"},
+                {field:"OldICNumber", title:"Old IC"}
+            ]
+        });
+
+    });
+
+
+        </script>
+
+        <br />
+    }

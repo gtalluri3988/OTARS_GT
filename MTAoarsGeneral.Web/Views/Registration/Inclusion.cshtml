@@ -1,0 +1,93 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Operations.RegistrationInclusionViewModel
+
+<script type="text/javascript">
+    var mainViewModel = kendo.observable(
+        @Html.Raw(@Json.Encode(Model))
+    );
+
+</script>
+
+
+
+<div id="main-content">
+     <h2>The details already exist and eligible for inclusion</h2>
+     @{Html.RenderPartial("~/Views/Agency/Details.cshtml", Model.Agency);}
+     @Html.ValSummary()
+     <table class="mta-panel">
+        <caption>Inclusion Details</caption>
+        <tr>
+             <th>@Html.LabelFor(model=>model.DateAppointed)</th>
+            <td>@Html.EditorFor(model=>model.DateAppointed, "DateEditor")</td>
+        <tr>
+        <tr>
+        <th>Upload Photograph</th>
+        <td><input type="file" id="photo"  name="photo" /></td>
+    </tr>
+    </table>
+     @Html.PartialFor(model => model.Guarantor, "Guarantor")
+     <div style="text-align:right;margin:30px">
+         <button id="submit-button" class="k-button"><span class="k-icon k-i-tick"></span>Submit</button>
+    </div>
+ </div>
+
+ <script type="text/javascript">
+
+     $(function () {
+         addBreadCrumb("Inclusion", "javascript:showDiv('#create-main')", 3);
+
+         kendo.bind($("#main-content"), mainViewModel);
+
+         $("#submit-button", "#main-content").click(function () {
+//             if($('.k-filename').length < 1) {
+//                alert("Please upload agent's photograph"); return false;
+//             }
+             jsonPost("#main-content", "@Url.Content("InclusionSubmit")", mainViewModel, function (response) {
+                 viewPost("#main-content", response.RedirectUrl, response.Data, function (result) {
+                     postPage("#create-complete", result);
+                 });
+             });
+             return false;
+         });
+
+         $("#photo").kendoUpload({
+                    async: {
+                        saveUrl: "UploadPhoto"
+                    },
+                    upload: function(e){
+                        if(e.files && e.files[0]){
+                            var f = e.files[0];
+                            if(f.name.replace(f.extension,'').toUpperCase() != $('#CorporateNominee_NewICNumber').text())//#CorporateNominee_AgencyNumber label[for="CorporateNominee_NewICNumber"]
+                            {
+                                alert("File name must be IC no of the agent only.");
+                                e.preventDefault();
+                            }
+                            else if([".jpg",".png",".jpeg"].indexOf(f.extension.toLowerCase()) < 0){
+                                alert("File type "+ f.extension.toLowerCase() +" is not supported.");
+                                e.preventDefault();
+                            }else if (e.files[0].size > 300000){
+                                alert("File size exceeded 300 KB.");
+                                e.preventDefault();
+                            }
+                        }else{
+                            e.preventDefault();
+                        }
+                    },
+                    error: function (e) {
+                        alert("Failed to upload photo");
+                    },
+                    success: function (e) {
+                        // An array with information about the uploaded files
+                        var files = e.files;
+
+                        if (e.operation == "upload" && e.XMLHttpRequest.status == 200) {
+                            alert("Successfully uploaded photo");
+                        }else{
+                            alert("Failed to upload photo");
+                        }
+                    },
+                    multiple: false
+                });
+     });
+
+ </script>

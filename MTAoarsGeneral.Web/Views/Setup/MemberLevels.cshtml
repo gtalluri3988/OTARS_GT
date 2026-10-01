@@ -1,0 +1,78 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Masters.MemberLevelViewModel
+@section CssScript{
+    @Html.Script("~/Scripts/Master.js")
+}           
+<div id="memberlevel-content">
+    <div id="memberlevel-grid"></div>
+    <br />
+    <div id="memberlevel-details" style="display:none;text-align:center">
+        <table class="mta-panel" style="width:90%">
+            <caption>Member Level</caption>
+
+            <tr>
+                <th>Code</th>
+                <td>@Html.BindTextBoxFor(model => model.Code)</td>
+                 <th>Description</th>
+                <td>@Html.BindTextBoxFor(model => model.Description)</td>
+                </tr>
+                <tr>
+                <th>@Html.LabelFor(model => model.IsActive)</th>
+                <td>@Html.BindEditorFor(model => model.IsActive)</td>
+  
+            </tr>
+             <tr>
+                <th colspan="4" style="text-align:right">
+                    <button class="k-button" id="save-button"><span class="k-icon k-i-tick"></span>Save</button>
+                    <button class="k-button" id="cancel-button"><span class="k-icon k-i-cancel"></span>Cancel</button>
+                </th>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var modelItem = @Html.Raw(@Json.Encode(Model));
+    
+    var master;
+     $(function () {
+
+             var memberlevelModel = {
+            id: "ID"
+            
+        };
+
+
+            $("#memberlevel-grid").kendoGrid({
+                    dataSource: getMasterGridDataSource(masterDataServiceUrl + "/LookupMemberLevels", memberlevelModel ),
+                    pageable:true,
+                    sortable:true,
+                    filterable:true,
+                    selectable:true,
+                    editable:"inline",
+                    columns: [
+                        { field: "Code" },
+                        { field: "Description" },
+                        { field: "IsActive"},
+                        { field: "ID", template:"<button class='k-button' onclick='onEditClick()'><span class='k-icon k-i-pencil'></span>Edit</button>", filterable:false, title:" "},
+                        //{ command: ["destroy"]}
+                    ],
+                    toolbar:[{template:"<button class='k-button' onclick='javascript:onAddClick()'><span class='k-icon k-i-plus'></span>Add</button>"}]
+                });
+
+        master = new Master({
+            url: masterDataServiceUrl + "/LookupMemberLevels",
+            gridSelector: "#memberlevel-grid", detailsSelector: "#memberlevel-details", modelItem: modelItem,
+            validationUrl: "@Url.Action("ValidateMemberLevel")"
+        });
+
+    });
+
+    function onEditClick() {
+        master.editClick();
+    }
+    
+    function onAddClick() {
+        master.addClick();
+    }
+</script>

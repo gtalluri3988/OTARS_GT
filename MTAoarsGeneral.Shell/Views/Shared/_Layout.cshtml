@@ -1,0 +1,190 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@using Microsoft.Practices.Unity
+@using MTAoarsGeneral.ViewModels.Shared
+@using MTAoarsGeneral.Utilities.IoC
+@using MTAoarsGeneral.Utilities.Interfaces
+@using MTAoarsGeneral.Utilities.Constants
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MTAoars General</title>
+    @Html.Script("~/Scripts/jquery-3.6.0.min.js")
+    @Html.Script("~/Scripts/jquery-migrate-3.0.0.js")
+    @Html.Script("~/Scripts/ui/jquery-ui.min.js")
+    @Html.Script("~/Scripts/jquery.blockUI.js")
+
+    @Html.Script("~/Scripts/ui/ui.core.js")
+    @Html.Script("~/Scripts/ui/ui.widget.js")
+    @Html.Script("~/Scripts/ui/ui.mouse.js")
+    @Html.Script("~/Scripts/superfish.js")
+    @Html.Script("~/Scripts/live_search.js")
+    @Html.Script("~/Scripts/tooltip.js")
+    @Html.Script("~/Scripts/cookie.js")
+    @Html.Script("~/Scripts/ui/ui.sortable.js")
+    @Html.Script("~/Scripts/ui/ui.draggable.js")
+    @Html.Script("~/Scripts/ui/ui.resizable.js")
+    @Html.Script("~/Scripts/ui/ui.position.js")
+    @Html.Script("~/Scripts/ui/ui.button.js")
+    @Html.Script("~/Scripts/ui/ui.dialog.js")
+    @Html.Script("~/Scripts/custom.js")
+    @Html.Script("~/Scripts/knockout.js")
+    @Html.Script("~/Scripts/knockout.bindings.js")
+    @Html.Script("~/Scripts/knockout.mapping.js")
+    @Html.Script("~/Scripts/validation.response.js")
+    @Html.Script("~/Scripts/site.js")
+
+    @Html.Script("~/Scripts/kendo/kendo.web.min.js")
+    @Html.StyleSheet("~/Content/css/ui/ui.base.css")
+    @Html.StyleSheet("~/Content/css/themes/gray_lightness/ui.css")
+    @Html.StyleSheet("~/Content/css/Site.css")
+    @Html.StyleSheet("~/Content/css/kendo/kendo.common.min.css")
+    @Html.StyleSheet("~/Content/css/kendo/kendo.default.min.css")
+
+
+    @RenderSection("CssScript", false)
+
+    <!--[if IE 6]>
+     @Html.StyleSheet("~/Content/css/ie6.css")
+     @Html.Script("~/Scripts/pngfix.js")
+
+    /* Fix IE6 Transparent PNG */
+       DD_belatedPNG.fix('.logo, ul#dashboard-buttons li a, .response-msg, #search-bar input');
+     </script>
+     <![endif]-->
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#sidebar").addClass('closed-sidebar').animate({ "speed": "1500" });
+            //$("#sidebar").animate("speed",500);
+            $("#page_wrapper #page-content #page-content-wrapper").addClass("no-bg-image wrapper-full");
+            $("#open_sidebar").show();
+            $("#close_sidebar, .hide_sidebar").hide();
+
+            $(".content-box").css("width", "96%");
+
+            $(".inner-page-title").css("width", "98%");
+
+            var sidebarHeight = $("#sidebar").height();
+            //alert(sidebarHeight);
+
+        });
+
+    </script>
+
+    <style>
+     .ui-progressbar .ui-progressbar-value { background-image: url("@Url.Content("~/content/images/pbar-ani.gif")"); }
+    </style>
+</head>
+<body>
+ <div id="progressbar" style="display:none;width:300px"></div>
+    <div id="page_wrapper">
+        <div id="page-header">
+            <div id="page-header-wrapper">
+                
+                <div id="top">
+                    <div class="site-name">Malaysian Takaful Association</div>
+                    <div class="welcome">
+                    @{
+                        var dataProvider = ObjectContainer.Container.Resolve<IScopeDataProvider>();
+                        var identity = dataProvider.Get<Identity>(GlobalConstants.CurrentIdentity);
+                        if (identity == null) {
+                            identity = ObjectContainer.Container.Resolve<Identity>();
+                        }
+                    }
+                        <span class="note">Welcome, <a href="#" title="Welcome, @identity.UserName">@identity.UserName</a></span>
+                       @* <a class="btn ui-state-default ui-corner-all" href="#"><span class="ui-icon ui-icon-wrench">
+                        </span>Settings </a><a class="btn ui-state-default ui-corner-all" href="#"><span
+                            class="ui-icon ui-icon-person"></span>My account </a>*@
+                       <a class="btn ui-state-default ui-corner-all"
+                                href="@Url.Action("LogOut", "Account")"><span class="ui-icon ui-icon-power"></span>Logout </a>
+                    </div>
+                    <div>&nbsp;</div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="navigation-pane">
+                
+                <ul id="navigation">
+                    <li><a href="#" class="sf-with-ul">Operations</a>
+                        <ul>
+                            <li><a href="@Url.Content("~/Registration/Start")">Registration</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Search", "Termination")">Termination</a>
+                            </li>
+                             <li>
+                                <a href="@Url.Action("List", "Renewal")">Renewal</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Index", "Mail")">Mail</a>
+                            </li>
+                             <li>
+                                <a href="@Url.Action("Index", "Invoice")">Invoice</a>
+                            </li>
+                             <li>
+                                <a href="@Url.Action("Enquiry", "Agency")">Enquiry</a>
+                            </li>
+                         </ul>
+                        
+                    </li>
+                     <li>
+                        <a href="#" class="sf-with-ul">Maintenance</a>
+                        <ul>
+                             <li><a href="@Url.Content("~/Maintenance/Search?maintenanceType=CCNO")">Change Nominee</a></li>
+                             <li><a href="@Url.Content("~/Maintenance/Search?maintenanceType=COA")">Change Address</a></li>
+                             <li><a href="@Url.Content("~/Maintenance/Search?maintenanceType=CGU")">Change Guarantor</a></li>
+                             <li><a href="@Url.Content("~/Maintenance/Search?maintenanceType=CPA")">Change Partner</a></li>
+                             <li><a href="@Url.Content("~/Maintenance/Search?maintenanceType=CBM")">Change Board Members</a></li>
+                        </ul>
+                     </li>
+                </ul>
+                
+                </div>
+            </div>
+        </div>
+
+        <div id="sub-nav">
+            <div class="page-title">
+                <div class="page-title-caption">
+                    <h1>@RenderSection("PageTitle", true)</h1>
+               
+                    <span>@RenderSection("Breadcrumb", true)</span>
+                </div>
+                <div>&nbsp;</div>
+            </div>
+
+        </div>
+        <div id="page-layout">
+            <div id="page-content">
+                <div id="page-content-wrapper" style="min-height:500px;padding-left:50px">
+                    @RenderBody()
+                    <div class="clearfix">
+                    </div>
+                   
+                    
+                    <div class="clear">
+                    </div>
+                </div>
+                <div class="clear">
+                </div>
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+        <div id="footer">
+           
+        </div>
+       
+        <div id="copyright">
+            Powered by <a href="http://www.torrenttech.com.my" title="Powered by Torrent">Torrent Technologies</a>
+        </div>
+        
+    </div>
+    <div id="progress-bar" style="height:20px;vertical-align:middle">
+        <div style="width:100%; height:100%;background-image:url('@Url.Content("~/content/images/pbar-ani.gif")');background-repeat:repeat-x;" />
+    </div>
+</body>
+
+
+</html>
+

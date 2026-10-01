@@ -1,0 +1,37 @@
+@model MTAoarsGeneral.ViewModels.Notifications.MailViewModel
+<div class="column-content-box">
+    <div class="content-box
+content-box-header ui-corner-all">
+        <div class="ui-state-default ui-corner-top ui-box-header">
+            <span class="ui-icon float-left ui-icon-notice"></span>@Model.Subject
+        </div>
+        <div class="hasdetailtable">
+            <table>
+                <tr>
+                    <td>
+                        <b>From</b>
+                    </td>
+                   
+                    <td>@Model.FromCompanyName
+                    </td>
+                    <tr>
+                    <td>
+                        <b>To</b>
+                    </td>
+                    <td>@Model.ToCompanyName
+                    </td>
+                    </tr>
+            
+                     <td>
+                        <b>Date</b>
+                    </td>
+                    <td>@Model.CreatedOnDisplay
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="content-box-wrapper">
+            @Html.Raw(Model.Body)
+        </div>
+    </div>
+</div>

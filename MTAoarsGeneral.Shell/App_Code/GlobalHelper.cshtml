@@ -1,0 +1,21 @@
+@using System.Web.Mvc
+@using System.Linq.Expressions
+@using MTAoarsGeneral.Utilities.Mvc
+
+@helper GetLookupDescription(IEnumerable<LookupItem> list, long? id) {
+    var item = list.SingleOrDefault(p => p.ID == id);
+    if(item != null) {
+        <span>@item.Description</span>;
+    }
+}
+
+
+@helper Coalesce(params string[] arguments) {
+    foreach(var arg in arguments) {
+        if(String.IsNullOrWhiteSpace(arg) == false) {
+          @arg;
+        }
+    }
+    @null;
+}
+

@@ -1,0 +1,14 @@
+@using MTAoarsGeneral.Utilities.Mvc
+@model MTAoarsGeneral.ViewModels.Notifications.MailViewModel
+@section  PageTitle{
+Inbox
+}
+@section Breadcrumb {
+    <a href="#" title="Layout Options">Layout Options</a> > <a href="#" title="Two column layout">
+        Two column layout</a> > This is a breadcrumb example
+}
+<div id="mainContent">
+
+                @Html.Partial("Detail", Model)
+           
+</div>

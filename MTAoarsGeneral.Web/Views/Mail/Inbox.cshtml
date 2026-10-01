@@ -1,0 +1,69 @@
+﻿<div id="inbox-content">
+Inbox
+     <div class="inbox-grid"></div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    addBreadCrumb("Inbox", "javascript:showDiv('#index-inbox')", 1);
+    var gridColumns = [
+                { field: "FromCompanyName", title: "From", sortField: "FromCompany.Name" },
+                { field: "Subject", title: "Subject", sortField: "Subject" },
+                { field: "CreatedOnDisplay", title:"Received", sortField: "CreatedOn" },
+                { field: "ToStatusDescription", title: "Status", sortField: "ToStatus.Description" },
+                { command: { text: "Details", click:showDetails}, title: " ", width: "110px" }];
+
+    var grid = $(".inbox-grid").kendoGrid({
+        dataSource: {
+            type: "jsonp",
+            serverPaging: true,
+            serverSorting: true,
+            serverFiltering:true,
+            pageSize: 10,
+            transport: {
+                read: {
+                    url:"@Url.Action("ReceivedList", "Mail")",
+                    type: "POST",
+                    contentType: 'application/json'
+                },
+                parameterMap: function (options, type) {
+                    var input = JSON.stringify(options);
+                    for(var i = 0; i < gridColumns.length; i++) {
+                        input = input.replace(gridColumns[i].field, gridColumns[i].sortField);
+                    }
+                    return input;
+                }
+
+            },
+            schema: { 
+                data:"Data", total:"TotalMail"
+            },
+            sort:[{field:"CreatedOn", dir:"desc"}]
+                
+        },
+       
+        height: 280,
+        pageable:{
+            refresh:true,
+            pageSizes: true
+        },
+        sortable: true,
+        filterable:true,
+        selectable:"multiple",
+        columns: gridColumns,
+        toolbar: [{text:"Outbox", template:"<button class='k-button' onclick='javascript:showOutbox()'><span class='k-icon k-i-custom'></span>Outbox</button>"},
+                    {text:"New", template:"<button class='k-button' onclick='javascript:showNew()'><span class='k-icon k-i-custom'></span>New</button>"}]
+    }).data("kendoGrid");
+    grid.refresh();
+ });
+
+ function showOutbox() {
+    loadPage("#index-outbox", '@Url.Action("Outbox")?' + getGuidQueryString());
+ }
+
+ function showNew() {
+    loadPage("#index-new", '@Url.Action("New")?' + getGuidQueryString());
+ }
+
+ 
+</script>
