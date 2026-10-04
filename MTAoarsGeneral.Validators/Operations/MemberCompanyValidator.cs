@@ -33,6 +33,8 @@ namespace MTAoarsGeneral.Validators.Operations
 
             if (item.IsGeneral)
             {
+                // Partner/director/shareholder memberships are not General registrations (matrix S8, S14)
+                principals = RegisteredPrincipalFilter.RegisteredTo(principals, item.ICNumber);
                 if (principals.Count(p => p.LookupIntermediaryType.Code == LookupConstants.IntermediaryType.General
                     && p.CompanyID == currentIdentity.CompanyID && p.LookupAgencyType.Code == item.AgencyType.Code) > 0)
                 {

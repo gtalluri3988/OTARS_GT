@@ -85,6 +85,11 @@ These are service-layer validators executed during `RegistrationService.Check(Re
 
 - **Allowed exception (Family)**: Individual Family agent in same TO joining as Corporate Family agent is allowed (validator yields no error in that scenario).
 
+> **General – which principals count (rules 3, 4, Confirm-stage company check, inclusion check):** only principals
+> registered to the IC — the IC's own Individual/Sole Proprietorship principal, or an agency where the IC is
+> Corporate Nominee / Additional Corporate Nominee (`RegisteredPrincipalFilter`). Being only a partner, director or
+> shareholder of an agency is not a General registration (matrix Scenarios 8, 12, 14).
+
 ---
 
 ### 4) Intermediary duplication + multi-company rules (`MemberIntermediaryValidator`) — Index stage
@@ -102,6 +107,24 @@ This validator enforces special constraints such as:
 
 - **Banca staff**: mismatch between individual/corporate status  
   - **Message**: `The Banca member with IC number "{0}" is already registered under {1} with {2}`
+
+---
+
+### 4a) General agency type matrix (`GeneralAgencyTypeValidator`) — Index stage (General, non-Banca, non-Individual only)
+
+Implements the General OTARS split matrix (UAT Script - General, Scenarios 1–7 and 16). Only active General
+principals in **another TO** where the IC is the **Corporate Nominee** (designation `CN`) are considered;
+partners, directors, shareholders and ACNs are ignored. Same-TO cases stay with validators 3 and 4.
+Skipped when "Allow conflict" is ticked and no principal is Not Released (same bypass as validator 4), so the
+conflict flow in `RegistrationService.Check` still applies.
+
+- **Different agency type** (e.g. Corporate Nominee of a Sole Proprietorship in TO A registering as Partnership in TO B)  
+  - **Message**: `The member with IC number "{0}" is already registered under General as Corporate Nominee of {1} Agency type with {2} (Agency Number "{3}"). Registration under a different Agency type ({4}) is not allowed`
+  - **Logic**: a Corporate Nominee may register in another TO only as Individual or as the same agency type.
+
+- **Same agency type, different business registration number** (Scenario 16)  
+  - **Message**: `The member with IC number "{0}" is already registered under General as Corporate Nominee of {1} (business registration number {2}) with {3}. Only the same business registration number can be registered under {4} Agency type`
+  - **Logic**: only the same entity (same BRN, compared trimmed and case-insensitive) can be registered in another TO.
 
 ---
 
@@ -259,6 +282,7 @@ Board members consistency rules (`BoardMembersValidator`) include:
   - **Message**: `{0}'s New IC number {1} should be 12 digits and begin with date of birth (yyMMdd) format`
 - Role member and corporate nominee are in different company  
   - **Message**: `{0}'s New IC number {1} and Corporate nomine IC number are in different company`
+  - **Exception**: not checked when the director/shareholder is the Corporate Nominee himself (matrix Scenarios 14, 15).
 - Duplicate in list  
   - **Message**: `{0} with IC Number {1} appears {2} times. Remove all except one`
 

@@ -243,12 +243,19 @@ namespace MTAoarsGeneral.Mappers.Operations
                     if (cn.Member.ID > 0)
                     {
                         memberID = cn.MemberID;
-                        int index = dest.AgencyMembers.ToList().FindIndex(m => m.MemberID == cn.MemberID);
-                        if (index >= 0)
-                            dest.AgencyMembers.ElementAt(index).Member.IsBancaStaff = cn.Member.IsBancaStaff;
-                        else if (dest.AgencyMembers.Count > 0)
-                            dest.AgencyMembers.FirstOrDefault().Member.IsBancaStaff = cn.Member.IsBancaStaff;
-                        if (cn.Agency != null) dest.Name = cn.Agency.Name;
+                        if (dest.ID == 0)
+                        {
+                            AddNomineeToNewAgency(dest, cn);
+                        }
+                        else
+                        {
+                            int index = dest.AgencyMembers.ToList().FindIndex(m => m.MemberID == cn.MemberID);
+                            if (index >= 0)
+                                dest.AgencyMembers.ElementAt(index).Member.IsBancaStaff = cn.Member.IsBancaStaff;
+                            else if (dest.AgencyMembers.Count > 0)
+                                dest.AgencyMembers.FirstOrDefault().Member.IsBancaStaff = cn.Member.IsBancaStaff;
+                            if (cn.Agency != null) dest.Name = cn.Agency.Name;
+                        }
                     }
                     else
                     {
@@ -296,12 +303,19 @@ namespace MTAoarsGeneral.Mappers.Operations
                       if (cn.Member.ID > 0)
                       {
                           memberID = cn.MemberID;
-                          int index = dest.AgencyMembers.ToList().FindIndex(m => m.MemberID == cn.MemberID);
-                          if (index >= 0)
-                              dest.AgencyMembers.ElementAt(index).Member.IsBancaStaff = cn.Member.IsBancaStaff;
-                          else if (dest.AgencyMembers.Count > 0)
-                              dest.AgencyMembers.FirstOrDefault().Member.IsBancaStaff = cn.Member.IsBancaStaff;
-                          if (cn.Agency != null) dest.Name = cn.Agency.Name;
+                          if (dest.ID == 0)
+                          {
+                              AddNomineeToNewAgency(dest, cn);
+                          }
+                          else
+                          {
+                              int index = dest.AgencyMembers.ToList().FindIndex(m => m.MemberID == cn.MemberID);
+                              if (index >= 0)
+                                  dest.AgencyMembers.ElementAt(index).Member.IsBancaStaff = cn.Member.IsBancaStaff;
+                              else if (dest.AgencyMembers.Count > 0)
+                                  dest.AgencyMembers.FirstOrDefault().Member.IsBancaStaff = cn.Member.IsBancaStaff;
+                              if (cn.Agency != null) dest.Name = cn.Agency.Name;
+                          }
                       }
                       else
                       {
@@ -350,7 +364,12 @@ namespace MTAoarsGeneral.Mappers.Operations
                     {
                         var memberCreator = ObjectContainer.Container.Resolve<AgencyMemberCreator>();
                         var cn = memberCreator.GetCorporateNominee(src);
-                        if (cn.Member.ID > 0)
+                        if (cn.Member.ID > 0 && dest.ID == 0)
+                        {
+                            AddNomineeToNewAgency(dest, cn);
+                            dest.AgencyMembers.Add(new AgencyMember { MemberID = cn.Member.ID, DesignationID = GetDesignationID(LookupConstants.Designation.Partner) });
+                        }
+                        else if (cn.Member.ID > 0)
                         {
                             var existCn = dest.AgencyMembers.First(p => p.LookupDesignation.Code == LookupConstants.Designation.CorporateNominee).Member;
                             dest.AgencyMembers.Add(memberCreator.GetCorporateNomineeAsPartner(existCn));
@@ -776,7 +795,11 @@ namespace MTAoarsGeneral.Mappers.Operations
         {
             var memberCreator = ObjectContainer.Container.Resolve<AgencyMemberCreator>();
             var cn = memberCreator.GetCorporateNominee(source);
-            if (cn.Member.ID > 0)
+            if (cn.Member.ID > 0 && agency.ID == 0)
+            {
+                AddNomineeToNewAgency(agency, cn);
+            }
+            else if (cn.Member.ID > 0)
             {
                 int index = agency.AgencyMembers.ToList().FindIndex(m => m.MemberID == cn.MemberID);
                 if (index >= 0)
@@ -790,6 +813,25 @@ namespace MTAoarsGeneral.Mappers.Operations
             }
             agency.AgencyMembers.AddRange(memberCreator.GetBoardMembers(cn.Member, source));
 
+        }
+
+        // An existing member (e.g. partner/director/shareholder of another agency, General matrix S8, S9, S12,
+        // S14, S15) registering a new agency of his own. The member is loaded by AgencyMemberCreator's own
+        // context, so link him to the new agency by MemberID instead of attaching the entity.
+        void AddNomineeToNewAgency(Agency agency, AgencyMember cn)
+        {
+            agency.AgencyMembers.Add(new AgencyMember
+            {
+                MemberID = cn.Member.ID,
+                DesignationID = GetDesignationID(LookupConstants.Designation.CorporateNominee),
+                IsPartTime = cn.IsPartTime
+            });
+        }
+
+        long GetDesignationID(string code)
+        {
+            var lookupRepository = ObjectContainer.Container.Resolve<ILookupRepository>();
+            return lookupRepository.Get<LookupDesignation>(code).ID;
         }
 
         long? GetLookupID(LookupItem item)

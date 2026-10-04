@@ -79,7 +79,10 @@ namespace MTAoarsGeneral.Validators.Operations
                     yield return new ValidationMessage("", "{0}'s New IC number {1} should be 12 digits and begin with date of birth (yyMMdd) format", designation, member.ICNumber);
                     continue;
                 }
-                if (!CanAllow(cnIcNumber, member.ICNumber))
+                // The Corporate Nominee may also be a director/shareholder of his own company,
+                // even if he is only a director/shareholder of another agency (matrix S14, S15)
+                var isNomineeSelf = designation != "Additional Corporate Nominee" && member.ICNumber == cnIcNumber;
+                if (!isNomineeSelf && !CanAllow(cnIcNumber, member.ICNumber))
                 {
                     yield return new ValidationMessage("", "{0}'s New IC number {1} and Corporate nomine IC number are in different company", designation, member.ICNumber);
                     continue;

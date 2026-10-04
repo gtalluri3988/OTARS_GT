@@ -31,3 +31,4 @@ packages/
 logs/
 *.log
 Nlog_Logging.txt
+/Issues/VALIDATION-MATRIX-ANALYSIS.md

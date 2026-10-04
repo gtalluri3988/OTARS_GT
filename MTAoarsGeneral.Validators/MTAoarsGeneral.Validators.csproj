@@ -88,6 +88,8 @@
     <Compile Include="Operations\CBCValidator.cs" />
     <Compile Include="Operations\BoardMembersValidator.cs" />
     <Compile Include="Operations\BusinessRegistrationNumberValidator.cs" />
+    <Compile Include="Operations\GeneralAgencyTypeValidator.cs" />
+    <Compile Include="Operations\RegisteredPrincipalFilter.cs" />
     <Compile Include="Notifications\Fluents\NewMailViewModelValidator.cs" />
     <Compile Include="Operations\ConflictValidator.cs" />
     <Compile Include="Operations\NewBusinessRegistrationNumberValidator.cs" />

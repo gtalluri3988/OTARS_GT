@@ -44,7 +44,9 @@ namespace MTAoarsGeneral.Validators.Operations
             var individualFamilyPrincipals = familyPrincipals.Where(p => AgencyManager.IsIndividual(p.LookupAgencyType.Code)).ToList();
 
 
-            if (item.Agency.IsGeneral && generalPrincipals.Exists(p => p.CompanyID == item.CompanyID && p.LookupAgencyType.Code == item.AgencyType.Code))
+            // Partner/director/shareholder memberships are not General registrations (matrix S14)
+            var registeredGeneralPrincipals = RegisteredPrincipalFilter.RegisteredTo(generalPrincipals, item.CorporateNominee.NewICNumber);
+            if (item.Agency.IsGeneral && registeredGeneralPrincipals.Exists(p => p.CompanyID == item.CompanyID && p.LookupAgencyType.Code == item.AgencyType.Code))
                 yield return new ValidationMessage("", "The member is already exists under General intermediary type in the same company");
 
             if (item.Agency.IsFamily && familyPrincipals.Exists(p => p.CompanyID == item.CompanyID))

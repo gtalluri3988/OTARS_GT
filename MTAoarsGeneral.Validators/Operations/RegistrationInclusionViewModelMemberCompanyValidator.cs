@@ -44,7 +44,7 @@ namespace MTAoarsGeneral.Validators.Operations
             logger.Info("[RegistrationValidation][General][Inclusion] Corporate nominee IC available={0}", !string.IsNullOrEmpty(icNumber));
             if (string.IsNullOrEmpty(icNumber)) yield break;
 
-            var existingPrincipals = memberRepository.GetPrincipals(icNumber).ToList();
+            var existingPrincipals = RegisteredPrincipalFilter.RegisteredTo(memberRepository.GetPrincipals(icNumber), icNumber);
             var isIndividual = item.AgencyType != null && item.AgencyType.Code == LookupConstants.AgencyType.Individual;
             var messages = MemberIntermediaryValidator.ValidateNonBancaGeneralPrincipals(existingPrincipals, icNumber, isIndividual).ToList();
             logger.Info("[RegistrationValidation][General][Inclusion] Shared General non-Banca rule message count={0}", messages.Count);

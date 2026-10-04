@@ -81,7 +81,9 @@ namespace MTAoarsGeneral.Validators.Operations
                 yield break;
             }
 
-            var generalPrincipals = principals.Where(p => p.LookupIntermediaryType.Code == LookupConstants.IntermediaryType.General).ToList();
+            // Partner/director/shareholder memberships are not General registrations (matrix S8, S12, S14)
+            var generalPrincipals = RegisteredPrincipalFilter.RegisteredTo(principals, item.ICNumber)
+                .Where(p => p.LookupIntermediaryType.Code == LookupConstants.IntermediaryType.General).ToList();
             var notReleasedAgents = generalPrincipals.Any(p => p.AgencyPrincipalStatus.Count(aps => aps.LookupAgencyPrincipalStatu.Code == LookupConstants.AgencyPrincipalStatus.NotReleased) > 0);
             if (generalPrincipals.Count >= 2 && item.IsGeneral && (!item.AllowConflict || notReleasedAgents))
             {

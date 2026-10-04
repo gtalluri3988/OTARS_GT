@@ -193,7 +193,11 @@ namespace MTAoarsGeneral.Services.Operations
             if (agencies.Count() > 0)
                 logger.Info("Agencies.ID: {0}", string.Join(";", agencies.Select(i => i.ID)));
 
-            var agency = (agencies.Count() > 0) ? GetMappedAgency(model, agencies.First()) : Mapper.Map<Agency>(model);
+            // [General matrix S8, S9, S12, S14, S15] Only reuse an agency where the IC is the Corporate Nominee.
+            // An IC who is only a partner/director/shareholder elsewhere gets his own new agency,
+            // instead of the registration being written onto that other agency.
+            var existingAgency = SelectNomineeAgency(agencies, ic, model.Agency == null ? null : model.Agency.BusinessRegistrationNumber);
+            var agency = (existingAgency != null) ? GetMappedAgency(model, existingAgency) : Mapper.Map<Agency>(model);
 
             using (var scope = new TransactionScope())
             {
@@ -203,6 +207,21 @@ namespace MTAoarsGeneral.Services.Operations
             return agency.ID;
         }
 
+
+        static Agency SelectNomineeAgency(IEnumerable<Agency> agencies, string ic, string businessRegistrationNumber)
+        {
+            var nomineeAgencies = agencies.Where(a => a.AgencyMembers.Any(am =>
+                am.LookupDesignation.Code == LookupConstants.Designation.CorporateNominee
+                && am.Member != null
+                && (am.Member.NewICNumber == ic || am.Member.PassportNumber == ic))).ToList();
+            if (!string.IsNullOrWhiteSpace(businessRegistrationNumber))
+            {
+                var sameEntity = nomineeAgencies.FirstOrDefault(a => a.BusinessRegistrationNumber != null
+                    && a.BusinessRegistrationNumber.Trim().Equals(businessRegistrationNumber.Trim(), StringComparison.OrdinalIgnoreCase));
+                if (sameEntity != null) return sameEntity;
+            }
+            return nomineeAgencies.FirstOrDefault();
+        }
 
         Agency GetMappedAgency(RegistrationViewModel model, Agency agency)
         {
