@@ -32,3 +32,6 @@ logs/
 *.log
 Nlog_Logging.txt
 /Issues/VALIDATION-MATRIX-ANALYSIS.md
+/docs/REGISTRATION-VALIDATION-RULES.md
+/Issues/Matrix9
+/Issues/scnario10_11

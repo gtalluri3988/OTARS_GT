@@ -9,6 +9,7 @@ using MTAoarsGeneral.Utilities.Config;
 using MTAoarsGeneral.Utilities.Constants;
 using System.Data.Objects;
 using MTAoarsGeneral.Utilities.Interfaces;
+using MTAoarsGeneral.Utilities.Extensions;
 
 namespace MTAoarsGeneral.Repositories.Operations
 {
@@ -701,6 +702,26 @@ namespace MTAoarsGeneral.Repositories.Operations
             return Context.Agencies
                .Where(ag => ag.BusinessRegistrationNumber == businessRegistrationNumber && ag.AgencyPrincipals.Any())
                .FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Every agency with principals whose BRN or new BRN matches either number, ignoring case,
+        /// spaces, '-', '/' and '.' (same normalization as StringExtensions.ToRegistrationNumberKey).
+        /// </summary>
+        public List<Agency> SelectByRegistrationNumber(string businessRegistrationNumber, string newBusinessRegistrationNumber)
+        {
+            var keys = new[] { businessRegistrationNumber, newBusinessRegistrationNumber }
+                .Select(n => n.ToRegistrationNumberKey())
+                .Where(k => k.Length > 0)
+                .Distinct()
+                .ToList();
+            if (keys.Count == 0) return new List<Agency>();
+
+            return Context.Agencies
+                .Where(ag => ag.AgencyPrincipals.Any()
+                    && (keys.Contains(ag.BusinessRegistrationNumber.Replace(" ", "").Replace("-", "").Replace("/", "").Replace(".", "").ToUpper())
+                        || keys.Contains(ag.NewBusinessRegistrationNumber.Replace(" ", "").Replace("-", "").Replace("/", "").Replace(".", "").ToUpper())))
+                .ToList();
         }
 
         public IEnumerable<AsciiReportDetail> Search(DateTime fromDate, DateTime toDate)

@@ -49,9 +49,9 @@ namespace MTAoarsGeneral.Web.Controllers
                     .Select(c => c.Value)
                     .SingleOrDefault();
 
-            // The OIDC cookie and the application session are separate. If the
-            // cookie is valid but CurrentIdentity is not in Session yet, rebuild
-            // the application identity from the authenticated user's subject.
+            // Finding 1: restore an ASP.NET session only after the OWIN cookie has passed
+            // its idle and absolute-expiry validation. This keeps the existing SSO flow
+            // working after a session recycle without allowing an expired cookie to revive it.
             if (!base.CurrentUser.IsLogin && user != null &&
                 user.Identity.IsAuthenticated && !string.IsNullOrEmpty(sub))
             {

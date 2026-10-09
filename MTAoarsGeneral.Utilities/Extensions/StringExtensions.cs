@@ -109,6 +109,17 @@ namespace MTAoarsGeneral.Utilities.Extensions
             return string.Format(text, args);
         }
 
+        /// <summary>
+        /// Comparison key for business registration numbers: upper case without spaces, '-', '/' and '.'
+        /// so "PT-1234", "pt 1234" and "PT1234" are the same entity.
+        /// Must stay in line with AgencyRepository.SelectByRegistrationNumber.
+        /// </summary>
+        public static string ToRegistrationNumberKey(this string input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return string.Empty;
+            return input.Replace(" ", "").Replace("-", "").Replace("/", "").Replace(".", "").ToUpperInvariant();
+        }
+
         public static bool IsNewBusinessRegistrationNumber(this string input)
         {
             if (input.Length != 12) return false;

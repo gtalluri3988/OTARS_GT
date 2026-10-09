@@ -44,12 +44,7 @@ namespace MTAoarsGeneral.Validators.Operations
                 yield return new ValidationMessage("", "New business registration number {0} already registered under {1}", item.NewBusinessRegistrationNumber, item.AgencyType.Description);
             }
 
-            var cn = memberRepository.GetCorporateNominee(agency.ID);
-            var icNumber = cn.LookupICType.Code == LookupConstants.ICTypes.NewIc ? cn.NewICNumber : cn.PassportNumber;
-            if (icNumber != item.ICNumber)
-            {
-                yield return new ValidationMessage("", "New business registration number {0} is not matching with the IC number", item.NewBusinessRegistrationNumber, item.AgencyType.Description);
-            }
+            // Corporate Nominee mismatch is checked by RegisteredEntityNomineeValidator (matrix S10, S11)
         }
     }
 }

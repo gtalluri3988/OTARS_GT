@@ -12,7 +12,8 @@ using System.Linq.Expressions;
 
 namespace MTAoarsGeneral.Web
 {
-    [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
+    // Findings 2-4: do not send server exception details or stack traces in WCF faults.
+    [ServiceBehavior(IncludeExceptionDetailInFaults = false)]
     [JSONPSupportBehavior]
     public class MasterDataService : DataService<EntityContext>
     {
@@ -23,7 +24,8 @@ namespace MTAoarsGeneral.Web
             // Examples:
             // config.SetEntitySetAccessRule("MyEntityset", EntitySetRights.AllRead);
             // config.SetServiceOperationAccessRule("MyServiceOperation", ServiceOperationRights.All);
-            config.UseVerboseErrors = true;
+            // Findings 2-4: retain error diagnostics in server logs only.
+            config.UseVerboseErrors = false;
             config.SetEntitySetAccessRule("Users", EntitySetRights.AllRead | EntitySetRights.AllWrite);
             config.SetEntitySetAccessRule("LookupRoles", EntitySetRights.AllRead | EntitySetRights.AllWrite);
             config.SetEntitySetAccessRule("TrainingViewDetails", EntitySetRights.AllRead);
@@ -63,7 +65,7 @@ namespace MTAoarsGeneral.Web
             config.SetEntitySetAccessRule("ALCHeaders", EntitySetRights.AllRead | EntitySetRights.AllWrite);
             config.SetEntitySetAccessRule("ALCMembers", EntitySetRights.AllRead | EntitySetRights.AllWrite);
             config.SetEntitySetAccessRule("Addresses", EntitySetRights.AllRead | EntitySetRights.AllWrite);
-            
+
             config.SetEntitySetAccessRule("LookupReferredActionTakens", EntitySetRights.AllRead | EntitySetRights.AllWrite);
             config.SetEntitySetAccessRule("LookupReferredPoliceReportLodgeds", EntitySetRights.AllRead | EntitySetRights.AllWrite);
 

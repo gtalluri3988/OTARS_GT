@@ -33,6 +33,8 @@ namespace MTAoarsGeneral.Repositories.Interfaces
         Agency Select(string businessRegistrationNumber);
         Agency Select(string businessRegistrationNumber, bool isNew);
 
+        List<Agency> SelectByRegistrationNumber(string businessRegistrationNumber, string newBusinessRegistrationNumber);
+
         List<AgencyPrincipal> Enquiry(String registrationNumber, String ICNumber, long companyId);
 
         AgencyPrincipal GetAgencyPrincipal(string agencyNumber);

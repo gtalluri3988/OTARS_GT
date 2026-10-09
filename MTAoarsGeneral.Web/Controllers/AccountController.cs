@@ -12,6 +12,7 @@ using MTAoarsGeneral.Utilities.Constants;
 using MTAoarsGeneral.ViewModels.Shared;
 using MTAoarsGeneral.Utilities.Config;
 using System.Security.Claims;
+using Microsoft.Owin;
 using MTAoarsGeneral.Utilities.Extensions;
 
 namespace MTAoarsGeneral.Web.Controllers
@@ -39,22 +40,32 @@ namespace MTAoarsGeneral.Web.Controllers
             //if (identity == null) { return Redirect(config.SSOUrl); }
             //else { return RedirectToAction("Index", "Home"); }
 
+            // Finding 1: this only restores the server session after OWIN has accepted
+            // the cookie, which is limited by the 15-minute idle and 60-minute absolute
+            // expiry checks configured in Startup. It preserves the established SSO flow
+            // when ASP.NET session state is recycled.
+            //if (this.User.Identity.IsAuthenticated && identity == null)
+            //{
+            //    var claimsIdentity = User.Identity as ClaimsIdentity;
+            //    var sub = claimsIdentity == null
+            //        ? null
+            //        : claimsIdentity.Claims.FirstOrDefault(i => i.Type == "sub");
+
+            //    if (sub != null && !string.IsNullOrEmpty(sub.Value))
+            //    {
+            //        identity = userService.Get(sub.Value);
+            //        if (identity != null)
+            //        {
+            //            dataProvider.Remove(GlobalConstants.CurrentIdentity);
+            //            dataProvider.Register(GlobalConstants.CurrentIdentity, identity);
+            //        }
+            //    }
+            //}
             if (this.User.Identity.IsAuthenticated && identity == null)
             {
-                var claimsIdentity = User.Identity as ClaimsIdentity;
-                var sub = claimsIdentity == null
-                    ? null
-                    : claimsIdentity.Claims.FirstOrDefault(i => i.Type == "sub");
-
-                if (sub != null && !string.IsNullOrEmpty(sub.Value))
-                {
-                    identity = userService.Get(sub.Value);
-                    if (identity != null)
-                    {
-                        dataProvider.Remove(GlobalConstants.CurrentIdentity);
-                        dataProvider.Register(GlobalConstants.CurrentIdentity, identity);
-                    }
-                }
+                var sub = (User.Identity as ClaimsIdentity).Claims.FirstOrDefault(i => i.Type == "sub").Value;
+                identity = userService.Get(sub);
+                dataProvider.Register(GlobalConstants.CurrentIdentity, identity);
             }
 
             if (identity != null)
@@ -93,14 +104,26 @@ namespace MTAoarsGeneral.Web.Controllers
 
         public ActionResult LogOut()
         {
-            FormsAuthentication.SignOut();
             var identity = dataProvider.Get<Identity>(GlobalConstants.CurrentIdentity);
+            // Finding 5: invalidate every authentication/session layer before redirecting away from the app.
+            HttpContext.GetOwinContext().Authentication.SignOut("Cookies");
+            FormsAuthentication.SignOut();
             dataProvider.Remove(GlobalConstants.CurrentIdentity);
+
+            dataProvider.Register<Identity>(GlobalConstants.CurrentIdentity, null);
+
 
             if (identity != null)
                 userService.SaveLogoutDetail(identity.UserLoginID);
             Session.Clear();
             Session.Abandon();
+            // Finding 5: expire the browser's session identifier so it cannot be replayed after logout.
+            Response.Cookies.Add(new HttpCookie("ASP.NET_SessionId", string.Empty)
+            {
+                Expires = DateTime.UtcNow.AddDays(-1),
+                HttpOnly = true,
+                Secure = Request.IsSecureConnection
+            });
             //return View("LogOn", new LogOnViewModel());
             //return Redirect("/home.aspx");
             return Redirect(config.SSOUrl);

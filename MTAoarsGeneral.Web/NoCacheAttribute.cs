@@ -11,8 +11,10 @@ namespace MTAoarsGeneral.Web
         public override void OnResultExecuting(ResultExecutingContext filterContext)
         {
             var response = filterContext.HttpContext.Response;
-            response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+            // Finding 6: prevent the Back button or shared browser cache from displaying authenticated pages after logout.
+            response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
             response.Headers["Pragma"] = "no-cache";
+            response.Headers["Expires"] = "0";
             base.OnResultExecuting(filterContext);
         }
     }
