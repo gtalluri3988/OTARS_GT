@@ -16,6 +16,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Practices.Unity;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using MTAoarsGeneral.Utilities.Managers;
@@ -24,6 +25,11 @@ namespace MTAoarsGeneral.Web
 {
     public class Startup
     {
+
+        // Finding 1: combines a 15-minute idle timeout with a non-renewable 60-minute absolute timeout.
+        private const string AbsoluteSessionExpiryClaimType = "mta:absolute_session_expiry_utc_ticks";
+        private static readonly TimeSpan IdleSessionTimeout = TimeSpan.FromMinutes(15);
+        private static readonly TimeSpan AbsoluteSessionTimeout = TimeSpan.FromMinutes(60);
 
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -48,13 +54,33 @@ namespace MTAoarsGeneral.Web
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = "Cookies"
+                //,
+                //// Finding 1: activity can renew the idle timeout, but never the absolute-expiry claim below.
+                //ExpireTimeSpan = IdleSessionTimeout,
+                //SlidingExpiration = true,
+                //Provider = new CookieAuthenticationProvider
+                //{
+                //    OnValidateIdentity = context =>
+                //    {
+                //        // Finding 1: reject missing, malformed, and expired session tickets server-side.
+                //        var expiryClaim = context.Identity.FindFirst(AbsoluteSessionExpiryClaimType);
+                //        long expiryTicks;
+                //        if (expiryClaim == null ||
+                //            !long.TryParse(expiryClaim.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out expiryTicks) ||
+                //            expiryTicks <= DateTime.UtcNow.Ticks)
+                //        {
+                //            context.RejectIdentity();
+                //        }
+                //        return Task.FromResult(0);
+                //    }
+                //}
             });
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectAuthenticationOptions
             {
                 Authority = AppSettings.Authority,
-                ClientId = "8A4E2741-A9BA-4F19-BED7-21B6CF602A6C",
-                Scope = "openid profile otars",
+                ClientId = "8A4E2741-A9BA-4F19-BED7-21B6CF602A6D",
+                Scope = "openid profile otarsgt",
                 RedirectUri = AppSettings.RedirectUri,
 
                 Configuration = config,
@@ -67,17 +93,17 @@ namespace MTAoarsGeneral.Web
                     IssuerSigningTokens = new[] { new X509SecurityToken(certificate) }
                 },
                 ResponseType = "id_token token",
-                SignInAsAuthenticationType = "Cookies",                
+                SignInAsAuthenticationType = "Cookies",
 
                 Notifications = new OpenIdConnectAuthenticationNotifications
                 {
-                    
+
                     SecurityTokenValidated = n =>
                     {
                         logger.Info("Raise event : SecurityTokenValidated");
 
                         var id = n.AuthenticationTicket.Identity;
-                        
+
                         // we want to keep sub
                         var sub = id.FindFirst(Constants.ClaimTypes.Subject);
                         if (sub != null)
@@ -109,6 +135,10 @@ namespace MTAoarsGeneral.Web
                             return Task.FromResult(0);
 
                         nid.AddClaim(new Claim(Constants.ClaimTypes.Subject, sub.Value.AESDecrypt()));
+                        // Finding 1: retain the original absolute expiry when the sliding idle cookie is renewed.
+                        nid.AddClaim(new Claim(
+                            AbsoluteSessionExpiryClaimType,
+                            DateTime.UtcNow.Add(AbsoluteSessionTimeout).Ticks.ToString(CultureInfo.InvariantCulture)));
 
                         n.AuthenticationTicket = new AuthenticationTicket(
                             nid,
@@ -135,7 +165,7 @@ namespace MTAoarsGeneral.Web
             using (WebResponse response = request.GetResponse())
             {
             }
-            
+
             //retrieve the ssl cert and assign it to an X509Certificate object
             X509Certificate cert = request.ServicePoint.Certificate;
 
