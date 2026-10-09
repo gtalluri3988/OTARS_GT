@@ -21,6 +21,20 @@
             $("#page-menu").kendoMenu();
         });
     </script>
+    @if (Html.GetIdentity() != null)
+    {
+        @Html.Script("~/Scripts/SessionTimeout.js")
+        <script type="text/javascript">
+            $(function () {
+                sessionTimeout.init({
+                    idleSeconds: @((int)MTAoarsGeneral.Web.SessionTimeoutManager.IdleTimeout.TotalSeconds),
+                    absoluteSeconds: @MTAoarsGeneral.Web.SessionTimeoutManager.GetRemainingAbsoluteSeconds(Context),
+                    expiredUrl: "@Url.Action("SessionExpired", "Account")",
+                    keepAliveUrl: "@Url.Action("KeepAlive", "Account")"
+                });
+            });
+        </script>
+    }
 
     @RenderSection("CssScript", false)
 </head>

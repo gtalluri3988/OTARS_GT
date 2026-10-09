@@ -131,7 +131,28 @@ namespace MTAoarsGeneral.Web.Controllers
 
         public ActionResult Unauthorized()
         {
+            // No logged-in user means the session has expired (or never existed):
+            // clear every session layer and send the user back to SSO to re-authenticate.
+            if (!dataProvider.HasRegistered(GlobalConstants.CurrentIdentity))
+            {
+                SessionTimeoutManager.SignOut(System.Web.HttpContext.Current);
+                return Redirect(config.SSOUrl);
+            }
             return View();
+        }
+
+        // Called by Scripts/SessionTimeout.js when the idle or absolute timeout is reached in the browser.
+        public ActionResult SessionExpired()
+        {
+            SessionTimeoutManager.SignOut(System.Web.HttpContext.Current);
+            return Redirect(config.SSOUrl);
+        }
+
+        // Called by Scripts/SessionTimeout.js when the user chooses to continue working;
+        // the request itself refreshes the server-side idle timer.
+        public JsonResult KeepAlive()
+        {
+            return Json(new { Result = dataProvider.HasRegistered(GlobalConstants.CurrentIdentity) }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult CaptchaImage()
