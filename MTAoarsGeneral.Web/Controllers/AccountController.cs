@@ -104,28 +104,8 @@ namespace MTAoarsGeneral.Web.Controllers
 
         public ActionResult LogOut()
         {
-            var identity = dataProvider.Get<Identity>(GlobalConstants.CurrentIdentity);
-            // Finding 5: invalidate every authentication/session layer before redirecting away from the app.
-            HttpContext.GetOwinContext().Authentication.SignOut("Cookies");
-            FormsAuthentication.SignOut();
-            dataProvider.Remove(GlobalConstants.CurrentIdentity);
-
-            dataProvider.Register<Identity>(GlobalConstants.CurrentIdentity, null);
-
-
-            if (identity != null)
-                userService.SaveLogoutDetail(identity.UserLoginID);
-            Session.Clear();
-            Session.Abandon();
-            // Finding 5: expire the browser's session identifier so it cannot be replayed after logout.
-            Response.Cookies.Add(new HttpCookie("ASP.NET_SessionId", string.Empty)
-            {
-                Expires = DateTime.UtcNow.AddDays(-1),
-                HttpOnly = true,
-                Secure = Request.IsSecureConnection
-            });
-            //return View("LogOn", new LogOnViewModel());
-            //return Redirect("/home.aspx");
+            // Use the same server-side invalidation path as session timeout handling.
+            SessionTimeoutManager.SignOut(System.Web.HttpContext.Current);
             return Redirect(config.SSOUrl);
         }
 

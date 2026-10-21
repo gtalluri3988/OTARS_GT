@@ -55,7 +55,8 @@ namespace MTAoarsGeneral.Web
 
             var session = context.Session;
             var identity = session[GlobalConstants.CurrentIdentity] as Identity;
-            if (identity == null) {
+            if (identity == null)
+            {
                 // Not logged in: nothing to time out.
                 session.Remove(LoginUtcKey);
                 session.Remove(LastActivityUtcKey);
@@ -67,7 +68,8 @@ namespace MTAoarsGeneral.Web
             var owner = GetOwner(identity);
 
             // A new login in this session (different user or login record) starts a new absolute window.
-            if (!(session[LoginUtcKey] is DateTime) || !owner.Equals(session[LoginOwnerKey] as string)) {
+            if (!(session[LoginUtcKey] is DateTime) || !owner.Equals(session[LoginOwnerKey] as string))
+            {
                 session[LoginUtcKey] = now;
                 session[LastActivityUtcKey] = now;
                 session[LoginOwnerKey] = owner;
@@ -75,7 +77,8 @@ namespace MTAoarsGeneral.Web
             }
 
             // SSO hands the user back here to log in; let it replace the identity instead of bouncing it.
-            if (IsLoginEntry(context.Request)) {
+            if (IsLoginEntry(context.Request))
+            {
                 session[LastActivityUtcKey] = now;
                 return;
             }
@@ -85,7 +88,8 @@ namespace MTAoarsGeneral.Web
 
             var idleExpired = now - lastActivityUtc > IdleTimeout;
             var absoluteExpired = now - loginUtc > AbsoluteTimeout;
-            if (!idleExpired && !absoluteExpired) {
+            if (!idleExpired && !absoluteExpired)
+            {
                 session[LastActivityUtcKey] = now;
                 return;
             }
@@ -120,31 +124,38 @@ namespace MTAoarsGeneral.Web
             var session = context.Session;
             var identity = session == null ? null : session[GlobalConstants.CurrentIdentity] as Identity;
 
-            if (identity != null && identity.UserLoginID > 0) {
-                try {
+            if (identity != null && identity.UserLoginID > 0)
+            {
+                try
+                {
                     ObjectContainer.Container.Resolve<IUserService>().SaveLogoutDetail(identity.UserLoginID);
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     logger.Error(ex);
                 }
             }
 
-            try {
+            try
+            {
                 context.GetOwinContext().Authentication.SignOut("Cookies");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 // The OWIN pipeline is not running (owin:AutomaticAppStartup=false); nothing to sign out.
                 logger.Debug("OWIN sign out skipped: " + ex.Message);
             }
 
             FormsAuthentication.SignOut();
 
-            if (session != null) {
+            if (session != null)
+            {
                 session.Clear();
                 session.Abandon();
             }
 
-            context.Response.Cookies.Add(new HttpCookie(SessionCookieName, string.Empty) {
+            context.Response.Cookies.Add(new HttpCookie(SessionCookieName, string.Empty)
+            {
                 Expires = DateTime.UtcNow.AddDays(-1),
                 HttpOnly = true,
                 Secure = context.Request.IsSecureConnection
@@ -156,7 +167,8 @@ namespace MTAoarsGeneral.Web
             var response = context.Response;
             response.Clear();
 
-            if (new HttpRequestWrapper(context.Request).IsAjaxRequest()) {
+            if (new HttpRequestWrapper(context.Request).IsAjaxRequest())
+            {
                 // Site.js checkError() and SessionTimeout.js both send the browser to the SSO page.
                 response.StatusCode = 401;
                 response.SuppressFormsAuthenticationRedirect = true;
@@ -164,7 +176,8 @@ namespace MTAoarsGeneral.Web
                 response.ContentType = "text/plain";
                 response.Write("Unauthorized to view the page. Your session has expired, please login again.");
             }
-            else {
+            else
+            {
                 response.Redirect(SSOUrl, false);
             }
 
